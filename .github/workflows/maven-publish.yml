@@ -21,7 +21,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
           server-id: space-maven
-          settings-path: ${{ github.workspace }}/.m2 # location for the settings.xml file
+          #settings-path: ${{ github.workspace }}/.m2 # location for the settings.xml file
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
