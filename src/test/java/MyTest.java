@@ -1,5 +1,5 @@
-import io.github.imaginedevit.testIt.annotations.TestIt;
-import io.github.imaginedevit.testIt.annotations.TestItClass;
+import io.github.imaginedevit.testIt.TestIt;
+import io.github.imaginedevit.testIt.TestItClass;
 import io.github.imaginedevit.testIt.TestCase;
 import org.junit.jupiter.api.Assertions;
 
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 public class MyTest {
 
     @TestIt(name = "(1 * 2) + 1 should be equal to 3")
-    public void test(TestCase<Integer,Integer> testCase){
+    void test(TestCase<Integer,Integer> testCase){
         testCase
                 .given("state is 1", () -> 1)
                 .and("state is multiplied by 2", state -> state.map(i -> i * 2).orElse(0))
@@ -17,6 +17,5 @@ public class MyTest {
                     Assertions.assertTrue(result.isPresent());
                     Assertions.assertEquals(3, result.get());
                 });
-
     }
 }

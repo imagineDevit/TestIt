@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt.casefns;
+package io.github.imaginedevit.testIt;
 
 import java.util.function.Supplier;
 

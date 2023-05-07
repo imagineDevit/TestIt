@@ -1,6 +1,5 @@
-package io.github.imaginedevit.testIt.annotations;
+package io.github.imaginedevit.testIt;
 
-import io.github.imaginedevit.testIt.resolvers.TestCaseResolver;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
 

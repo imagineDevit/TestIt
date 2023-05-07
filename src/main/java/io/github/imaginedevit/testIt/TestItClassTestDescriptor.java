@@ -1,6 +1,5 @@
-package io.github.imaginedevit.testIt.descriptors;
+package io.github.imaginedevit.testIt;
 
-import io.github.imaginedevit.testIt.engine.TestItPredicates;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;

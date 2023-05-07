@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt.annotations;
+package io.github.imaginedevit.testIt;
 
 import org.junit.platform.commons.annotation.Testable;
 

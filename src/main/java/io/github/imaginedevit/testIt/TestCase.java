@@ -1,16 +1,13 @@
 package io.github.imaginedevit.testIt;
 
 
-import io.github.imaginedevit.testIt.casefns.*;
-import io.github.imaginedevit.testIt.utils.StmtMsg;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static io.github.imaginedevit.testIt.utils.TextUtils.*;
+import static io.github.imaginedevit.testIt.TextUtils.*;
 
 /**
  * Test case representation
@@ -45,6 +42,7 @@ public class TestCase<T, R> {
         }
     }
     public static final String RUN = "run";
+    public static final String CREATE = "create";
     public static final String DASH = "----------";
 
     private final String name;
@@ -86,7 +84,7 @@ public class TestCase<T, R> {
      * @param name test case name
      * @return the test case
      */
-    public static <T, R> TestCase<T, R> create(String name) {
+    protected static <T, R> TestCase<T, R> create(String name) {
         return new TestCase<>(name);
     }
 

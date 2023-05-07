@@ -1,7 +1,6 @@
-package io.github.imaginedevit.testIt.engine;
+package io.github.imaginedevit.testIt;
 
 
-import io.github.imaginedevit.testIt.TestItExecutor;
 import org.junit.platform.engine.*;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.ClasspathRootSelector;

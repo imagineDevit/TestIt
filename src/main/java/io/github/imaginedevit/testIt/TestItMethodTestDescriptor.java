@@ -1,7 +1,5 @@
-package io.github.imaginedevit.testIt.descriptors;
+package io.github.imaginedevit.testIt;
 
-import io.github.imaginedevit.testIt.annotations.TestIt;
-import io.github.imaginedevit.testIt.TestCase;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.MethodSource;
@@ -38,8 +36,7 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
     }
 
     public TestCase<?,?> getTestCase() {
-        String name = this.testMethod.getAnnotation(TestIt.class).name();
-        return TestCase.create(name);
+        return TestCase.create(this.testMethod.getAnnotation(TestIt.class).name());
     }
 
 }

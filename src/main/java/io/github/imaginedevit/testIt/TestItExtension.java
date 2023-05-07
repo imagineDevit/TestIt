@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt.extensions;
+package io.github.imaginedevit.testIt;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;

@@ -1,7 +1,5 @@
-package io.github.imaginedevit.testIt.resolvers;
+package io.github.imaginedevit.testIt;
 
-import io.github.imaginedevit.testIt.annotations.TestIt;
-import io.github.imaginedevit.testIt.TestCase;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -16,6 +14,9 @@ public class TestCaseResolver implements ParameterResolver {
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return TestCase.create(extensionContext.getTestMethod().get().getAnnotation(TestIt.class).name());
+        return extensionContext.getTestMethod()
+                .map(method -> method.getAnnotation(TestIt.class).name())
+                .map(TestCase::create)
+                .orElseThrow();
     }
 }

@@ -1,9 +1,6 @@
 package io.github.imaginedevit.testIt;
 
 
-import io.github.imaginedevit.testIt.casefns.AndGivenFn;
-import io.github.imaginedevit.testIt.casefns.GWhenFn;
-
 public class GivenStmt<T, R> {
 
     private final TestCase<T,R> testCase;

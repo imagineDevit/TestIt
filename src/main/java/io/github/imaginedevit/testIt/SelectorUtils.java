@@ -1,7 +1,5 @@
-package io.github.imaginedevit.testIt.engine;
+package io.github.imaginedevit.testIt;
 
-import io.github.imaginedevit.testIt.descriptors.TestItClassTestDescriptor;
-import io.github.imaginedevit.testIt.descriptors.TestItMethodTestDescriptor;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.discovery.ClasspathRootSelector;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;

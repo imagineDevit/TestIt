@@ -1,8 +1,5 @@
-package io.github.imaginedevit.testIt.engine;
+package io.github.imaginedevit.testIt;
 
-import io.github.imaginedevit.testIt.annotations.TestIt;
-import io.github.imaginedevit.testIt.annotations.TestItClass;
-import io.github.imaginedevit.testIt.TestCase;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.rapidpm.frp.model.Result;
 
@@ -27,7 +24,7 @@ public class TestItPredicates {
                         matchCase(() -> AnnotationSupport.isAnnotated(clazz, TestItClass.class), () -> Result.success(Boolean.TRUE))
                 )
                         .ifFailed(logger::info)
-                        .ifPresent(b -> logger.info("selected class " + clazz))
+                        .ifPresent(b -> logger.info("selected " + clazz))
                         .getOrElse(() -> false);
     }
 

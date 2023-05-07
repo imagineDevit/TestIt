@@ -1,7 +1,5 @@
 package io.github.imaginedevit.testIt;
 
-import io.github.imaginedevit.testIt.casefns.ThenFn;
-
 public class WhenStmt<T,R> {
 
     private final TestCase<T,R> testCase;
