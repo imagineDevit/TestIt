@@ -17,6 +17,9 @@ import static io.github.imaginedevit.testIt.TextUtils.*;
  */
 public class TestCase<T, R> {
 
+    /**
+     * Test case result that can be either success or failure
+     */
     public enum Result {
         SUCCESS("✅", green("Passed")),
         FAILURE("❌", red("Failed"));
@@ -41,14 +44,28 @@ public class TestCase<T, R> {
             );
         }
     }
-    public static final String RUN = "run";
-    public static final String CREATE = "create";
+
+    /**
+     * Constants
+     */
     public static final String DASH = "----------";
 
-    private final String name;
+    /**
+     * Test case name
+     */
+    protected final String name;
+
+    private final TestCaseReport.TestReport report;
+
+    /**
+     * Test case state and result
+     */
     private T state;
     private R result;
 
+    /**
+     * Test case closed flag
+     */
     private boolean closed = false;
 
 
@@ -56,9 +73,12 @@ public class TestCase<T, R> {
      * Fns
      */
     private GivenFn<T> givenFn = null;
+    private GivenRFn givenRFn = null;
     private WhenFn<R> whenFn = null;
+    private WhenRFn whenRFn = null;
     private final List<AndGivenFn<T>> andGivenFns = new ArrayList<>();
-    private final List<GWhenFn<T,R>> whenFns = new ArrayList<>();
+    private final List<Object> whenFns = new ArrayList<>();
+   // private final List<WhenRFn> whenRFns = new ArrayList<>();
     private final List<ThenFn<R>> thenFns = new ArrayList<>();
 
     /**
@@ -74,8 +94,9 @@ public class TestCase<T, R> {
      *
      * @param name the testCase name
      */
-    private TestCase(String name) {
+    private TestCase(String name, TestCaseReport.TestReport report) {
         this.name = name;
+        this.report = report;
     }
 
     /**
@@ -84,45 +105,78 @@ public class TestCase<T, R> {
      * @param name test case name
      * @return the test case
      */
-    protected static <T, R> TestCase<T, R> create(String name) {
-        return new TestCase<>(name);
+    protected static <T, R> TestCase<T, R> create(String name, TestCaseReport.TestReport report) {
+        return new TestCase<>(name, report);
     }
 
-    public  GivenStmt<T, R> given(String message, GivenFn<T> fn) {
-        return runIfOpen(()->{
+    public GivenStmt<T, R> given(String message, GivenFn<T> fn) {
+        return runIfOpen(() -> {
             this.givenMsgs.add(StmtMsg.given(message));
+            this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.given(message));
             this.givenFn = fn;
             return new GivenStmt<>(this);
         });
     }
 
+    public GivenStmt<T, R> given(String message, GivenRFn fn) {
+        return runIfOpen(() -> {
+            this.givenMsgs.add(StmtMsg.given(message));
+            this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.given(message));
+            this.givenRFn = fn;
+            return new GivenStmt<>(this);
+        });
+    }
+
+
     protected void andGiven(String message, AndGivenFn<T> fn) {
         this.givenMsgs.add(StmtMsg.and(message));
+        this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.and(message));
         this.andGivenFns.add(fn);
     }
 
-    public  WhenStmt<T, R> when(String message, WhenFn<R> fn) {
+    public WhenStmt<T, R> when(String message, WhenFn<R> fn) {
         return runIfOpen(() -> {
             this.whenMsgs.add(StmtMsg.when(message));
+            this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.when(message));
             this.whenFn = fn;
             return new WhenStmt<>(this);
         });
     }
 
-    protected  WhenStmt<T, R> gWhen(String message, GWhenFn<T,R> fn) {
+    public WhenStmt<T, R> when(String message, WhenRFn fn) {
+        return runIfOpen(() -> {
+            this.whenMsgs.add(StmtMsg.when(message));
+            this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.when(message));
+            this.whenRFn = fn;
+            return new WhenStmt<>(this);
+        });
+    }
+
+    protected WhenStmt<T, R> whenr(String message, WhenRFn fn) {
         this.whenMsgs.add(StmtMsg.when(message));
+        this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.when(message));
+        this.whenFns.add(fn);
+        return new WhenStmt<>(this);
+
+    }
+
+    protected WhenStmt<T, R> when(String message, GWhenFn<T, R> fn) {
+        this.whenMsgs.add(StmtMsg.when(message));
+        this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.when(message));
         this.whenFns.add(fn);
         return new WhenStmt<>(this);
     }
 
     protected ThenStmt<T, R> then(String message, ThenFn<R> fn) {
         this.thenMsgs.add(StmtMsg.then(message));
+        this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.then(message));
         this.thenFns.add(fn);
         return new ThenStmt<>(this);
     }
 
     protected void andThen(String message, ThenFn<R> fn) {
         thenMsgs.add(StmtMsg.and(message));
+        this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.and(message));
         this.thenFns.add(fn);
     }
 
@@ -130,30 +184,49 @@ public class TestCase<T, R> {
      * Print report and run the test case
      */
 
+    @SuppressWarnings("unchecked")
     protected void run() {
 
         System.out.print(report());
+
         if (this.givenFn != null) {
             this.state = this.givenFn.get();
+        } else if (this.givenRFn != null) {
+            this.givenRFn.run();
         }
 
         this.andGivenFns.forEach(f -> this.state = f.apply(Optional.ofNullable(this.state)));
 
         if (this.whenFn != null) {
-            this.result = this.whenFn.get().orElse(null);
+            this.result = this.whenFn.get();
+        } else if (this.whenRFn != null) {
+            this.whenRFn.run();
         } else {
-            this.whenFns.forEach(fn -> this.result = fn.apply(Optional.ofNullable(this.state)));
+
+
+            this.whenFns.forEach(fn -> {
+                if (fn instanceof GWhenFn<?,?> gfn) {
+                    this.result = ((GWhenFn<T,R>) gfn).apply(Optional.ofNullable(this.state));
+                } else if (fn instanceof WhenRFn rfn) {
+                    rfn.run();
+                }
+            });
         }
 
         this.thenFns.forEach(fn -> fn.accept(Optional.ofNullable(this.result)));
+
     }
 
     private String report() {
 
-        var title = bold("TEST CASE")+ ": " + italic(purple(name));
+        var title = bold("TEST CASE") + ": " + italic(purple(name));
+
+        String givenMsg = givenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+        String whenMsg = whenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+        String thenMsg = thenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
 
         return """
-              
+                              
                 %s
                 %s
                 %s
@@ -162,18 +235,18 @@ public class TestCase<T, R> {
                 %s
                 %s
                   """.formatted(
-                DASH,title,DASH,
-                givenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n")),
-                whenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n")),
-                thenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n")),
+                DASH, title, DASH,
+                givenMsg,
+                whenMsg,
+                thenMsg,
                 DASH
         );
     }
 
-    private <S> S runIfOpen(Supplier<S> fn){
-        if(this.closed){
+    private <S> S runIfOpen(Supplier<S> fn) {
+        if (this.closed) {
             throw new IllegalStateException("""
-                    
+                                        
                     Test case is already closed.
                     A test case can only be run once.
                     """);

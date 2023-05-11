@@ -1,6 +1,5 @@
 package io.github.imaginedevit.testIt;
 
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
 
 import java.lang.annotation.*;
@@ -9,7 +8,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Testable
 @Documented
-@ExtendWith(TestCaseResolver.class)
+//@ExtendWith(TestCaseResolver.class)
 public @interface TestIt {
     String name();
 }

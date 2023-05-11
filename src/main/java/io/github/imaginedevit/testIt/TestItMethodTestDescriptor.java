@@ -35,8 +35,11 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
         return testMethod;
     }
 
-    public TestCase<?,?> getTestCase() {
-        return TestCase.create(this.testMethod.getAnnotation(TestIt.class).name());
+    public TestCase<?,?> getTestCase(TestCaseReport.TestReport report) {
+        String name = this.testMethod.getAnnotation(TestIt.class).name();
+        report.setName(name);
+        report.setStatus(TestCaseReport.TestReport.Status.SKIPPED);
+        return TestCase.create(name, report);
     }
 
 }

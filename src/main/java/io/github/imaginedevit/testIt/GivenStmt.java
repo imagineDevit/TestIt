@@ -15,7 +15,12 @@ public class GivenStmt<T, R> {
     }
 
     public  WhenStmt<T,R> when(String message, GWhenFn<T,R> fn) {
-        return testCase.gWhen(message, fn);
+        return testCase.when(message, fn);
     }
+
+    public  WhenStmt<T,R> when(String message, WhenRFn fn) {
+        return testCase.whenr(message, fn);
+    }
+
 
 }

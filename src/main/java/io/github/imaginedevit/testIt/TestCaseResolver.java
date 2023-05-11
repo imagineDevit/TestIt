@@ -10,13 +10,14 @@ public class TestCaseResolver implements ParameterResolver {
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         Class<?> clazz = parameterContext.getParameter().getType();
         return TestCase.class.isAssignableFrom(clazz);
+
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         return extensionContext.getTestMethod()
                 .map(method -> method.getAnnotation(TestIt.class).name())
-                .map(TestCase::create)
+                //.map(TestCase::create)
                 .orElseThrow();
     }
 }

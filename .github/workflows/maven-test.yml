@@ -1,8 +1,10 @@
 name: Maven Package
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
+      - feature/*
 
 jobs:
   build:
@@ -21,10 +23,5 @@ jobs:
           distribution: 'zulu'
           server-id: space-maven
 
-      - name: Set new version
-        run: |
-          mvn versions:set -DnewVersion=${GITHUB_REF#refs/tags/}
-          mvn versions:commit
-
-      - name: Publish
-        run: mvn deploy -s $GITHUB_WORKSPACE/.m2/settings.xml
+      - name: Test
+        run: mvn test
