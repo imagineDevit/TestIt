@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 
 import org.junit.platform.engine.*;

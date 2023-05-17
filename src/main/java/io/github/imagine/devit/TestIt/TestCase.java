@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static io.github.imaginedevit.testIt.TextUtils.*;
+import static io.github.imagine.devit.TestIt.TextUtils.*;
 
 /**
  * Test case representation
@@ -88,15 +88,18 @@ public class TestCase<T, R> {
     private final List<StmtMsg> whenMsgs = new ArrayList<>();
     private final List<StmtMsg> thenMsgs = new ArrayList<>();
 
+    private final TestParameters.Parameter parameters;
 
     /**
      * Constructor with name
      *
-     * @param name the testCase name
+     * @param name       the testCase name
+     * @param parameters
      */
-    private TestCase(String name, TestCaseReport.TestReport report) {
+    private TestCase(String name, TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
         this.name = name;
         this.report = report;
+        this.parameters = parameters;
     }
 
     /**
@@ -106,9 +109,12 @@ public class TestCase<T, R> {
      * @return the test case
      */
     protected static <T, R> TestCase<T, R> create(String name, TestCaseReport.TestReport report) {
-        return new TestCase<>(name, report);
+        return new TestCase<>(name, report, null);
     }
 
+    protected static <T, R> TestCase<T, R> create(String name, TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
+        return new TestCase<>(name, report, parameters);
+    }
     public GivenStmt<T, R> given(String message, GivenFn<T> fn) {
         return runIfOpen(() -> {
             this.givenMsgs.add(StmtMsg.given(message));
@@ -217,9 +223,18 @@ public class TestCase<T, R> {
 
     }
 
+    protected String getName(){
+        if (parameters != null) return parameters.formatName(name);
+        else return name;
+    }
+
     private String report() {
 
-        var title = bold("TEST CASE") + ": " + italic(purple(name));
+        var n = name;
+        if (parameters != null){
+            n = parameters.formatName(n);
+        }
+        var title = bold("TEST CASE") + ": " + italic(purple(n));
 
         String givenMsg = givenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
         String whenMsg = whenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));

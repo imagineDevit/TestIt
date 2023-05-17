@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.EngineExecutionListener;
@@ -41,6 +41,11 @@ public class TestItExecutor {
             report.addClassReport(classReport);
             executeContainer(request, root);
         }
+
+        if (root instanceof TestItParameterizedMethodTestDescriptor){
+            executeContainer(request, root);
+        }
+
         if (root instanceof TestItMethodTestDescriptor md) {
             String className = md.getTestMethod().getDeclaringClass().getName();
             TestCaseReport.ClassReport classReport = report.getClassReport(className).orElseGet(() -> {
@@ -71,11 +76,14 @@ public class TestItExecutor {
 
             Object instance = ReflectionUtils.newInstance(root.getTestClass());
 
-            ReflectionUtils.invokeMethod(root.getTestMethod(), instance, testCase);
+            if (root.getParams() != null){
 
-            //testCase.run();
+                root.getParams().executeTest(instance, root.getTestMethod(), testCase);
+            } else {
+                ReflectionUtils.invokeMethod(root.getTestMethod(), instance, testCase);
+            }
+
             TestCase.class.getDeclaredMethod("run").invoke(testCase);
-
             report.setStatus(TestCaseReport.TestReport.Status.SUCCESS);
 
             System.out.println(TestCase.Result.SUCCESS.message(null));
@@ -86,8 +94,8 @@ public class TestItExecutor {
 
             report.setStatus(TestCaseReport.TestReport.Status.FAILURE);
 
-
             report.addTrace(e.getClass().getName());
+
             Arrays.stream(e.getStackTrace()).forEach(element -> report.addTrace("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at %s".formatted(element.toString())));
 
             if (e.getCause() != null){

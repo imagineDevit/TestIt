@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.discovery.ClasspathRootSelector;
@@ -30,7 +30,17 @@ public class SelectorUtils {
     public static void appendTestInMethod(Method method, EngineDescriptor root) {
         Class<?> clazz = method.getDeclaringClass();
         if (TestItPredicates.isMethodTest().test(method)) {
-            root.addChild(new TestItMethodTestDescriptor(method, clazz, root.getUniqueId()));
+            root.addChild(new TestItMethodTestDescriptor(
+                    Utils.getTestItName(method.getAnnotation(TestIt.class).value(), method),
+                    method,
+                    clazz,
+                    root.getUniqueId(),
+                    null));
+
+        } else if(TestItPredicates.isParameterizedMethodTest().test(method)) {
+            String parameterSource = method.getAnnotation(ParameterizedTestIt.class).source();
+            Method sourceMethod = ReflectionUtils.findMethod(clazz, parameterSource).orElseThrow();
+            root.addChild(new TestItParameterizedMethodTestDescriptor(method, sourceMethod, clazz, root.getUniqueId()));
         }
     }
 }

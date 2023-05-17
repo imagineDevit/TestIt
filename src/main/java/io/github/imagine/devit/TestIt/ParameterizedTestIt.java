@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 import org.junit.platform.commons.annotation.Testable;
 
@@ -8,7 +8,9 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Testable
 @Documented
-//@ExtendWith(TestCaseResolver.class)
-public @interface TestIt {
+public @interface ParameterizedTestIt {
+
     String name();
+
+    String source() default "";
 }

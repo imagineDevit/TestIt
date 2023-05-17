@@ -1,8 +1,8 @@
 package io.github.imagineDevit.testIt;
 
-import io.github.imaginedevit.testIt.TestCase;
-import io.github.imaginedevit.testIt.TestIt;
-import io.github.imaginedevit.testIt.TestItClass;
+import io.github.imagine.devit.TestIt.TestCase;
+import io.github.imagine.devit.TestIt.TestIt;
+import io.github.imagine.devit.TestIt.TestItClass;
 import org.junit.jupiter.api.Assertions;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineTestKit;
@@ -11,7 +11,7 @@ import org.junit.platform.testkit.engine.Events;
 @TestItClass
 public class TestEngine {
 
-    @TestIt(name = "test the test-it engine")
+    @TestIt(value = "test the test-it engine")
     void verify(TestCase<Void, Events> tc) {
 
         tc
@@ -23,8 +23,8 @@ public class TestEngine {
                 .then("I should get a test event", (events) -> {
                     Assertions.assertTrue(events.isPresent());
                     events.get().assertStatistics(stats -> stats
-                            .started(1)
-                            .succeeded(1)
+                            .started(3)
+                            .succeeded(3)
                     );
                 });
 

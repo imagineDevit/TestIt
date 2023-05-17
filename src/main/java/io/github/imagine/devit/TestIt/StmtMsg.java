@@ -1,6 +1,6 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
-import static io.github.imaginedevit.testIt.TextUtils.*;
+import static io.github.imagine.devit.TestIt.TextUtils.*;
 
 public record StmtMsg(String value) {
 

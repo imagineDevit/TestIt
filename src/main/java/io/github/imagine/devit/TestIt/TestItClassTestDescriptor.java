@@ -1,9 +1,11 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.ClassSource;
+
+import java.lang.reflect.Method;
 
 public class TestItClassTestDescriptor extends AbstractTestDescriptor {
 
@@ -31,6 +33,20 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
 
     private void addAllChildren() {
         ReflectionUtils.findMethods(testClass, TestItPredicates.isMethodTest())
-                .forEach(method -> addChild(new TestItMethodTestDescriptor(method, testClass, getUniqueId())));
+                .forEach(method ->
+                    addChild(new TestItMethodTestDescriptor(
+                            Utils.getTestItName(method.getAnnotation(TestIt.class).value(), method),
+                            method,
+                            testClass,
+                            getUniqueId(),
+                            null))
+                );
+
+        ReflectionUtils.findMethods(testClass, TestItPredicates.isParameterizedMethodTest())
+                .forEach(method -> {
+                    String parameterSource = method.getAnnotation(ParameterizedTestIt.class).source();
+                    Method sourceMethod = ReflectionUtils.findMethod(testClass, parameterSource).orElseThrow();
+                    addChild(new TestItParameterizedMethodTestDescriptor(method, sourceMethod, testClass, getUniqueId()));
+                });
     }
 }

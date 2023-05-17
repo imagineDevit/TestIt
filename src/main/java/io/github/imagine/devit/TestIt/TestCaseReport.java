@@ -1,4 +1,4 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,7 +65,7 @@ public class TestCaseReport {
 
 
 
-    static class ClassReport {
+    public static class ClassReport {
         private final String name;
 
         public ClassReport(String name) {
@@ -182,7 +182,6 @@ public class TestCaseReport {
         private Status status;
         private final List<String> stacktraces = new ArrayList<>();
         private String failureReason;
-
 
 
         public String getName() {

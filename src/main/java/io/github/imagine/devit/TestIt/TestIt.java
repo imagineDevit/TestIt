@@ -1,12 +1,13 @@
-package io.github.imaginedevit.testIt;
+package io.github.imagine.devit.TestIt;
 
 import org.junit.platform.commons.annotation.Testable;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Testable
 @Documented
-public @interface TestItClass {
+public @interface TestIt {
+    String value() default "";
 }
