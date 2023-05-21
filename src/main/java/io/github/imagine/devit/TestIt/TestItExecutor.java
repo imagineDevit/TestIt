@@ -1,5 +1,10 @@
 package io.github.imagine.devit.TestIt;
 
+import io.github.imagine.devit.TestIt.descriptors.TestItClassTestDescriptor;
+import io.github.imagine.devit.TestIt.descriptors.TestItMethodTestDescriptor;
+import io.github.imagine.devit.TestIt.descriptors.TestItParameterizedMethodTestDescriptor;
+import io.github.imagine.devit.TestIt.report.ReportViewer;
+import io.github.imagine.devit.TestIt.report.TestCaseReport;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.ExecutionRequest;
@@ -15,58 +20,75 @@ public class TestItExecutor {
 
     private static Integer NB = null;
 
+    private boolean allCallbacksRan = false;
+
     public void execute(ExecutionRequest request, TestDescriptor root) {
+
         if (NB == null) {
             NB = root.getChildren().size();
         }
+
         if (root instanceof EngineDescriptor) {
-            if (report == null) {
-                report = new TestCaseReport();
+            executeForEngineDescriptor(request, root);
+        }
+
+        if (root instanceof TestItClassTestDescriptor ctd) {
+            allCallbacksRan = true;
+            ctd.execute(d -> executeForClassDescriptor(request, d));
+            allCallbacksRan = false;
+        }
+
+        if (root instanceof TestItParameterizedMethodTestDescriptor) {
+            executeContainer(request, root);
+        }
+
+        if (root instanceof TestItMethodTestDescriptor mtd) {
+            mtd.execute(d ->  executeForMethodDescriptor(request, mtd), allCallbacksRan);
+        }
+
+    }
+
+
+    private void executeForMethodDescriptor(ExecutionRequest request, TestItMethodTestDescriptor md) {
+        String className = md.getTestMethod().getDeclaringClass().getName();
+        TestCaseReport.ClassReport classReport = report.getClassReport(className).orElseGet(() -> {
+            TestCaseReport.ClassReport cr = new TestCaseReport.ClassReport(className);
+            report.addClassReport(cr);
+            return cr;
+        });
+
+        TestCaseReport.TestReport testReport = executeTest(request, md);
+        classReport.addTestReport(testReport);
+    }
+
+    private void executeForClassDescriptor(ExecutionRequest request, TestItClassTestDescriptor r) {
+        TestCaseReport.ClassReport classReport = new TestCaseReport.ClassReport(r.getTestClass().getName());
+        report.addClassReport(classReport);
+        executeContainer(request, r);
+    }
+
+    private void executeForEngineDescriptor(ExecutionRequest request, TestDescriptor root) {
+        if (report == null) {
+            report = new TestCaseReport();
+        }
+
+        executeContainer(request, root);
+
+        try {
+            if (NB != null && report.getClassReports().size() == NB) {
+                new ReportViewer().view(report);
+                NB = null;
             }
-            executeContainer(request, root);
-
-            try {
-                if(report.getClassReports().size() == NB){
-                    new ReportViewer().view(report);
-                    NB = null;
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-
-        if (root instanceof TestItClassTestDescriptor r) {
-            TestCaseReport.ClassReport classReport = new TestCaseReport.ClassReport(r.getTestClass().getName());
-            report.addClassReport(classReport);
-            executeContainer(request, root);
-        }
-
-        if (root instanceof TestItParameterizedMethodTestDescriptor){
-            executeContainer(request, root);
-        }
-
-        if (root instanceof TestItMethodTestDescriptor md) {
-            String className = md.getTestMethod().getDeclaringClass().getName();
-            TestCaseReport.ClassReport classReport = report.getClassReport(className).orElseGet(() -> {
-                TestCaseReport.ClassReport cr = new TestCaseReport.ClassReport(className);
-                report.addClassReport(cr);
-                return cr;
-            });
-
-            TestCaseReport.TestReport testReport = executeTest(request, (TestItMethodTestDescriptor) root);
-            classReport.addTestReport(testReport);
-        }
-
-
     }
 
     private TestCaseReport.TestReport executeTest(ExecutionRequest request, TestItMethodTestDescriptor root) {
 
-
         TestCaseReport.TestReport report = new TestCaseReport.TestReport();
 
-        TestCase<?, ?> testCase = root.getTestCase(report);
+        TestCase<?, ?> testCase = root.getTestCase(report, TestCase::create, TestCase::getName);
 
         EngineExecutionListener listener = request.getEngineExecutionListener();
 
@@ -74,13 +96,11 @@ public class TestItExecutor {
 
         try {
 
-            Object instance = ReflectionUtils.newInstance(root.getTestClass());
 
-            if (root.getParams() != null){
-
-                root.getParams().executeTest(instance, root.getTestMethod(), testCase);
+            if (root.getParams() != null) {
+                root.getParams().executeTest(root.getTestInstance(), root.getTestMethod(), testCase);
             } else {
-                ReflectionUtils.invokeMethod(root.getTestMethod(), instance, testCase);
+                ReflectionUtils.invokeMethod(root.getTestMethod(), root.getTestInstance(), testCase);
             }
 
             TestCase.class.getDeclaredMethod("run").invoke(testCase);
@@ -98,7 +118,7 @@ public class TestItExecutor {
 
             Arrays.stream(e.getStackTrace()).forEach(element -> report.addTrace("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at %s".formatted(element.toString())));
 
-            if (e.getCause() != null){
+            if (e.getCause() != null) {
                 System.out.println(TestCase.Result.FAILURE.message(e.getCause().getMessage()));
                 report.setFailureReason(e.getCause().getMessage());
                 report.addTrace("Caused by: %s : %s".formatted(e.getCause().getClass().getName(), e.getCause().getMessage()));

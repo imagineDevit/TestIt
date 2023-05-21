@@ -1,5 +1,10 @@
-package io.github.imagine.devit.TestIt;
+package io.github.imagine.devit.TestIt.utils;
 
+import io.github.imagine.devit.TestIt.annotations.ParameterizedTest;
+import io.github.imagine.devit.TestIt.annotations.Test;
+import io.github.imagine.devit.TestIt.descriptors.TestItClassTestDescriptor;
+import io.github.imagine.devit.TestIt.descriptors.TestItMethodTestDescriptor;
+import io.github.imagine.devit.TestIt.descriptors.TestItParameterizedMethodTestDescriptor;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.discovery.ClasspathRootSelector;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
@@ -29,18 +34,19 @@ public class SelectorUtils {
 
     public static void appendTestInMethod(Method method, EngineDescriptor root) {
         Class<?> clazz = method.getDeclaringClass();
+        var instance= ReflectionUtils.newInstance(clazz);
         if (TestItPredicates.isMethodTest().test(method)) {
             root.addChild(new TestItMethodTestDescriptor(
-                    Utils.getTestItName(method.getAnnotation(TestIt.class).value(), method),
+                    Utils.getTestName(method.getAnnotation(Test.class).value(), method),
                     method,
-                    clazz,
+                    instance,
                     root.getUniqueId(),
-                    null));
+                    null, null, null, null, null));
 
         } else if(TestItPredicates.isParameterizedMethodTest().test(method)) {
-            String parameterSource = method.getAnnotation(ParameterizedTestIt.class).source();
+            String parameterSource = method.getAnnotation(ParameterizedTest.class).source();
             Method sourceMethod = ReflectionUtils.findMethod(clazz, parameterSource).orElseThrow();
-            root.addChild(new TestItParameterizedMethodTestDescriptor(method, sourceMethod, clazz, root.getUniqueId()));
+            root.addChild(new TestItParameterizedMethodTestDescriptor(method, sourceMethod, instance, root.getUniqueId(), null, null, null, null));
         }
     }
 }

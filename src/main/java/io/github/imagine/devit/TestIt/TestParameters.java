@@ -31,7 +31,7 @@ public class TestParameters<T extends TestParameters.Parameter> {
 
         abstract void executeTest(Object testInstance, Method method, TestCase<?,?> testCase);
 
-        String formatName(String name) {
+        public String formatName(String name) {
             for (int i = 0; i < paramValues.length; i++) {
                 name = name.replace("{%s}".formatted(i), paramValues[i].toString());
             }

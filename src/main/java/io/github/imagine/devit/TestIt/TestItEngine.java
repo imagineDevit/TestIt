@@ -1,6 +1,7 @@
 package io.github.imagine.devit.TestIt;
 
 
+import io.github.imagine.devit.TestIt.utils.SelectorUtils;
 import org.junit.platform.engine.*;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.ClasspathRootSelector;
@@ -42,6 +43,5 @@ public class TestItEngine implements TestEngine {
         TestDescriptor root = executionRequest.getRootTestDescriptor();
         new TestItExecutor().execute(executionRequest, root);
     }
-
 
 }

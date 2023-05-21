@@ -1,4 +1,4 @@
-package io.github.imagine.devit.TestIt;
+package io.github.imagine.devit.TestIt.utils;
 
 public class TextUtils {
 

@@ -1,4 +1,4 @@
-package io.github.imagine.devit.TestIt;
+package io.github.imagine.devit.TestIt.report;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

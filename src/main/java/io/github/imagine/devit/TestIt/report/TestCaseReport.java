@@ -1,4 +1,4 @@
-package io.github.imagine.devit.TestIt;
+package io.github.imagine.devit.TestIt.report;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,7 +62,6 @@ public class TestCaseReport {
 
         return map;
     }
-
 
 
     public static class ClassReport {
@@ -130,9 +129,9 @@ public class TestCaseReport {
         }
     }
 
-    static class TestReport {
+    public static class TestReport {
 
-        record DescriptionItem(String prefix, String label) {
+        public record DescriptionItem(String prefix, String label) {
 
             public static DescriptionItem given(String label) {
                 return new DescriptionItem("GIVEN", label);
@@ -159,7 +158,7 @@ public class TestCaseReport {
             }
         }
 
-        enum Status {
+        public enum Status {
             SUCCESS("&#9989;", "passed", "text-success"),
             FAILURE("&#10060;", "failed", "text-danger"),
             SKIPPED("&#10069;", "skipped", "text-warning");

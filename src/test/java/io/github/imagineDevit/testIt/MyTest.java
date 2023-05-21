@@ -1,39 +1,77 @@
 package io.github.imagineDevit.testIt;
 
-import io.github.imagine.devit.TestIt.*;
-import org.junit.jupiter.api.Assertions;
+import io.github.imagine.devit.TestIt.TestCase;
+import io.github.imagine.devit.TestIt.TestCaseResult;
+import io.github.imagine.devit.TestIt.TestParameters;
+import io.github.imagine.devit.TestIt.annotations.*;
 
 
-@TestItClass
+@ExtendWith({MyTestExtension.class})
 public class MyTest {
 
-    @TestIt("(1 * 2) + 1 should be 3")
-    void test(TestCase<Integer,Integer> testCase){
-        testCase
-                .given("state is 1", () -> 1)
-                .and("state is multiplied by 2", state -> state.map(i -> i * 2).orElse(0))
-                .when("1 is added to the state", state -> state.map(i -> i + 1).orElse(0))
-                .then("the result should be 3", result -> {
-                    Assertions.assertTrue(result.isPresent());
-                    Assertions.assertEquals(3, result.get());
-                });
+    int i;
+
+    @BeforeAll
+    void setUp() {
+        i = 1;
+        System.out.println("Before All I'm executed ****************");
     }
 
-    @ParameterizedTestIt(
+    @AfterAll
+    void tearDown() {
+        System.out.println("at the end => i = " + i);
+    }
+
+    @Test("(1 * 2) + 1 should be 3")
+    void test(TestCase<Integer, Integer> testCase) {
+        System.out.println("i = " + i);
+        i++;
+        testCase
+                .given("state is 1", () -> 1)
+                .and("state is multiplied by 2", state -> state * 2)
+                .when("1 is added to the state", state ->  state.mapAndGet(i -> i + 1))
+                .then("the result should be not null", TestCaseResult::shouldBeNotNull)
+                .and("the result should be equal to 3", result -> result.shouldBeEqualTo(3));
+    }
+
+    @ParameterizedTest(
             name = "(1 * 2) + {0} should be equal to {1}",
             source = "getParams")
-    void test2(TestCase<Integer,Integer> testCase, Integer number, Integer expectedResult){
+    void test2(TestCase<Integer, Integer> testCase, Integer number, Integer expectedResult) {
+
+        System.out.println("i = " + i);
+        i++;
 
         testCase
                 .given("state is 1", () -> 1)
-                .and("state is multiplied by 2", state -> state.map(i -> i * 2).orElse(0))
-                .when("%d is added to the state".formatted(number), state -> state.map(i -> i + number).orElse(0))
-                .then("the result should be %d".formatted(expectedResult), result -> {
-                    Assertions.assertTrue(result.isPresent());
-                    Assertions.assertEquals(expectedResult, result.get());
-                });
+                .and("state is multiplied by 2", state -> state* 2)
+                .when("%d is added to the state".formatted(number), state -> state.mapAndGet(i -> i + number))
+                .then("the result should be %d".formatted(expectedResult), result ->
+                        result
+                                .shouldBeNotNull()
+                                .shouldBeEqualTo(expectedResult)
+
+                );
     }
-    private TestParameters<TestParameters.Parameter.P2<Integer, Integer>> getParams(){
+
+    @Test("An illegalState exception should be thrown")
+    void test3(TestCase<Void, IllegalStateException> testCase) {
+        testCase
+                .when("called method throw an exception with oups message", TestCase.catchItFn(
+                        IllegalStateException.class,
+                        () -> {
+                            throw new IllegalStateException("Oups");
+                        })
+                )
+
+                .then("the exception is not null", ex -> ex
+                        .shouldBeNotNull()
+                        .map(IllegalStateException::getMessage)
+                        .shouldBeEqualTo("Oups")
+                );
+    }
+
+    private TestParameters<TestParameters.Parameter.P2<Integer, Integer>> getParams() {
         return TestParameters.of(
                 TestParameters.Parameter.P2.of(1, 3),
                 TestParameters.Parameter.P2.of(2, 4)
