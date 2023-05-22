@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Test It</title>
+        <title>Introduction - GWTUnit</title>
 
 
         <!-- Custom HTML head -->
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="Introduction.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="Introduction.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="TestCase.html"><strong aria-hidden="true">2.</strong> Test Case</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Given.html"><strong aria-hidden="true">2.1.</strong> Given</a></li><li class="chapter-item expanded "><a href="When.html"><strong aria-hidden="true">2.2.</strong> When</a></li><li class="chapter-item expanded "><a href="Then.html"><strong aria-hidden="true">2.3.</strong> Then</a></li></ol></li><li class="chapter-item expanded "><a href="ParameterizedTest.html"><strong aria-hidden="true">3.</strong> Parameterized Test</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -110,7 +110,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Test It</h1>
+                    <h1 class="menu-title">GWTUnit</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -143,27 +143,18 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>Testit is a simple unit testing library for Java.</p>
-<p>It is designed to be easy to use, easy to read, and easy to write.</p>
-<p>It is built on JUnit platform so have to be used with JUnit.</p>
-<hr />
-<p>The main goal of this library is to allow developers to write tests in <strong>GIVEN-WHEN-THEN</strong> style.</p>
-<pre><code class="language-java">
-@TestIt(name=&quot;1 + 1 should be 2&quot;)
-void test(TestCase&lt;Integer, Integer&gt; testCase) {
-   testCase
-      .given(&quot;state is 1&quot;, () -&gt; 1))
-      .when(&quot;1 is added to the state&quot;, (input) -&gt; input + 1))
-      .then(&quot;the result should be 2&quot;, result -&gt; assertEquals(2, result));
-}
-
-</code></pre>
+<p><strong>GWTUnit</strong> is a simple unit testing library for Java developers.</p>
+<p><strong>GWTUnit</strong> provide a <em>test engine</em> built on <strong><em>Junit platform</em></strong>.</p>
+<p>The main purpose of this library is to allow developers to write more readable unit tests by using a <em><strong>GIVEN-WHEN-THEN</strong></em> format.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
+                            <a rel="next" href="TestCase.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -172,6 +163,9 @@ void test(TestCase&lt;Integer, Integer&gt; testCase) {
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
+                    <a rel="next" href="TestCase.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
