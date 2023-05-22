@@ -3,7 +3,7 @@ name: Deploy MdBook on github pages
 on:
   push:
     branches:
-      - doc/*
+      - doc
 
 jobs:
   deploy-docs:
