@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.imagineDevit</groupId>
     <artifactId>GWTUnit</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <description>
         A JUnit based library that allow developers to write unit test on GIVEN-WHEN-THEN format
     </description>
@@ -23,7 +21,8 @@
         <url>https://github.com/imagineDevit/GWTUnit.git</url>
         <connection>scm:git:git://https://github.com/imagineDevit/GWTUnit</connection>
         <developerConnection>scm:git:git@github.com:imagineDevit/imagineDevit.git</developerConnection>
-    </scm>
+      <tag>GWTUnit-0.0.1</tag>
+  </scm>
     <developers>
         <developer>
             <name>HenriJoel SEDJAME</name>
@@ -119,7 +118,7 @@
                 </executions>
             </plugin>
 
-            <!-- MAVEN JAVADOC -->
+            <!-- MAVEN JAVADOC
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -132,7 +131,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
             <!-- NEXUS STAGING -->
             <plugin>
