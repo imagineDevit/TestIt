@@ -1,11 +1,8 @@
 package io.github.imagineDevit.GWTUnit;
 
-import io.github.imagineDevit.GWTUnit.annotations.AfterEach;
-import io.github.imagineDevit.GWTUnit.annotations.BeforeEach;
-import io.github.imagineDevit.GWTUnit.annotations.ParameterizedTest;
-import io.github.imagineDevit.GWTUnit.annotations.Test;
+import io.github.imagineDevit.GWTUnit.annotations.*;
 
-
+@ConfigureWith(MyTestConfiguration.class)
 public class MyTest2 {
 
     int i;
@@ -26,8 +23,8 @@ public class MyTest2 {
 
         testCase
                 .given("state is 1", () -> 1)
-                .and("state is multiplied by 2", state -> state * 2)
-                .when("1 is added to the state", state -> state.mapAndGet(i -> i + 1))
+                .and("state is multiplied by 2", state -> state.map(i -> i * 2))
+                .when("1 is added to the state", state -> state.onValue(i -> i + 1))
                 .then("the result should be 3", result ->
                         result
                                 .shouldBeNotNull()
@@ -43,20 +40,13 @@ public class MyTest2 {
         System.out.println("i = " + i);
         testCase
                 .given("state is 1", () -> 1)
-                .and("state is multiplied by 2", state -> state * 2)
-                .when("%d is added to the state".formatted(number), state -> state.mapAndGet(i -> i + number))
+                .and("state is multiplied by 2", state -> state.map(i -> i * 2))
+                .when("%d is added to the state".formatted(number), state -> state.onValue(i -> i + number))
                 .then("the result should be %d".formatted(expectedResult), result ->
                     result
                             .shouldBeNotNull()
                             .shouldBeEqualTo(expectedResult)
                 );
-    }
-
-    private TestParameters<TestParameters.Parameter.P2<Integer, Integer>> getParams() {
-        return TestParameters.of(
-                TestParameters.Parameter.P2.of(1, 3),
-                TestParameters.Parameter.P2.of(2, 4)
-        );
     }
 
 }

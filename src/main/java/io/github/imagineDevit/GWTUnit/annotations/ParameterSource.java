@@ -2,15 +2,13 @@ package io.github.imagineDevit.GWTUnit.annotations;
 
 import java.lang.annotation.*;
 
-/**
- * Annotate a method that has to be called after each test execution
- */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 @Documented
-public @interface AfterEach {
+public @interface ParameterSource {
+
     /**
-     * @return the callback invocation order
+     * @return the name of the parameter source
      */
-    int order() default 0;
+    String value();
 }

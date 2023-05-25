@@ -1,7 +1,9 @@
 package io.github.imagineDevit.GWTUnit.statements.functions;
 
-import java.util.function.Function;
+import io.github.imagineDevit.GWTUnit.TestCaseState;
+
+import java.util.function.UnaryOperator;
 
 
 @FunctionalInterface
-public interface GivenFFn<T> extends Function<T,T> {}
+public interface GivenFFn<T> extends UnaryOperator<TestCaseState<T>> {}

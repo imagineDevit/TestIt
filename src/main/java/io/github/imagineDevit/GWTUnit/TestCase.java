@@ -73,12 +73,6 @@ public class TestCase<T, R> {
 
     }
 
-    public static class TestCaseError extends RuntimeException {
-        public TestCaseError(String message){
-            super(message);
-        }
-    }
-
     /**
      * Test case result that can be either success or failure
      */
@@ -279,22 +273,24 @@ public class TestCase<T, R> {
             this.givenRFn.run();
         }
 
-        this.andGivenFns.forEach(f -> this.state = state.map(f));
+        this.andGivenFns.forEach(f -> this.state = f.apply(this.state));
 
-        if (this.whenFn != null) {
-            this.result = TestCaseResult.of(this.whenFn.get());
-        } else if (this.whenRFn != null) {
-            this.whenRFn.run();
-        } else {
-
-
-            this.whenFns.forEach(fn -> {
-                if (fn instanceof WhenFFn<?,?> gfn) {
-                    this.result = TestCaseResult.of(((WhenFFn<T,R>) gfn).apply(this.state));
-                } else if (fn instanceof WhenRFn rfn) {
-                    rfn.run();
-                }
-            });
+        try {
+            if (this.whenFn != null) {
+                this.result = TestCaseResult.of(this.whenFn.get());
+            } else if (this.whenRFn != null) {
+                this.whenRFn.run();
+            } else {
+                this.whenFns.forEach(fn -> {
+                    if (fn instanceof WhenFFn<?,?> gfn) {
+                        this.result = ((WhenFFn<T,R>) gfn).apply(this.state);
+                    } else if (fn instanceof WhenRFn rfn) {
+                        rfn.run();
+                    }
+                });
+            }
+        } catch (Exception e) {
+            this.result.withError(e);
         }
 
         this.thenFns.forEach(fn -> fn.accept(this.result));
@@ -346,34 +342,6 @@ public class TestCase<T, R> {
         }
         this.closed = true;
         return fn.get();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <E extends Throwable> WhenSFn<E> catchItFn(Class<E> exceptionClazz, Runnable runnable) {
-        try {
-            runnable.run();
-        } catch (Throwable e){
-            if (e.getClass() == exceptionClazz) {
-                return () -> (E) e;
-            }
-            throw new TestCaseError("Expected <%s> but found <%s> ".formatted(exceptionClazz.getName(), e.getClass().getName()));
-        }
-
-        throw new TestCaseError("Expected <%s> exception to be thrown, but no exception thrown ".formatted(exceptionClazz.getName()));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <E extends Throwable> E catchIt(Class<E> exceptionClazz, Runnable runnable) {
-        try {
-            runnable.run();
-        } catch (Throwable e){
-            if (e.getClass() == exceptionClazz) {
-                return (E) e;
-            }
-            throw new TestCaseError("Expected <%s> but found <%s> ".formatted(exceptionClazz.getName(), e.getClass().getName()));
-        }
-
-        throw new TestCaseError("Expected <%s> exception to be thrown, but no exception thrown ".formatted(exceptionClazz.getName()));
     }
 
 }

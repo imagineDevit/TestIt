@@ -12,7 +12,6 @@ import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.ClassSource;
 
-import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -67,7 +66,6 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
                         m -> Optional.ofNullable(m.getAnnotation(AfterEach.class)).map(AfterEach::order).orElse(0)
                 );
 
-
         addAllChildren();
     }
 
@@ -98,10 +96,8 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
                 );
 
         ReflectionUtils.findMethods(testClass, TestItPredicates.isParameterizedMethodTest())
-                .forEach(method -> {
-                    String parameterSource = method.getAnnotation(ParameterizedTest.class).source();
-                    Method sourceMethod = ReflectionUtils.findMethod(testClass, parameterSource).orElseThrow();
-                    addChild(new TestItParameterizedMethodTestDescriptor(method, sourceMethod, testInstance, getUniqueId(), beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback));
-                });
+                .forEach(method ->
+                    addChild(new TestItParameterizedMethodTestDescriptor(method, Utils.getParameters(method), testInstance, getUniqueId(), beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback))
+                );
     }
 }

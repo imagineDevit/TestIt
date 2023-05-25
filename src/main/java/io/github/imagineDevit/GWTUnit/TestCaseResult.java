@@ -11,18 +11,23 @@ public class TestCaseResult<T> {
 
     private final T value;
 
+    private Exception error;
+
     //region constructor
     private TestCaseResult(T value) {
         this.value = value;
     }
 
     public static <T> TestCaseResult<T> of(T value){
-        if (value == null) throw new IllegalStateException("");
         return new TestCaseResult<>(value);
     }
 
     public static <T> TestCaseResult<T> empty() {
         return new TestCaseResult<>(null);
+    }
+
+    protected void withError(Exception e){
+        this.error = e;
     }
 
     //endregion
@@ -64,13 +69,21 @@ public class TestCaseResult<T> {
         return this;
     }
 
+    public  <E extends Exception> void shouldBeException(Class<E> eClass){
+        if(this.error == null){
+            throw new AssertionError("Expected <%s> exception to be thrown, but no exception thrown ".formatted(eClass.getName()));
+        } else if (error.getClass() != eClass) {
+            throw new AssertionError("Expected <%s> but found <%s> ".formatted(eClass.getName(), error.getClass().getName()));
+        }
 
+    }
     @SafeVarargs
     public final void assertAll(Consumer<T>... consumers){
         for (Consumer<T> consumer : consumers) {
             consumer.accept(value);
         }
     }
+
 
     // endregion
 }

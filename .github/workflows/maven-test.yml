@@ -21,7 +21,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-          server-id: space-maven
 
       - name: Test
         run: mvn test

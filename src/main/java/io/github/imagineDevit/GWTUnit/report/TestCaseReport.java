@@ -7,6 +7,8 @@ public class TestCaseReport {
 
     private final Set<ClassReport> classReports = new TreeSet<>(Comparator.comparing(ClassReport::getName));
 
+
+
     public void addClassReport(ClassReport classReport) {
         classReports.add(classReport);
     }
@@ -181,7 +183,6 @@ public class TestCaseReport {
         private Status status;
         private final List<String> stacktraces = new ArrayList<>();
         private String failureReason;
-
 
         public String getName() {
             return name;

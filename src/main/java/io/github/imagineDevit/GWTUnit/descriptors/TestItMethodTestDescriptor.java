@@ -11,6 +11,7 @@ import io.github.imagineDevit.GWTUnit.report.TestCaseReport;
 import io.github.imagineDevit.GWTUnit.report.TestCaseReport.TestReport;
 import io.github.imagineDevit.GWTUnit.utils.Utils;
 import org.assertj.core.util.TriFunction;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.MethodSource;
@@ -112,6 +113,10 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
         return tc;
     }
 
+    public Optional<String> shouldBeSkipped() {
+        return AnnotationSupport.findAnnotation(this.testMethod, Skipped.class)
+                .map(Skipped::reason);
+    }
     public void execute(Consumer<TestItMethodTestDescriptor> consumer, boolean allCallacksRan) {
         if (!allCallacksRan) beforeAllCallback.beforeAll();
         beforeEachCallback.beforeEach();

@@ -38,7 +38,6 @@ public class TestItPredicates {
                         .getOrElse(() -> false);
     }
 
-
     public static Predicate<Method> isMethodTest() {
         return method -> match(
                 matchCase(() -> Result.failure("This method is not supported by this TestEngine - " + method.getName())),

@@ -1,6 +1,8 @@
 package io.github.imagineDevit.GWTUnit.utils;
 
 
+import io.github.imagineDevit.GWTUnit.TestConfiguration;
+import io.github.imagineDevit.GWTUnit.TestParameters;
 import io.github.imagineDevit.GWTUnit.callbacks.AfterAllCallback;
 import io.github.imagineDevit.GWTUnit.callbacks.AfterEachCallback;
 import io.github.imagineDevit.GWTUnit.callbacks.BeforeAllCallback;
@@ -24,8 +26,8 @@ public abstract class Utils {
     public static void runCallbacks(Map<Object, List<Method>> methods, Function<Method, Integer> order) {
         methods
                 .forEach((instance, ms) ->
-                    ms.stream().sorted(Comparator.comparing(order))
-                            .forEach(m -> ReflectionUtils.invokeMethod(m, instance))
+                        ms.stream().sorted(Comparator.comparing(order))
+                                .forEach(m -> ReflectionUtils.invokeMethod(m, instance))
                 );
     }
 
@@ -40,8 +42,60 @@ public abstract class Utils {
     public static Map<Object, List<Method>> getBeforeEachMethods(Object testInstance) {
         return getCallbackMethods(testInstance, BeforeEach.class, BeforeEachCallback.class, "beforeEach");
     }
+
     public static Map<Object, List<Method>> getAfterEachMethods(Object testInstance) {
         return getCallbackMethods(testInstance, AfterEach.class, AfterEachCallback.class, "afterEach");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<? extends TestParameters.Parameter> getParametersFromMethod(Method method, String source) {
+        return AnnotationSupport.findAnnotation(method, ParameterSource.class)
+                .map(ParameterSource::value)
+                .map(name -> {
+                    if (Objects.equals(source, name)) {
+
+                        Object instance = ReflectionUtils.newInstance(method.getDeclaringClass());
+
+                        TestParameters<TestParameters.Parameter> testParameters = (TestParameters<TestParameters.Parameter>) ReflectionUtils.invokeMethod(method, instance);
+
+                        return testParameters.getParameters();
+                    }
+
+                    return new ArrayList<TestParameters.Parameter>();
+
+                }).orElse(new ArrayList<>());
+    }
+
+    public static List<? extends TestParameters.Parameter> getParametersFromConfiguration(TestConfiguration configuration, String source) {
+        return configuration.getParameters(source)
+                .map(TestParameters::getParameters)
+                .orElse(new ArrayList<>());
+    }
+
+    public static List<? extends TestParameters.Parameter> getParameters(Method method){
+
+        var testClass = method.getDeclaringClass();
+
+        String parameterSource = method.getAnnotation(ParameterizedTest.class).source();
+
+        List<Method> methodList = ReflectionUtils.findMethods(
+                testClass,
+                (Method m) -> AnnotationSupport.isAnnotated(m, ParameterSource.class) && m.getAnnotation(ParameterSource.class).value().equals(parameterSource)
+        );
+
+        return switch (methodList.size()) {
+            case 0 -> {
+                if(AnnotationSupport.isAnnotated(testClass, ConfigureWith.class)) {
+                    Class<? extends TestConfiguration> configClass = testClass.getAnnotation(ConfigureWith.class).value();
+                    yield Utils.getParametersFromConfiguration(ReflectionUtils.newInstance(configClass), parameterSource);
+                } else {
+                    throw new IllegalStateException("No parameter source with name %s found".formatted(parameterSource));
+                }
+            }
+            case 1 -> Utils.getParametersFromMethod(methodList.get(0), parameterSource);
+            default -> throw new IllegalStateException("Multiple parameter sources with same name found (%s)".formatted(parameterSource));
+        };
+
     }
 
     private static Map<Object, List<Method>> getCallbackMethods(Object testInstance, Class<? extends Annotation> annotationClazz, Class<?> callbackClazz, String callbackMethod) {
@@ -64,5 +118,6 @@ public abstract class Utils {
 
         return map;
     }
+
 
 }

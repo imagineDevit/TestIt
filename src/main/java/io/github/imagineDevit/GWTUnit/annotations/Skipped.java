@@ -3,14 +3,15 @@ package io.github.imagineDevit.GWTUnit.annotations;
 import java.lang.annotation.*;
 
 /**
- * Annotate a method that has to be called after each test execution
+ * Skip a test
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 @Documented
-public @interface AfterEach {
+public @interface Skipped {
+
     /**
-     * @return the callback invocation order
+     * @return the reason of skipping the test
      */
-    int order() default 0;
+    String reason() default "";
 }

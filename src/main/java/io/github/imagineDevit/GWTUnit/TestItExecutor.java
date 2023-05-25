@@ -13,6 +13,7 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class TestItExecutor {
 
@@ -22,13 +23,22 @@ public class TestItExecutor {
 
     private boolean allCallbacksRan = false;
 
+    private Boolean withReport;
+
     public void execute(ExecutionRequest request, TestDescriptor root) {
+
+        if (withReport == null) {
+            withReport = Boolean.valueOf(System.getenv(MvnArgs.GENERATE_REPORT));
+        }
 
         if (NB == null) {
             NB = root.getChildren().size();
         }
 
         if (root instanceof EngineDescriptor) {
+
+            initReport();
+
             executeForEngineDescriptor(request, root);
         }
 
@@ -48,40 +58,49 @@ public class TestItExecutor {
 
     }
 
+    private void initReport() {
+        if (report == null && withReport) {
+            report = new TestCaseReport();
+        }
+    }
+
 
     private void executeForMethodDescriptor(ExecutionRequest request, TestItMethodTestDescriptor md) {
         String className = md.getTestMethod().getDeclaringClass().getName();
-        TestCaseReport.ClassReport classReport = report.getClassReport(className).orElseGet(() -> {
-            TestCaseReport.ClassReport cr = new TestCaseReport.ClassReport(className);
-            report.addClassReport(cr);
-            return cr;
-        });
+
+        Optional<TestCaseReport.ClassReport> classReport = getReport().map(
+                tc -> tc.getClassReport(className).orElseGet(() -> {
+                    TestCaseReport.ClassReport cr = new TestCaseReport.ClassReport(className);
+                    tc.addClassReport(cr);
+                    return cr;
+                })
+        );
+
 
         TestCaseReport.TestReport testReport = executeTest(request, md);
-        classReport.addTestReport(testReport);
+        classReport.ifPresent(cr -> cr.addTestReport(testReport));
     }
 
     private void executeForClassDescriptor(ExecutionRequest request, TestItClassTestDescriptor r) {
         TestCaseReport.ClassReport classReport = new TestCaseReport.ClassReport(r.getTestClass().getName());
-        report.addClassReport(classReport);
+        getReport().ifPresent(tc -> tc.addClassReport(classReport));
         executeContainer(request, r);
     }
 
     private void executeForEngineDescriptor(ExecutionRequest request, TestDescriptor root) {
-        if (report == null) {
-            report = new TestCaseReport();
-        }
-
         executeContainer(request, root);
-
-        try {
-            if (NB != null && report.getClassReports().size() == NB) {
-                new ReportViewer().view(report);
-                NB = null;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        getReport()
+                .ifPresent(tc -> {
+                    if (NB != null && tc.getClassReports().size() == NB) {
+                        try {
+                            new ReportViewer().view(tc);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        } finally {
+                            NB = null;
+                        }
+                    }
+                });
     }
 
     private TestCaseReport.TestReport executeTest(ExecutionRequest request, TestItMethodTestDescriptor root) {
@@ -92,46 +111,54 @@ public class TestItExecutor {
 
         EngineExecutionListener listener = request.getEngineExecutionListener();
 
-        listener.executionStarted(root);
+        return root.shouldBeSkipped()
+                .map(reason -> {
+                    listener.executionSkipped(root, reason);
+                    return report;
+                })
+                .orElseGet(() -> {
 
-        try {
+                    listener.executionStarted(root);
 
+                    try {
 
-            if (root.getParams() != null) {
-                root.getParams().executeTest(root.getTestInstance(), root.getTestMethod(), testCase);
-            } else {
-                ReflectionUtils.invokeMethod(root.getTestMethod(), root.getTestInstance(), testCase);
-            }
+                        if (root.getParams() != null) {
+                            root.getParams().executeTest(root.getTestInstance(), root.getTestMethod(), testCase);
+                        } else {
+                            ReflectionUtils.invokeMethod(root.getTestMethod(), root.getTestInstance(), testCase);
+                        }
 
-            TestCase.class.getDeclaredMethod("run").invoke(testCase);
-            report.setStatus(TestCaseReport.TestReport.Status.SUCCESS);
+                        TestCase.class.getDeclaredMethod("run").invoke(testCase);
 
-            System.out.println(TestCase.Result.SUCCESS.message(null));
+                        report.setStatus(TestCaseReport.TestReport.Status.SUCCESS);
 
-            listener.executionFinished(root, TestExecutionResult.successful());
+                        System.out.println(TestCase.Result.SUCCESS.message(null));
 
-        } catch (Exception e) {
+                        listener.executionFinished(root, TestExecutionResult.successful());
 
-            report.setStatus(TestCaseReport.TestReport.Status.FAILURE);
+                    } catch (Exception e) {
 
-            report.addTrace(e.getClass().getName());
+                        report.setStatus(TestCaseReport.TestReport.Status.FAILURE);
 
-            Arrays.stream(e.getStackTrace()).forEach(element -> report.addTrace("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at %s".formatted(element.toString())));
+                        report.addTrace(e.getClass().getName());
 
-            if (e.getCause() != null) {
-                System.out.println(TestCase.Result.FAILURE.message(e.getCause().getMessage()));
-                report.setFailureReason(e.getCause().getMessage());
-                report.addTrace("Caused by: %s : %s".formatted(e.getCause().getClass().getName(), e.getCause().getMessage()));
-                Arrays.stream(e.getCause().getStackTrace()).forEach(element -> report.addTrace("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at %s".formatted(element.toString())));
-            } else {
-                System.out.println(TestCase.Result.FAILURE.message(e.getMessage()));
-                report.setFailureReason(e.getMessage());
-            }
+                        Arrays.stream(e.getStackTrace()).forEach(element -> report.addTrace("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at %s".formatted(element.toString())));
 
-            listener.executionFinished(root, TestExecutionResult.failed(e));
-        }
+                        if (e.getCause() != null) {
+                            System.out.println(TestCase.Result.FAILURE.message(e.getCause().getMessage()));
+                            report.setFailureReason(e.getCause().getMessage());
+                            report.addTrace("Caused by: %s : %s".formatted(e.getCause().getClass().getName(), e.getCause().getMessage()));
+                            Arrays.stream(e.getCause().getStackTrace()).forEach(element -> report.addTrace("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at %s".formatted(element.toString())));
+                        } else {
+                            System.out.println(TestCase.Result.FAILURE.message(e.getMessage()));
+                            report.setFailureReason(e.getMessage());
+                        }
 
-        return report;
+                        listener.executionFinished(root, TestExecutionResult.failed(e));
+                    }
+
+                    return report;
+                });
     }
 
     private void executeContainer(ExecutionRequest request, TestDescriptor root) {
@@ -142,5 +169,9 @@ public class TestItExecutor {
         root.getChildren().forEach(child -> execute(request, child));
 
         listener.executionFinished(root, TestExecutionResult.successful());
+    }
+
+    private Optional<TestCaseReport> getReport() {
+        return Optional.ofNullable(report);
     }
 }

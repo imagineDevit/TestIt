@@ -1,6 +1,5 @@
 package io.github.imagineDevit.GWTUnit.utils;
 
-import io.github.imagineDevit.GWTUnit.annotations.ParameterizedTest;
 import io.github.imagineDevit.GWTUnit.annotations.Test;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItClassTestDescriptor;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItMethodTestDescriptor;
@@ -44,9 +43,7 @@ public class SelectorUtils {
                     null, null, null, null, null));
 
         } else if(TestItPredicates.isParameterizedMethodTest().test(method)) {
-            String parameterSource = method.getAnnotation(ParameterizedTest.class).source();
-            Method sourceMethod = ReflectionUtils.findMethod(clazz, parameterSource).orElseThrow();
-            root.addChild(new TestItParameterizedMethodTestDescriptor(method, sourceMethod, instance, root.getUniqueId(), null, null, null, null));
+            root.addChild(new TestItParameterizedMethodTestDescriptor(method, null, instance, root.getUniqueId(), null, null, null, null));
         }
     }
 }
