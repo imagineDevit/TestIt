@@ -13,6 +13,11 @@ jobs:
       packages: write
 
     steps:
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - uses: actions/checkout@v3
       - uses: actions/checkout@master
         with:
@@ -32,7 +37,7 @@ jobs:
           mvn versions:commit
 
       - name: Publish
-        run: mvn clean deploy -P release -DskipTests -Dgpg.passphrase=${JRELEASER_GPG_PASSPHRASE} -s $GITHUB_WORKSPACE/.m2/settings.xml
+        run: mvn clean deploy -P release -DskipTests -Dgpg.passphrase=${GPG_PASSPHRASE} -s $GITHUB_WORKSPACE/.m2/settings.xml
 
       - name: Commit & Push changes
         uses: actions-js/push@master
