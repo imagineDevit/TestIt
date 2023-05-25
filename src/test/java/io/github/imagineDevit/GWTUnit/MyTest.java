@@ -23,6 +23,7 @@ public class MyTest {
 
     // region tests
     @Test("(1 * 2) + 1 should be 3")
+    @Skipped
     void test(TestCase<Integer, Integer> testCase) {
         System.out.println("i = " + i);
         i++;

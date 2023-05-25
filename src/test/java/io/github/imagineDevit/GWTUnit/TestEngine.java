@@ -21,8 +21,9 @@ public class TestEngine {
                                 .shouldBeNotNull()
                                 .assertAll(e -> e.assertStatistics(
                                                 stats -> stats
-                                                        .started(4)
-                                                        .succeeded(4))
+                                                        .started(5)
+                                                        .succeeded(4)
+                                                        .skipped(1))
                                 )
 
                 );

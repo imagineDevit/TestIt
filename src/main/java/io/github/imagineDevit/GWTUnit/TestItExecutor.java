@@ -111,6 +111,8 @@ public class TestItExecutor {
 
         EngineExecutionListener listener = request.getEngineExecutionListener();
 
+        listener.executionStarted(root);
+
         return root.shouldBeSkipped()
                 .map(reason -> {
                     listener.executionSkipped(root, reason);
@@ -118,7 +120,7 @@ public class TestItExecutor {
                 })
                 .orElseGet(() -> {
 
-                    listener.executionStarted(root);
+
 
                     try {
 
