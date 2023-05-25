@@ -1,1 +1,2 @@
-io.github.imaginedevit.testIt.TestItEngine
+io.github.imagineDevit.GWTUnit.TestItEngine
+org.junit.jupiter.engine.JupiterTestEngine
