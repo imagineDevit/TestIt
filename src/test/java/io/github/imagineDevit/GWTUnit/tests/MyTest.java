@@ -58,6 +58,14 @@ public class MyTest {
                 );
     }
 
+    @Test
+    @Skipped(reason = "this test is skipped")
+    void test3(TestCase<Void, Integer> testCase) {
+        testCase
+                .when("called method return 1", () -> 1)
+                .then("the result should be not null", TestCaseResult::shouldBeNotNull)
+                .and("the result should be equal to 1", result -> result.shouldBeEqualTo(1));
+    }
 
     @Test("An illegalState exception should be thrown")
     void test4(TestCase<Void, IllegalStateException> testCase) {
