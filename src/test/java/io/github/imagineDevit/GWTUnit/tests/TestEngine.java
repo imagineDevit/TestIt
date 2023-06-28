@@ -1,5 +1,6 @@
-package io.github.imagineDevit.GWTUnit;
+package io.github.imagineDevit.GWTUnit.tests;
 
+import io.github.imagineDevit.GWTUnit.TestCase;
 import io.github.imagineDevit.GWTUnit.annotations.Test;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineTestKit;

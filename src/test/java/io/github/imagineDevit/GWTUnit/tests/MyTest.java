@@ -1,11 +1,14 @@
-package io.github.imagineDevit.GWTUnit;
+package io.github.imagineDevit.GWTUnit.tests;
 
+import io.github.imagineDevit.GWTUnit.TestCase;
+import io.github.imagineDevit.GWTUnit.TestCaseResult;
+import io.github.imagineDevit.GWTUnit.TestParameters;
 import io.github.imagineDevit.GWTUnit.annotations.*;
-import io.github.imagineDevit.GWTUnit.annotations.ParameterSource;
 
 
 @ExtendWith({MyTestExtension.class})
 @ConfigureWith(MyTestConfiguration.class)
+@SuppressWarnings("unused")
 public class MyTest {
 
     int i;
@@ -21,9 +24,8 @@ public class MyTest {
         System.out.println("at the end => i = " + i);
     }
 
-    // region tests
+
     @Test("(1 * 2) + 1 should be 3")
-    @Skipped
     void test(TestCase<Integer, Integer> testCase) {
         System.out.println("i = " + i);
         i++;
@@ -38,7 +40,8 @@ public class MyTest {
 
     @ParameterizedTest(
             name = "(1 * 2) + {0} should be equal to {1}",
-            source = "getParams")
+            source = "getParams"
+    )
     void test2(TestCase<Integer, Integer> testCase, Integer number, Integer expectedResult) {
 
         System.out.println("i = " + i);
@@ -55,13 +58,29 @@ public class MyTest {
                 );
     }
 
-    // endregion
 
     @Test("An illegalState exception should be thrown")
     void test4(TestCase<Void, IllegalStateException> testCase) {
         testCase
-                .when("called method throw an exception with oups message", () -> {throw new IllegalStateException("Oups");})
+                .when("called method throw an exception with oups message", () -> {
+                    throw new IllegalStateException("Oups");
+                })
                 .then("the exception is not null", result -> result.shouldBeException(IllegalStateException.class));
+    }
+
+    @Test("test case with context")
+    void test5(TestCase<Void, Integer> testCase) {
+        testCase.withContext()
+                .given("1 is added to the context", ctx -> ctx.set("one", 1))
+                .when("set result one attribute ", ctx -> {
+                    Integer one = ctx.<Integer>get("one");
+                    ctx.setResult(one + 1);
+                })
+                .then("the result should be 2", (ctx, result) ->
+                        result
+                                .shouldBeNotNull()
+                                .shouldBeEqualTo(2)
+                );
     }
 
     @ParameterSource("getParams")

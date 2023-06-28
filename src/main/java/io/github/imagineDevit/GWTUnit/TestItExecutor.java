@@ -119,9 +119,6 @@ public class TestItExecutor {
                     return report;
                 })
                 .orElseGet(() -> {
-
-
-
                     try {
 
                         if (root.getParams() != null) {

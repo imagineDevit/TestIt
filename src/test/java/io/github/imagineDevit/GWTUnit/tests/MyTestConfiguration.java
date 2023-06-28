@@ -1,9 +1,12 @@
-package io.github.imagineDevit.GWTUnit;
+package io.github.imagineDevit.GWTUnit.tests;
 
+
+import io.github.imagineDevit.GWTUnit.TestConfiguration;
+import io.github.imagineDevit.GWTUnit.TestParameters;
 
 import java.util.Map;
 
-import static io.github.imagineDevit.GWTUnit.TestParameters.Parameter.*;
+import static io.github.imagineDevit.GWTUnit.TestParameters.Parameter.P2;
 
 public class MyTestConfiguration implements TestConfiguration {
     @Override
