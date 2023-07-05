@@ -1,4 +1,4 @@
-package io.github.imagineDevit.GWTUnit;
+package io.github.imagineDevit.GWTUnit.tests;
 
 import io.github.imagineDevit.GWTUnit.callbacks.AfterAllCallback;
 import io.github.imagineDevit.GWTUnit.callbacks.BeforeAllCallback;

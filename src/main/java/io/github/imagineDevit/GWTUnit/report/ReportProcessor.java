@@ -10,15 +10,18 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
-public class ReportViewer {
+/**
+ * This class is responsible for processing the report template and generating the report.
+ */
+public class ReportProcessor {
 
     private final Template template;
 
-    public ReportViewer() throws IOException {
+    public ReportProcessor() throws IOException {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_31);
         File tempDirectory = FileUtils.getTempDirectory();
         File file = new File(tempDirectory.getPath() + "/report.ftl");
-        FileUtils.copyInputStreamToFile(Objects.requireNonNull(ReportViewer.class.getClassLoader().getResourceAsStream("report.ftl")), file);
+        FileUtils.copyInputStreamToFile(Objects.requireNonNull(ReportProcessor.class.getClassLoader().getResourceAsStream("report.ftl")), file);
 
         configuration.setDirectoryForTemplateLoading(tempDirectory);
 
@@ -28,7 +31,7 @@ public class ReportViewer {
     }
 
 
-    public void view(TestCaseReport testCaseReport) throws Exception {
+    public void process(TestCaseReport testCaseReport) throws Exception {
 
         var dataModel = Map.of("report", testCaseReport.toMap());
 

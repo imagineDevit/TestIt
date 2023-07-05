@@ -40,7 +40,6 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
 
         this.testInstance = ReflectionUtils.newInstance(testClass);
 
-
         this.beforeAllCallback = () ->
                 Utils.runCallbacks(
                         Utils.getBeforeAllMethods(testInstance),

@@ -3,11 +3,12 @@ package io.github.imagineDevit.GWTUnit.utils;
 
 import io.github.imagineDevit.GWTUnit.TestConfiguration;
 import io.github.imagineDevit.GWTUnit.TestParameters;
+import io.github.imagineDevit.GWTUnit.annotations.*;
 import io.github.imagineDevit.GWTUnit.callbacks.AfterAllCallback;
 import io.github.imagineDevit.GWTUnit.callbacks.AfterEachCallback;
 import io.github.imagineDevit.GWTUnit.callbacks.BeforeAllCallback;
 import io.github.imagineDevit.GWTUnit.callbacks.BeforeEachCallback;
-import io.github.imagineDevit.GWTUnit.annotations.*;
+import io.github.imagineDevit.GWTUnit.statements.StmtMsg;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.util.ReflectionUtils;
 
@@ -15,6 +16,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static io.github.imagineDevit.GWTUnit.TestCase.DASH;
 
 public abstract class Utils {
 
@@ -98,6 +103,63 @@ public abstract class Utils {
 
     }
 
+    public static String reportTestCase(String name, List<StmtMsg> givenMsgs, List<StmtMsg> whenMsgs, List<StmtMsg> thenMsgs, TestParameters.Parameter parameters) {
+        var n = name;
+
+        if (parameters != null){
+            n = parameters.formatName(n);
+        }
+        var title = TextUtils.bold("TEST CASE") + ": " + TextUtils.italic(TextUtils.purple(n));
+
+        String givenMsg = givenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+        String whenMsg = whenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+        String thenMsg = thenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(
+                """
+                %s
+                %s
+                %s
+                """.formatted(DASH, title, DASH)
+        );
+        if (!givenMsg.isEmpty()) {
+            sb.append("""
+                    %s
+                    """.formatted(givenMsg));
+        }
+
+        if (!whenMsg.isEmpty()) {
+            sb.append("""
+                    %s
+                    """.formatted(whenMsg));
+        }
+
+        if (!thenMsg.isEmpty()) {
+            sb.append("""
+                    %s
+                    """.formatted(thenMsg));
+        }
+
+        sb.append("""
+                %s
+                """.formatted(DASH));
+
+        return sb.toString();
+    }
+
+    public static <S> S runIfOpen(boolean closed, Supplier<S> fn, Runnable close) {
+        if (closed) {
+            throw new IllegalStateException("""
+                                       
+                    Test case is already closed.
+                    A test case can only be run once.
+                    """);
+        }
+        close.run();
+        return fn.get();
+    }
     private static Map<Object, List<Method>> getCallbackMethods(Object testInstance, Class<? extends Annotation> annotationClazz, Class<?> callbackClazz, String callbackMethod) {
         Map<Object, List<Method>> map = new HashMap<>();
         Class<?> testClass = testInstance.getClass();

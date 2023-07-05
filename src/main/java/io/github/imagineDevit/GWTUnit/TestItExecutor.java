@@ -3,8 +3,9 @@ package io.github.imagineDevit.GWTUnit;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItClassTestDescriptor;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItMethodTestDescriptor;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItParameterizedMethodTestDescriptor;
-import io.github.imagineDevit.GWTUnit.report.ReportViewer;
+import io.github.imagineDevit.GWTUnit.report.ReportProcessor;
 import io.github.imagineDevit.GWTUnit.report.TestCaseReport;
+import io.github.imagineDevit.GWTUnit.utils.MvnArgs;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.ExecutionRequest;
@@ -93,7 +94,7 @@ public class TestItExecutor {
                 .ifPresent(tc -> {
                     if (NB != null && tc.getClassReports().size() == NB) {
                         try {
-                            new ReportViewer().view(tc);
+                            new ReportProcessor().process(tc);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         } finally {
@@ -119,9 +120,6 @@ public class TestItExecutor {
                     return report;
                 })
                 .orElseGet(() -> {
-
-
-
                     try {
 
                         if (root.getParams() != null) {

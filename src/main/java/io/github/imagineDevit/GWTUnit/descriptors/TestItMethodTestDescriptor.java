@@ -54,31 +54,43 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
         this.beforeAllCallback = Objects.requireNonNullElseGet(beforeAllCallback, () -> () ->
                 runCallbacks(
                         getBeforeAllMethods(testInstance),
-                        m -> Optional.ofNullable(m.getAnnotation(BeforeAll.class)).map(BeforeAll::order).orElse(0))
+                        m -> Optional.ofNullable(m.getAnnotation(BeforeAll.class))
+                                .map(BeforeAll::order)
+                                .orElse(0)
+                )
         );
 
         this.afterAllCallback = Objects.requireNonNullElseGet(afterAllCallback, () -> () ->
                 runCallbacks(
                         getAfterAllMethods(testInstance),
-                        m -> Optional.ofNullable(m.getAnnotation(AfterAll.class)).map(AfterAll::order).orElse(0))
+                        m -> Optional.ofNullable(m.getAnnotation(AfterAll.class))
+                                .map(AfterAll::order)
+                                .orElse(0)
+                )
         );
 
         this.beforeEachCallback = Objects.requireNonNullElseGet(beforeEachCallback, () -> () ->
                 runCallbacks(
                         getBeforeEachMethods(testInstance),
-                        m -> Optional.ofNullable(m.getAnnotation(BeforeEach.class)).map(BeforeEach::order).orElse(0))
+                        m -> Optional.ofNullable(m.getAnnotation(BeforeEach.class))
+                                .map(BeforeEach::order)
+                                .orElse(0)
+                )
         );
 
         this.afterEachCallback = Objects.requireNonNullElseGet(afterEachCallback, () -> () ->
                 runCallbacks(
                         getAfterEachMethods(testInstance),
-                        m -> Optional.ofNullable(m.getAnnotation(AfterEach.class)).map(AfterEach::order).orElse(0))
+                        m -> Optional.ofNullable(m.getAnnotation(AfterEach.class))
+                                .map(AfterEach::order)
+                                .orElse(0)
+                )
         );
 
     }
 
 
-    public Object getTestInstance(){
+    public Object getTestInstance() {
         return testInstance;
     }
 
@@ -95,12 +107,12 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
         return params;
     }
 
-    public TestCase<?,?> getTestCase(TestCaseReport.TestReport report, TriFunction<String, TestReport, TestParameters.Parameter, TestCase<?,?>> createTestCase, Function<TestCase<?,?>, String> getName) {
-        String name ;
-        if (params == null){
-           name = Utils.getTestName(this.testMethod.getAnnotation(Test.class).value(), this.testMethod);
+    public TestCase<?, ?> getTestCase(TestCaseReport.TestReport report, TriFunction<String, TestReport, TestParameters.Parameter, TestCase<?, ?>> createTestCase, Function<TestCase<?, ?>, String> getName) {
+        String name;
+        if (params == null) {
+            name = Utils.getTestName(this.testMethod.getAnnotation(Test.class).value(), this.testMethod);
         } else {
-           name = this.testMethod.getAnnotation(ParameterizedTest.class).name();
+            name = this.testMethod.getAnnotation(ParameterizedTest.class).name();
         }
 
 
@@ -115,8 +127,10 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
 
     public Optional<String> shouldBeSkipped() {
         return AnnotationSupport.findAnnotation(this.testMethod, Skipped.class)
+                .or(() -> AnnotationSupport.findAnnotation(this.testMethod.getDeclaringClass(), Skipped.class))
                 .map(Skipped::reason);
     }
+
     public void execute(Consumer<TestItMethodTestDescriptor> consumer, boolean allCallacksRan) {
         if (!allCallacksRan) beforeAllCallback.beforeAll();
         beforeEachCallback.beforeEach();

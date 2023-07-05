@@ -3,12 +3,18 @@ package io.github.imagineDevit.GWTUnit.report;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This class is responsible for generating the report.
+ * It contains the data model for the report.
+ * <p>
+ * The data model is a tree structure of {@link TestCaseReport.ClassReport} and {@link TestCaseReport.TestReport}.
+ * </p>
+ */
 public class TestCaseReport {
 
     private final Set<ClassReport> classReports = new TreeSet<>(Comparator.comparing(ClassReport::getName));
 
-
-
+    // region public methods
     public void addClassReport(ClassReport classReport) {
         classReports.add(classReport);
     }
@@ -23,28 +29,6 @@ public class TestCaseReport {
                 .findFirst();
     }
 
-    private int getTotalTestCount(){
-        return classReports.stream()
-                .mapToInt(cr -> cr.testReports.size())
-                .sum();
-    }
-
-    private long getFailureCount() {
-        return classReports.stream()
-                .mapToLong(ClassReport::getFailureCount)
-                .sum();
-    }
-    private long getSkippedCount() {
-        return classReports.stream()
-                .mapToLong(ClassReport::getSkippedCount)
-                .sum();
-    }
-
-    private long getSuccessCount() {
-        return classReports.stream()
-                .mapToLong(ClassReport::getSuccessCount)
-                .sum();
-    }
     public String toString() {
         return "TestCaseReport{" +
                 "classReports=" + classReports +
@@ -65,6 +49,34 @@ public class TestCaseReport {
         return map;
     }
 
+    // endregion
+
+    // region private methods
+    private int getTotalTestCount(){
+        return classReports.stream()
+                .mapToInt(cr -> cr.testReports.size())
+                .sum();
+    }
+
+    private long getFailureCount() {
+        return classReports.stream()
+                .mapToLong(ClassReport::getFailureCount)
+                .sum();
+    }
+
+    private long getSkippedCount() {
+        return classReports.stream()
+                .mapToLong(ClassReport::getSkippedCount)
+                .sum();
+    }
+
+    private long getSuccessCount() {
+        return classReports.stream()
+                .mapToLong(ClassReport::getSuccessCount)
+                .sum();
+    }
+
+    // endregion
 
     public static class ClassReport {
         private final String name;

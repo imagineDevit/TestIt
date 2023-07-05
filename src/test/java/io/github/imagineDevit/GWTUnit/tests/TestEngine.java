@@ -1,5 +1,6 @@
-package io.github.imagineDevit.GWTUnit;
+package io.github.imagineDevit.GWTUnit.tests;
 
+import io.github.imagineDevit.GWTUnit.TestCase;
 import io.github.imagineDevit.GWTUnit.annotations.Test;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineTestKit;
@@ -21,8 +22,8 @@ public class TestEngine {
                                 .shouldBeNotNull()
                                 .assertAll(e -> e.assertStatistics(
                                                 stats -> stats
-                                                        .started(5)
-                                                        .succeeded(4)
+                                                        .started(7)
+                                                        .succeeded(6)
                                                         .skipped(1))
                                 )
 

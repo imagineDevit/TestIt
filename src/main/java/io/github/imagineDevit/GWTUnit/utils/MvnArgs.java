@@ -1,4 +1,4 @@
-package io.github.imagineDevit.GWTUnit;
+package io.github.imagineDevit.GWTUnit.utils;
 
 public final class MvnArgs {
     public static final String GENERATE_REPORT = "generate.report";
