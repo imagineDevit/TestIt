@@ -31,7 +31,7 @@ public class MyTest {
         i++;
 
         testCase
-                .given("state is 1", () -> 1)
+                .given("state is 1",  1)
                 .and("state is multiplied by 2", state -> state.map(i -> i * 2))
                 .when("1 is added to the state", state -> state.onValue(i -> i + 1))
                 .then("the result should be not null", TestCaseResult::shouldBeNotNull)

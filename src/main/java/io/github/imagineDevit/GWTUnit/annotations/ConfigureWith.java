@@ -5,6 +5,9 @@ import io.github.imagineDevit.GWTUnit.TestConfiguration;
 import java.lang.annotation.*;
 
 /**
+ * Annotation that specifies the test configuration class for a particular class.
+ * The annotated class can be configured with an instance of the specified test configuration class.
+ *
  * @see TestConfiguration
  */
 @Retention(RetentionPolicy.RUNTIME)

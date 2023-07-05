@@ -210,6 +210,15 @@ public class TestCase<T, R> extends CloseableCase {
         });
     }
 
+    public GivenStmt<T, R> given(String message, T t) {
+        return runIfOpen(() -> {
+            this.givenMsgs.add(StmtMsg.given(message));
+            this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.given(message));
+            this.state = TestCaseState.of(t);
+            return new GivenStmt<>(this);
+        });
+    }
+
     /**
      * Creates a new Given statement with the provided message and (runnable) function.
      *

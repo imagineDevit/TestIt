@@ -5,8 +5,10 @@ import org.junit.platform.commons.annotation.Testable;
 import java.lang.annotation.*;
 
 /**
- * Indicate that the test is executed on different parameters
+ * A custom annotation used to mark a test method as a parameterized test.
+ * The test case name and parameter source name can be specified using this annotation.
  */
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 @Testable

@@ -3,6 +3,8 @@ package io.github.imagineDevit.GWTUnit;
 
 import io.github.imagineDevit.GWTUnit.report.TestCaseReport;
 import io.github.imagineDevit.GWTUnit.statements.StmtMsg;
+import io.github.imagineDevit.GWTUnit.statements.functions.CtxConsumer;
+import io.github.imagineDevit.GWTUnit.statements.functions.ResCtxConsumer;
 import io.github.imagineDevit.GWTUnit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
