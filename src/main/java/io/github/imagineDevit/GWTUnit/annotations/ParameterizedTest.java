@@ -23,5 +23,5 @@ public @interface ParameterizedTest {
     /**
      * @return the parameter source name
      */
-    String source() default "";
+    String source();
 }

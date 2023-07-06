@@ -112,7 +112,7 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
         if (params == null) {
             name = Utils.getTestName(this.testMethod.getAnnotation(Test.class).value(), this.testMethod);
         } else {
-            name = this.testMethod.getAnnotation(ParameterizedTest.class).name();
+            name = Utils.getTestName(this.testMethod.getAnnotation(ParameterizedTest.class).name(), this.testMethod);
         }
 
 
