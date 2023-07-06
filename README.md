@@ -85,7 +85,7 @@ Each method takes a string as a parameter representing the statement description
     class MyTest {
     
         @ParameterizedTest(
-                name = "(1 * 2) + {0} should be equal to {1}",
+                name = "Length of {0} should be equal to {1}",
                 source = "getParams"
         )
         void test2(TestCase<String, Integer> testCase, String text, Integer expectedResult) {
@@ -107,7 +107,7 @@ Each method takes a string as a parameter representing the statement description
         }
     }
 ```
-⚠️ _Please note that test parameters can be incorporated in the test name. The value of the parameter is denoted by placing its index within curly brackets_
+⚠️ _Please note that test parameters can be incorporated in the test name. The value of the parameter is denoted by placing its index within curly brackets_  👉 `Length of {0} should be equal to {1}`
 
 - ### @Skipped
     This annotation marks a test method as skipped.
