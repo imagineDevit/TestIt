@@ -6,4 +6,4 @@ import io.github.imagineDevit.GWTUnit.TestCaseResult;
 
 import java.util.function.BiConsumer;
 
-public interface ResCtxConsumer<R> extends BiConsumer<TestCaseContext<R>.TCtx, TestCaseResult<R>> {}
+public interface ResCtxConsumer<R> extends BiConsumer<TestCaseContext<?, R>.TCtx, TestCaseResult<R>> {}

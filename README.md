@@ -2,12 +2,13 @@
 
 ---
 
-[![minimum java version](https://img.shields.io/badge/java-17+-blue)](https://jdk.java.net/17/)
+[![minimum java version](https://img.shields.io/badge/Java-17+-blue)](https://jdk.java.net/17/)
 [![javadoc](https://javadoc.io/badge2/io.github.imagineDevit/GWTUnit/javadoc.svg)](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit)
 [![GitHub](https://img.shields.io/github/license/imagineDevit/edgedb?style=flat)](https://github.com/imagineDevit/edgedb/blob/main/License)
-[![GitHub contributors](https://badgen.net/github/contributors/imagineDevit/GWTUnit)](https://github.com/imagineDevit/GWTUnit/graphs/contributors)
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/imagineDevit/GWTUnit/Maven%20Test)
+![build](https://github.com/imagineDevit/GWTUnit/actions/workflows/maven-publish.yml/badge.svg)
+![maven test](https://github.com/imagineDevit/GWTUnit/actions/workflows/maven-test.yml/badge.svg) 
 ![GitHub issues](https://img.shields.io/github/issues/imagineDevit/GWTUnit)
+[![GitHub contributors](https://badgen.net/github/contributors/imagineDevit/GWTUnit)](https://github.com/imagineDevit/GWTUnit/graphs/contributors)
 
 **GWTUnit** is a java test library based on [JUnit platform](https://junit.org/junit5/docs/current/user-guide/).
 It gives developers the ability to write unit tests in the [GWT (Given-When-Then)](https://en.wikipedia.org/wiki/Given-When-Then) format.
@@ -28,6 +29,7 @@ _This is a simple usage example_ 👇
 ```
 
 ---
+
 ## TestCase
 
 As seen in the example above, the test method takes a `TestCase<T,R>` as a parameter.
@@ -57,6 +59,37 @@ Each method takes a string as a parameter representing the statement description
 
 - #### and()
     `GivenStmt<T,R>` and `ThenStmt<T,R>` classes have an `and()` method that allows to chain multiple statements of the same type.
+
+---
+
+## TestCase with context
+
+In some cases, it is necessary to store variables other than the state and the result of the test. In this case a testCase can be converted into a `TestCaseWithContext<T,R>` by calling the `withContext()` method.
+
+`TestCaseWithContext<T,R>` offers some methods :
+
+ - to store state : `setState(T state)`
+ - to transform state: `mapState(Function<T,T> mapper)`
+ - to map state into result : `stateToResult(Function<T,R> mapper)`
+ - to store a context variable : `setVar(String key, Object value)`
+ - to get a context variable : `getVar(String key)`
+
+_This is a simple usage example_ 👇
+
+```java
+ class MyTest {
+    
+    @Test("1 + 1 should be 2")
+    void test(TestCase<Integer, Integer> testCase) {
+        testCase.withContext()
+                .given("the state is set to 1", ctx -> ctx.setState(1))
+                .when("result is set to state + 1", ctx -> ctx.stateToResult(state -> state + 1))
+                .then("the result should be 2", (ctx, result) ->
+                        result.shouldBeNotNull().shouldBeEqualTo(2)
+                );
+    }
+}
+```
 
 ---
 ## Annotations
@@ -138,9 +171,14 @@ Each method takes a string as a parameter representing the statement description
 - ### @ConfigureWith
   This annotation registers a class as the test class configuration. It take a class that must implement [TestConfiguration](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestConfiguration.html) as parameter
 
+---
 
+## Report generation
 
+GWTUnit provides a report generation feature. This feature is disabled by default. 
 
+To enable it, you must add a new environment variable `gwtunit.generate.report = true`.
 
+The report file `report.html` is generated and stored in the `target/gwtunit` directory.
 
 

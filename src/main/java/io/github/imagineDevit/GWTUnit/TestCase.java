@@ -131,7 +131,7 @@ public class TestCase<T, R> extends CloseableCase {
 
 
 
-    private TestCaseWithContext<R> ctxCase = null;
+    private TestCaseWithContext<T, R> ctxCase = null;
 
     /**
      * Fns
@@ -187,7 +187,7 @@ public class TestCase<T, R> extends CloseableCase {
      *
      * @return the test case with a context
      */
-    public TestCaseWithContext<R> withContext() {
+    public TestCaseWithContext<T, R> withContext() {
         this.ctxCase =  new TestCaseWithContext<>(this.name, this.report, this.parameters);
         return ctxCase;
     }

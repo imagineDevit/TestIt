@@ -77,13 +77,10 @@ public class MyTest {
     }
 
     @Test("test case with context")
-    void test5(TestCase<Void, Integer> testCase) {
+    void test5(TestCase<Integer, Integer> testCase) {
         testCase.withContext()
-                .given("1 is added to the context", ctx -> ctx.set("one", 1))
-                .when("set result one attribute ", ctx -> {
-                    Integer one = ctx.<Integer>get("one");
-                    ctx.setResult(one + 1);
-                })
+                .given("the state is set to 1", ctx -> ctx.setState(1))
+                .when("result is set to state + 1", ctx -> ctx.stateToResult(one -> one + 1))
                 .then("the result should be 2", (ctx, result) ->
                         result
                                 .shouldBeNotNull()
