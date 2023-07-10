@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ import java.util.Objects;
  */
 public class ReportProcessor {
 
+    public static final String TARGET_GWTUNIT = "target/gwtunit";
     private final Template template;
 
     public ReportProcessor() throws IOException {
@@ -35,7 +37,11 @@ public class ReportProcessor {
 
         var dataModel = Map.of("report", testCaseReport.toMap());
 
-        File file = new File("target/report.html");
+        if (!Files.exists(new File(TARGET_GWTUNIT).toPath())) {
+            Files.createDirectory(new File(TARGET_GWTUNIT).toPath());
+        }
+
+        File file = new File("%s/report.html".formatted(TARGET_GWTUNIT));
         template.process(dataModel, new FileWriter(file));
 
         System.out.println("------------------------------------------------------------------");

@@ -4,4 +4,4 @@ import io.github.imagineDevit.GWTUnit.TestCaseContext;
 
 import java.util.function.Consumer;
 
-public interface CtxConsumer<T, R extends TestCaseContext<T>> extends Consumer<R> {}
+public interface CtxConsumer<R, C extends TestCaseContext<?, R>> extends Consumer<C> {}
