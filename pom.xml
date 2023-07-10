@@ -5,7 +5,7 @@
 
     <groupId>io.github.imagineDevit</groupId>
     <artifactId>GWTUnit</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.0.7</version>
     <description>
         A JUnit based library that allow developers to write unit test on GIVEN-WHEN-THEN format
     </description>
@@ -89,13 +89,6 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>2.3.31</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-            <version>1.0.1</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
