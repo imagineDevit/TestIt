@@ -33,7 +33,7 @@ public class MyTest {
         testCase
                 .given("state is 1",  1)
                 .and("state is multiplied by 2", state -> state.map(i -> i * 2))
-                .when("1 is added to the state", state -> state.onValue(i -> i + 1))
+                .when("1 is added to the state", state -> state.mapToResult(i -> i + 1))
                 .then("the result should be not null", TestCaseResult::shouldBeNotNull)
                 .and("the result should be equal to 3", result -> result.shouldBeEqualTo(3));
     }
@@ -50,7 +50,7 @@ public class MyTest {
         testCase
                 .given("state is 1", () -> 1)
                 .and("state is multiplied by 2", state -> state.map(i -> i * 2))
-                .when("%d is added to the state".formatted(number), state -> state.onValue(i -> i + number))
+                .when("%d is added to the state".formatted(number), state -> state.mapToResult(i -> i + number))
                 .then("the result should be %d".formatted(expectedResult), result ->
                         result
                                 .shouldBeNotNull()

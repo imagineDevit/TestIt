@@ -1,0 +1,26 @@
+package ${packageName};
+
+public class ${GeneratedClassName} {
+
+    private final ${ClassName} delegate;
+
+    public ${GeneratedClassName}(${ClassName} delegate) {
+        this.delegate = delegate;
+    }
+
+    #foreach($data in ${methodDatas})
+
+    record ${data.paramRecordName()}(${data.paramsWithType()}) {}
+
+    #if(${data.methodReturnType()} == "void")
+    public void ${data.methodName()}(${data.paramRecordName()} param) {
+        this.delegate.${data.methodName()}(${data.paramsValues()});
+    }
+    #else
+    public ${data.methodReturnType()} ${data.methodName()}(${data.paramRecordName()} param) {
+        return this.delegate.${data.methodName()}(${data.paramsValues()});
+    }
+    #end
+
+    #end
+}
