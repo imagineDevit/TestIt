@@ -35,6 +35,7 @@ class MyTest {
 
 ## 📭 TestCase
 
+
 As seen in the example above, the test method takes a `TestCase<T,R>` as a parameter.
 
 ⚠️ It is a particularity of <strong style="color:darkcyan">GWTUnit</strong> : ️ **_all test methods should have at least one parameter of type `TestCase<T,R>`_**.
@@ -265,8 +266,8 @@ _This is a simple usage example_ 👇
   This annotation registers a class as the test class configuration. It take a class that must implement [TestConfiguration](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestConfiguration.html) as parameter
 
 ---
-
 ## 📑 Report generation
+
 
 GWTUnit provides a report generation feature. This feature is disabled by default. 
 
