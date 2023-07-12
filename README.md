@@ -1,4 +1,5 @@
-# GWTUnit
+
+# 🧪GWTUnit
 
 ---
 
@@ -10,31 +11,34 @@
 ![GitHub issues](https://img.shields.io/github/issues/imagineDevit/GWTUnit)
 [![GitHub contributors](https://badgen.net/github/contributors/imagineDevit/GWTUnit)](https://github.com/imagineDevit/GWTUnit/graphs/contributors)
 
-**GWTUnit** is a java test library based on [JUnit platform](https://junit.org/junit5/docs/current/user-guide/).
+<strong style="color:darkcyan">GWTUnit</strong> is a java test library based on [JUnit platform](https://junit.org/junit5/docs/current/user-guide/).
 It gives developers the ability to write unit tests in the [GWT (Given-When-Then)](https://en.wikipedia.org/wiki/Given-When-Then) format.
 
 
 _This is a simple usage example_ 👇
 ```java 
-    class MyTest {
+import io.github.imagineDevit.GWTUnit.annotations.Test;
 
-        @Test("1 + 1 should be 2")
-        void test(TestCase<Integer, Integer> testCase) {
-            testCase
-                    .given("state is 1", 1)
-                    .when("1 is added to the state", state -> state.onValue(i -> i + 1))
-                    .then("the result should be equal to 3", result -> result.shouldBeEqualTo(2));
-        }
+class MyTest {
+
+    @Test("1 + 1 should be 2")
+    void test(TestCase<Integer, Integer> testCase) {
+        testCase
+                .given("state is 1", 1)
+                .when("1 is added to the state", state -> state.mapToResult(i -> i + 1))
+                .then("the result should be equal to 3", result -> result.shouldBeEqualTo(2));
     }
+}
 ```
 
 ---
 
-## TestCase
+## 📭 TestCase
+
 
 As seen in the example above, the test method takes a `TestCase<T,R>` as a parameter.
 
-⚠️ It is a particularity of **GWTUnit** : ️ **_all test methods should have at least one parameter of type `TestCase<T,R>`_**.
+⚠️ It is a particularity of <strong style="color:darkcyan">GWTUnit</strong> : ️ **_all test methods should have at least one parameter of type `TestCase<T,R>`_**.
 
 TestCase is a generic Object that takes two types as parameters : `T` and `R`.
 
@@ -42,12 +46,14 @@ TestCase is a generic Object that takes two types as parameters : `T` and `R`.
 
 `R` represent the type of the result of the test. It can be any type. Use `Void` if you don't need a result.
 
+___
+
 `TestCase` and its linked statements ([GivenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.GivenStmt.html), [WhenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.WhenStmt.html) and [ThenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.ThenStmt.html) ) come with a set of methods that can be chained to write the test in the GWT format.
 
-Each method takes a string as a parameter representing the statement description.
+Each method takes a string first parameter representing the statement description.
 
 
-### Statement methods 
+### ⚙️ Statement methods 
 - #### given()
     This method sets the initial state of the test. It returns a [GivenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.GivenStmt.html) object.
 
@@ -60,9 +66,97 @@ Each method takes a string as a parameter representing the statement description
 - #### and()
     `GivenStmt<T,R>` and `ThenStmt<T,R>` classes have an `and()` method that allows to chain multiple statements of the same type.
 
+
+### ⏳ State
+
+When it comes to testing a method, the test state is represented by the method parameters.
+
+
+Thus, can we represent the state of a method test as an object of type `T` when the method has a single parameter
+otherwise as a `List<Object>`.
+
+Managing a `List<Object>` as test state is possible but may not be very conformable.
+
+This is why <strong style="color:darkcyan">GWTUnit</strong> introduces <strong style="color: #2f8793">@GWTProxyable</strong> annotation.
+
+<strong style="color: #2f8793">@GWTProxyable</strong> annotation has a processor that generates a `proxy class` for each annotated class and a `parameters record` for each public method with more than one parameter.
+
+This `parameters record` contains all method parameters. 
+
+The `proxy class` contains `one parameter proxy methods` corresponding to the public method.
+
+_Let's see an example_
+
+Consider the following class 👇
+
+```java
+package io.example.helpers;
+
+import io.github.imagineDevit.GWTUnit.annotations.GwtProxyable;
+
+@GwtProxyable
+public class StringHelper {
+    
+    public String repeat(String text, int times, boolean separator) {
+        return String.repeat(separator + times).replaceFirst(separator, "");
+    }
+}
+```
+<br>
+After compiling your project, the following proxy class should be generated :
+
+```java
+package io.example.helpers;
+
+public class StringHelperTestProxy {
+    
+    private final StringHelper delegate;
+    
+    public StringUtilsTestProxy(StringHelper delegate) {
+        this.delegate = delegate;
+    }
+    
+    record RepeatParams(String text, int times, boolean separator) {}
+  
+    public String repeat(RepeatParams param) {
+        return this.delegate.repeat(param.text(), param.times(), param.separator());
+    }
+}
+```
+As seen above, the generated record name is the name of the method suffixed with _Params_.
+
+_What if we have method overloading (several methods with the same name and different parameters) in our class?
+
+<p style="color: #f15252"> 🧨️ Compilation will fail !!!!️ </p>
+
+To solve the problem, annotate the overloaded method with <strong style="color: #2f8793">@ParameterRecordName</strong> and specify the name of the record. 
+
+<br>
+
+The generated `proxy class` can then be used for testing as follows:
+
+```java
+import io.github.imagineDevit.GWTUnit.TestCase;
+import io.github.imagineDevit.GWTUnit.annotations.Test;
+import static io.example.helpers.StringHelperTestProxy.*;
+
+class StringHelperTest {
+    
+    private StringHelperTestProxy proxy = new StringHelperTestProxy(new StringHelper());
+    
+    @Test
+    public repeat(TestCase<RepeatParams, String> testCase) {
+        testCase
+                .given("a param", new RepeatParams("A", 3, "_"))
+                .when("repeat is called", state -> state.mapToResult(proxy::repeat))
+                .then("the result should be A_A_A", result -> result.shouldBeEqualTo("A_A_A"));
+    }
+}
+
+```
 ---
 
-## TestCase with context
+## 📬 TestCase with context
 
 In some cases, it is necessary to store variables other than the state and the result of the test. In this case a testCase can be converted into a `TestCaseWithContext<T,R>` by calling the `withContext()` method.
 
@@ -92,13 +186,13 @@ _This is a simple usage example_ 👇
 ```
 
 ---
-## Annotations
+## 📌 Annotations
 
-**GWTUnit** provides a set of annotations that can be used to configure the test classes and methods.
+<strong style="color:darkcyan">GWTUnit</strong> provides a set of annotations that can be used to configure the test classes and methods.
 
 - ### @Test
 
-    **GWTUnit** provide a custom annotation `@Test` that can take a string as a parameter representing the test name. 
+  <strong style="color:darkcyan">GWTUnit</strong> provide a custom annotation `@Test` that can take a string as a parameter representing the test name. 
 
     If no parameter is provided, the test name will be the method name.
 
@@ -114,7 +208,7 @@ _This is a simple usage example_ 👇
     A parameterized test method must have all paremeters as arguments. The order of the parameters must be the same as the order of the parameters in the `TestParameters` object.
 
 
-```java
+```java 
     class MyTest {
     
         @ParameterizedTest(
@@ -172,8 +266,8 @@ _This is a simple usage example_ 👇
   This annotation registers a class as the test class configuration. It take a class that must implement [TestConfiguration](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestConfiguration.html) as parameter
 
 ---
+## 📑 Report generation
 
-## Report generation
 
 GWTUnit provides a report generation feature. This feature is disabled by default. 
 

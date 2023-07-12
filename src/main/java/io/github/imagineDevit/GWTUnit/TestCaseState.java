@@ -1,5 +1,6 @@
 package io.github.imagineDevit.GWTUnit;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -22,8 +23,13 @@ public class TestCaseState<T> {
         return TestCaseState.of(mapper.apply(value));
     }
 
-    public <R> TestCaseResult<R> onValue(Function<T,R> mapper){
+    public <R> TestCaseResult<R> mapToResult(Function<T,R> mapper){
         return TestCaseResult.of(mapper.apply(value));
+    }
+
+    public TestCaseResult<Void> consumeValue(Consumer<T> consumer){
+        consumer.accept(value);
+        return TestCaseResult.of(null);
     }
 
 }
