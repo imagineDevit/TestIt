@@ -89,7 +89,7 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
     }
 
     public boolean shouldBeReported() {
-        return !this.configuration.excludeFromReport().contains(this.testClass);
+        return this.configuration != null && !this.configuration.excludeFromReport().contains(this.testClass);
     }
 
     private void addAllChildren() {

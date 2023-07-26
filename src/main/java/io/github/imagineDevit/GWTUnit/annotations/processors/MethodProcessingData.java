@@ -1,7 +1,7 @@
 package io.github.imagineDevit.GWTUnit.annotations.processors;
 
 import io.github.imagineDevit.GWTUnit.annotations.ParameterRecordName;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
