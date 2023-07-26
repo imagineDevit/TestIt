@@ -133,6 +133,15 @@ public class TestCaseWithContext<T, R> extends CloseableCase {
         });
     }
 
+    public GivenCtxStmt<T, R> given(String message, T t) {
+        return runIfOpen(() -> {
+            this.givenMsgs.add(StmtMsg.given(message));
+            this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.given(message));
+            this.gCtx.setState(t);
+            return new GivenCtxStmt<>(this);
+        });
+    }
+
 
     protected void andGiven(String message, CtxConsumer<R, TestCaseContext<T, R>.GCtx> fn) {
         this.givenMsgs.add(StmtMsg.and(message));

@@ -1,6 +1,7 @@
 package io.github.imagineDevit.GWTUnit.utils;
 
 import io.github.imagineDevit.GWTUnit.annotations.Test;
+import io.github.imagineDevit.GWTUnit.callbacks.GwtCallbacks;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItClassTestDescriptor;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItMethodTestDescriptor;
 import io.github.imagineDevit.GWTUnit.descriptors.TestItParameterizedMethodTestDescriptor;
@@ -34,16 +35,19 @@ public class SelectorUtils {
     public static void appendTestInMethod(Method method, EngineDescriptor root) {
         Class<?> clazz = method.getDeclaringClass();
         var instance= ReflectionUtils.newInstance(clazz);
+
         if (TestItPredicates.isMethodTest().test(method)) {
             root.addChild(new TestItMethodTestDescriptor(
                     Utils.getTestName(method.getAnnotation(Test.class).value(), method),
                     method,
                     instance,
                     root.getUniqueId(),
-                    null, null, null, null, null));
+                    null, new GwtCallbacks(null, null, null, null)));
 
         } else if(TestItPredicates.isParameterizedMethodTest().test(method)) {
-            root.addChild(new TestItParameterizedMethodTestDescriptor(method, null, instance, root.getUniqueId(), null, null, null, null));
+            root.addChild(new TestItParameterizedMethodTestDescriptor(method, null, instance, root.getUniqueId(), new GwtCallbacks(null, null, null, null), null));
         }
     }
+
+
 }

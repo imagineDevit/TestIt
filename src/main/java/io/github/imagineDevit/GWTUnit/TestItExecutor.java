@@ -84,7 +84,9 @@ public class TestItExecutor {
 
     private void executeForClassDescriptor(ExecutionRequest request, TestItClassTestDescriptor r) {
         TestCaseReport.ClassReport classReport = new TestCaseReport.ClassReport(r.getTestClass().getName());
-        getReport().ifPresent(tc -> tc.addClassReport(classReport));
+        if (r.shouldBeReported()) {
+            getReport().ifPresent(tc -> tc.addClassReport(classReport));
+        }
         executeContainer(request, r);
     }
 
