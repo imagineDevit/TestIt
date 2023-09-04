@@ -5,7 +5,7 @@
 
     <groupId>io.github.imagineDevit</groupId>
     <artifactId>GWTUnit</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8-SNAPSHOT</version>
     <description>
         A JUnit based library that allow developers to write unit test on GIVEN-WHEN-THEN format
     </description>
@@ -93,14 +93,14 @@
 
         <dependency>
             <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>1.7</version>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.3</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-tools</artifactId>
-            <version>2.0</version>
+            <groupId>org.apache.velocity.tools</groupId>
+            <artifactId>velocity-tools-generic</artifactId>
+            <version>3.1</version>
         </dependency>
 
     </dependencies>

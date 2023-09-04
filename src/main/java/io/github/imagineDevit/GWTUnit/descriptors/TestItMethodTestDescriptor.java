@@ -3,10 +3,7 @@ package io.github.imagineDevit.GWTUnit.descriptors;
 import io.github.imagineDevit.GWTUnit.TestCase;
 import io.github.imagineDevit.GWTUnit.TestParameters;
 import io.github.imagineDevit.GWTUnit.annotations.*;
-import io.github.imagineDevit.GWTUnit.callbacks.AfterAllCallback;
-import io.github.imagineDevit.GWTUnit.callbacks.AfterEachCallback;
-import io.github.imagineDevit.GWTUnit.callbacks.BeforeAllCallback;
-import io.github.imagineDevit.GWTUnit.callbacks.BeforeEachCallback;
+import io.github.imagineDevit.GWTUnit.callbacks.*;
 import io.github.imagineDevit.GWTUnit.report.TestCaseReport;
 import io.github.imagineDevit.GWTUnit.report.TestCaseReport.TestReport;
 import io.github.imagineDevit.GWTUnit.utils.Utils;
@@ -40,7 +37,7 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
 
     private final AfterEachCallback afterEachCallback;
 
-    public TestItMethodTestDescriptor(String name, Method testMethod, Object testInstance, UniqueId uniqueId, TestParameters.Parameter params, BeforeAllCallback beforeAllCallback, AfterAllCallback afterAllCallback, BeforeEachCallback beforeEachCallback, AfterEachCallback afterEachCallback) {
+    public TestItMethodTestDescriptor(String name, Method testMethod, Object testInstance, UniqueId uniqueId, TestParameters.Parameter params, GwtCallbacks callbacks) {
 
         super(
                 uniqueId.append("method", name),
@@ -51,7 +48,7 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
         this.testMethod = testMethod;
         this.params = params;
 
-        this.beforeAllCallback = Objects.requireNonNullElseGet(beforeAllCallback, () -> () ->
+        this.beforeAllCallback = Objects.requireNonNullElseGet(callbacks.beforeAllCallback(), () -> () ->
                 runCallbacks(
                         getBeforeAllMethods(testInstance),
                         m -> Optional.ofNullable(m.getAnnotation(BeforeAll.class))
@@ -60,7 +57,7 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
                 )
         );
 
-        this.afterAllCallback = Objects.requireNonNullElseGet(afterAllCallback, () -> () ->
+        this.afterAllCallback = Objects.requireNonNullElseGet(callbacks.afterAllCallback(), () -> () ->
                 runCallbacks(
                         getAfterAllMethods(testInstance),
                         m -> Optional.ofNullable(m.getAnnotation(AfterAll.class))
@@ -69,7 +66,7 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
                 )
         );
 
-        this.beforeEachCallback = Objects.requireNonNullElseGet(beforeEachCallback, () -> () ->
+        this.beforeEachCallback = Objects.requireNonNullElseGet(callbacks.beforeEachCallback(), () -> () ->
                 runCallbacks(
                         getBeforeEachMethods(testInstance),
                         m -> Optional.ofNullable(m.getAnnotation(BeforeEach.class))
@@ -78,7 +75,7 @@ public class TestItMethodTestDescriptor extends AbstractTestDescriptor {
                 )
         );
 
-        this.afterEachCallback = Objects.requireNonNullElseGet(afterEachCallback, () -> () ->
+        this.afterEachCallback = Objects.requireNonNullElseGet(callbacks.afterEachCallback(), () -> () ->
                 runCallbacks(
                         getAfterEachMethods(testInstance),
                         m -> Optional.ofNullable(m.getAnnotation(AfterEach.class))

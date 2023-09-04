@@ -26,7 +26,7 @@ class MyTest {
         testCase
                 .given("state is 1", 1)
                 .when("1 is added to the state", state -> state.mapToResult(i -> i + 1))
-                .then("the result should be equal to 3", result -> result.shouldBeEqualTo(2));
+                .then("the result should be equal to 2", result -> result.shouldBeEqualTo(2));
     }
 }
 ```
@@ -45,8 +45,6 @@ TestCase is a generic Object that takes two types as parameters : `T` and `R`.
 `T` represent the type of the state of the test. It can be any type. Use `Void` if you don't need a state. 
 
 `R` represent the type of the result of the test. It can be any type. Use `Void` if you don't need a result.
-
-___
 
 `TestCase` and its linked statements ([GivenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.GivenStmt.html), [WhenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.WhenStmt.html) and [ThenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.ThenStmt.html) ) come with a set of methods that can be chained to write the test in the GWT format.
 
@@ -83,7 +81,7 @@ This is why <strong style="color:darkcyan">GWTUnit</strong> introduces <strong s
 
 This `parameters record` contains all method parameters. 
 
-The `proxy class` contains `one parameter proxy methods` corresponding to the public method.
+The `proxy class` has a `one parameter proxy methods` for each original class public method.
 
 _Let's see an example_
 
@@ -97,13 +95,13 @@ import io.github.imagineDevit.GWTUnit.annotations.GwtProxyable;
 @GwtProxyable
 public class StringHelper {
     
-    public String repeat(String text, int times, boolean separator) {
+    public String repeat(String text, int times, String separator) {
         return String.repeat(separator + times).replaceFirst(separator, "");
     }
 }
 ```
 <br>
-After compiling your project, the following proxy class should be generated :
+After compiling your project, the following proxy class should be generated 👇:
 
 ```java
 package io.example.helpers;
@@ -116,21 +114,29 @@ public class StringHelperTestProxy {
         this.delegate = delegate;
     }
     
-    record RepeatParams(String text, int times, boolean separator) {}
+    record RepeatParams(String text, int times, String separator) {}
   
     public String repeat(RepeatParams param) {
         return this.delegate.repeat(param.text(), param.times(), param.separator());
     }
 }
 ```
-As seen above, the generated record name is the name of the method suffixed with _Params_.
+As seen above, the generated record name is the _name of the method suffixed with _**Params**_.
 
-_What if we have method overloading (several methods with the same name and different parameters) in our class?
+_What if we have method overloading (several methods with the same name and different parameters) in our class?_
 
 <p style="color: #f15252"> 🧨️ Compilation will fail !!!!️ </p>
 
-To solve the problem, annotate the overloaded method with <strong style="color: #2f8793">@ParameterRecordName</strong> and specify the name of the record. 
+To solve the problem, annotate the overloaded method with <strong style="color: #2f8793">@ParameterRecordName</strong> and specify the name of the record.
 
+```java
+import io.github.imagineDevit.GWTUnit.annotations.ParameterRecordName;
+
+@ParameterRecordName("justRepeat")
+public String repeat(String text, int times) {
+    return String.repeat(times);
+}
+```
 <br>
 
 The generated `proxy class` can then be used for testing as follows:
@@ -145,11 +151,19 @@ class StringHelperTest {
     private StringHelperTestProxy proxy = new StringHelperTestProxy(new StringHelper());
     
     @Test
-    public repeat(TestCase<RepeatParams, String> testCase) {
+    public void repeat(TestCase<RepeatParams, String> testCase) {
         testCase
                 .given("a param", new RepeatParams("A", 3, "_"))
                 .when("repeat is called", state -> state.mapToResult(proxy::repeat))
                 .then("the result should be A_A_A", result -> result.shouldBeEqualTo("A_A_A"));
+    }
+
+    @Test("just repeat A 3 times should give AAA")
+    public void justRepeat(TestCase<JustRepeatParams, String> testCase) {
+        testCase
+            .given("a param", new JustRepeatParams("A", 3))
+            .when("repeat is called", state -> state.mapToResult(proxy::repeat))
+            .then("the result should be AAA", result -> result.shouldBeEqualTo("AAA"));
     }
 }
 
@@ -202,7 +216,7 @@ _This is a simple usage example_ 👇
     - `name` : the test name. If not provided, the test name will be the method name.
   
     - `source` : the parameter source. Parameter source can be :
-      - a method annotated [@ParameterSource](#ParameterSource) that returns a `TestParameters` object. (The source is the `@ParameterSource` value)) 
+      - a method annotated [@ParameterSource](#parametersource) that returns a `TestParameters` object. (The source is the `@ParameterSource` value)) 
       - a entry of the Map<String, TestParameters> returned by the test configuration class (The source is the entry key)
  
     A parameterized test method must have all paremeters as arguments. The order of the parameters must be the same as the order of the parameters in the `TestParameters` object.

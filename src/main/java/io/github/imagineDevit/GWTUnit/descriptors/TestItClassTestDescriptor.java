@@ -1,10 +1,8 @@
 package io.github.imagineDevit.GWTUnit.descriptors;
 
+import io.github.imagineDevit.GWTUnit.TestConfiguration;
 import io.github.imagineDevit.GWTUnit.annotations.*;
-import io.github.imagineDevit.GWTUnit.callbacks.AfterAllCallback;
-import io.github.imagineDevit.GWTUnit.callbacks.AfterEachCallback;
-import io.github.imagineDevit.GWTUnit.callbacks.BeforeAllCallback;
-import io.github.imagineDevit.GWTUnit.callbacks.BeforeEachCallback;
+import io.github.imagineDevit.GWTUnit.callbacks.*;
 import io.github.imagineDevit.GWTUnit.utils.TestItPredicates;
 import io.github.imagineDevit.GWTUnit.utils.Utils;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -28,6 +26,8 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
     private final BeforeEachCallback beforeEachCallback;
 
     private final AfterEachCallback afterEachCallback;
+
+    private final TestConfiguration configuration;
 
     public TestItClassTestDescriptor(Class<?> testClass, UniqueId uniqueId) {
         super(
@@ -65,6 +65,11 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
                         m -> Optional.ofNullable(m.getAnnotation(AfterEach.class)).map(AfterEach::order).orElse(0)
                 );
 
+        this.configuration = Optional.ofNullable(testClass.getAnnotation(ConfigureWith.class))
+                .map(ConfigureWith::value)
+                .map(ReflectionUtils::newInstance)
+                .orElse(null);
+
         addAllChildren();
     }
 
@@ -83,6 +88,10 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
         afterAllCallback.afterAll();
     }
 
+    public boolean shouldBeReported() {
+        return this.configuration != null && !this.configuration.excludeFromReport().contains(this.testClass);
+    }
+
     private void addAllChildren() {
         ReflectionUtils.findMethods(testClass, TestItPredicates.isMethodTest())
                 .forEach(method ->
@@ -91,12 +100,12 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
                                 method,
                                 testInstance,
                                 getUniqueId(),
-                                null, beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback))
+                                null, new GwtCallbacks(beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback)))
                 );
 
         ReflectionUtils.findMethods(testClass, TestItPredicates.isParameterizedMethodTest())
                 .forEach(method ->
-                    addChild(new TestItParameterizedMethodTestDescriptor(method, Utils.getParameters(method), testInstance, getUniqueId(), beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback))
+                        addChild(new TestItParameterizedMethodTestDescriptor(method, Utils.getParameters(method, this.configuration), testInstance, getUniqueId(), new GwtCallbacks(beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback), this.configuration))
                 );
     }
 }

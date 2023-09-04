@@ -77,7 +77,7 @@ public abstract class Utils {
                 .orElse(new ArrayList<>());
     }
 
-    public static List<? extends TestParameters.Parameter> getParameters(Method method){
+    public static List<? extends TestParameters.Parameter> getParameters(Method method, TestConfiguration configuration) {
 
         var testClass = method.getDeclaringClass();
 
@@ -90,9 +90,8 @@ public abstract class Utils {
 
         return switch (methodList.size()) {
             case 0 -> {
-                if(AnnotationSupport.isAnnotated(testClass, ConfigureWith.class)) {
-                    Class<? extends TestConfiguration> configClass = testClass.getAnnotation(ConfigureWith.class).value();
-                    yield Utils.getParametersFromConfiguration(ReflectionUtils.newInstance(configClass), parameterSource);
+                if(configuration != null) {
+                    yield Utils.getParametersFromConfiguration(configuration, parameterSource);
                 } else {
                     throw new IllegalStateException("No parameter source with name %s found".formatted(parameterSource));
                 }
@@ -101,6 +100,14 @@ public abstract class Utils {
             default -> throw new IllegalStateException("Multiple parameter sources with same name found (%s)".formatted(parameterSource));
         };
 
+    }
+
+    public static TestConfiguration getConfiguration(Method method) {
+        Class<?> clazz = method.getDeclaringClass();
+        return Optional.ofNullable(clazz.getAnnotation(ConfigureWith.class))
+                .map(ConfigureWith::value)
+                .map(ReflectionUtils::newInstance)
+                .orElse(null);
     }
 
     public static String reportTestCase(String name, List<StmtMsg> givenMsgs, List<StmtMsg> whenMsgs, List<StmtMsg> thenMsgs, TestParameters.Parameter parameters) {
