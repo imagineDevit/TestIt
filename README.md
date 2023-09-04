@@ -151,20 +151,20 @@ class StringHelperTest {
     private StringHelperTestProxy proxy = new StringHelperTestProxy(new StringHelper());
     
     @Test
-    public repeat(TestCase<RepeatParams, String> testCase) {
+    public void repeat(TestCase<RepeatParams, String> testCase) {
         testCase
                 .given("a param", new RepeatParams("A", 3, "_"))
                 .when("repeat is called", state -> state.mapToResult(proxy::repeat))
                 .then("the result should be A_A_A", result -> result.shouldBeEqualTo("A_A_A"));
     }
 
-  @Test("just repeat A 3 times should give AAA")
-  public justRepeat(TestCase<JustRepeatParams, String> testCase) {
-    testCase
+    @Test("just repeat A 3 times should give AAA")
+    public void justRepeat(TestCase<JustRepeatParams, String> testCase) {
+        testCase
             .given("a param", new JustRepeatParams("A", 3))
             .when("repeat is called", state -> state.mapToResult(proxy::repeat))
             .then("the result should be AAA", result -> result.shouldBeEqualTo("AAA"));
-  }
+    }
 }
 
 ```
