@@ -2,11 +2,12 @@ package io.github.imagineDevit.GWTUnit.report;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
@@ -21,9 +22,16 @@ public class ReportProcessor {
 
     public ReportProcessor() throws IOException {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_31);
-        File tempDirectory = FileUtils.getTempDirectory();
+
+        File tempDirectory = new File(System.getProperty("java.io.tmpdir"));
         File file = new File(tempDirectory.getPath() + "/report.ftl");
-        FileUtils.copyInputStreamToFile(Objects.requireNonNull(ReportProcessor.class.getClassLoader().getResourceAsStream("report.ftl")), file);
+
+        InputStream source = Objects.requireNonNull(ReportProcessor.class.getClassLoader().getResourceAsStream("report.ftl"));
+
+         try (var target = new FileOutputStream(file)) {
+                target.write(source.readAllBytes());
+         }
+
 
         configuration.setDirectoryForTemplateLoading(tempDirectory);
 

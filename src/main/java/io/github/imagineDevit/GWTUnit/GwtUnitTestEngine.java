@@ -9,8 +9,8 @@ import org.junit.platform.engine.discovery.MethodSelector;
 import org.junit.platform.engine.discovery.PackageSelector;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
-public class TestItEngine implements TestEngine {
-    public static final String ENGINE_ID = "test-it-engine";
+public class GwtUnitTestEngine implements TestEngine {
+    public static final String ENGINE_ID = "gwt-unit-test-engine";
 
 
     @Override
@@ -21,7 +21,7 @@ public class TestItEngine implements TestEngine {
     @Override
     public TestDescriptor discover(EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
 
-        EngineDescriptor root = new EngineDescriptor(uniqueId, "TestItEngine");
+        EngineDescriptor root = new EngineDescriptor(uniqueId, "GwtUnitTestEngine");
 
         engineDiscoveryRequest.getSelectorsByType(ClasspathRootSelector.class)
                 .forEach(selector -> SelectorUtils.appendTestInRoot(selector, root));
@@ -41,7 +41,7 @@ public class TestItEngine implements TestEngine {
     @Override
     public void execute(ExecutionRequest executionRequest) {
         TestDescriptor root = executionRequest.getRootTestDescriptor();
-        new TestItExecutor().execute(executionRequest, root);
+        new GwtUnitTestExecutor().execute(executionRequest, root);
     }
 
 }

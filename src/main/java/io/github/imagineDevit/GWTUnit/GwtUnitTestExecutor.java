@@ -1,8 +1,8 @@
 package io.github.imagineDevit.GWTUnit;
 
-import io.github.imagineDevit.GWTUnit.descriptors.TestItClassTestDescriptor;
-import io.github.imagineDevit.GWTUnit.descriptors.TestItMethodTestDescriptor;
-import io.github.imagineDevit.GWTUnit.descriptors.TestItParameterizedMethodTestDescriptor;
+import io.github.imagineDevit.GWTUnit.descriptors.GwtClassTestDescriptor;
+import io.github.imagineDevit.GWTUnit.descriptors.GwtMethodTestDescriptor;
+import io.github.imagineDevit.GWTUnit.descriptors.GwtParameterizedMethodTestDescriptor;
 import io.github.imagineDevit.GWTUnit.report.ReportProcessor;
 import io.github.imagineDevit.GWTUnit.report.TestCaseReport;
 import io.github.imagineDevit.GWTUnit.utils.MvnArgs;
@@ -16,7 +16,7 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class TestItExecutor {
+public class GwtUnitTestExecutor {
 
     private TestCaseReport report;
 
@@ -43,17 +43,17 @@ public class TestItExecutor {
             executeForEngineDescriptor(request, root);
         }
 
-        if (root instanceof TestItClassTestDescriptor ctd) {
+        if (root instanceof GwtClassTestDescriptor ctd) {
             allCallbacksRan = true;
             ctd.execute(d -> executeForClassDescriptor(request, d));
             allCallbacksRan = false;
         }
 
-        if (root instanceof TestItParameterizedMethodTestDescriptor) {
+        if (root instanceof GwtParameterizedMethodTestDescriptor) {
             executeContainer(request, root);
         }
 
-        if (root instanceof TestItMethodTestDescriptor mtd) {
+        if (root instanceof GwtMethodTestDescriptor mtd) {
             mtd.execute(d ->  executeForMethodDescriptor(request, mtd), allCallbacksRan);
         }
 
@@ -66,7 +66,7 @@ public class TestItExecutor {
     }
 
 
-    private void executeForMethodDescriptor(ExecutionRequest request, TestItMethodTestDescriptor md) {
+    private void executeForMethodDescriptor(ExecutionRequest request, GwtMethodTestDescriptor md) {
         String className = md.getTestMethod().getDeclaringClass().getName();
 
         Optional<TestCaseReport.ClassReport> classReport = getReport().map(
@@ -82,7 +82,7 @@ public class TestItExecutor {
         classReport.ifPresent(cr -> cr.addTestReport(testReport));
     }
 
-    private void executeForClassDescriptor(ExecutionRequest request, TestItClassTestDescriptor r) {
+    private void executeForClassDescriptor(ExecutionRequest request, GwtClassTestDescriptor r) {
         TestCaseReport.ClassReport classReport = new TestCaseReport.ClassReport(r.getTestClass().getName());
         if (r.shouldBeReported()) {
             getReport().ifPresent(tc -> tc.addClassReport(classReport));
@@ -106,7 +106,7 @@ public class TestItExecutor {
                 });
     }
 
-    private TestCaseReport.TestReport executeTest(ExecutionRequest request, TestItMethodTestDescriptor root) {
+    private TestCaseReport.TestReport executeTest(ExecutionRequest request, GwtMethodTestDescriptor root) {
 
         TestCaseReport.TestReport report = new TestCaseReport.TestReport();
 

@@ -1,89 +1,143 @@
 package io.github.imagineDevit.GWTUnit;
 
 
-import java.util.function.Consumer;
+import io.github.imagineDevit.GWTUnit.assertions.ShouldBe;
+import io.github.imagineDevit.GWTUnit.assertions.ShouldFail;
+import io.github.imagineDevit.GWTUnit.assertions.ShouldHave;
+import io.github.imagineDevit.GWTUnit.assertions.ShouldMatch;
+
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class TestCaseResult<T> {
 
-    private final T value;
+    public static sealed class ResultValue {
 
-    private Exception error;
+        @SuppressWarnings("unchecked")
+        public <T> Optional<Ok<T>> ok() {
+            return this instanceof Ok ? Optional.of((Ok<T>) this) : Optional.empty();
+        }
+
+        @SuppressWarnings("unchecked")
+        public <E extends Exception> Optional<Err<E>> err() {
+            return this instanceof Err ? Optional.of((Err<E>) this) : Optional.empty();
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> T get() {
+            if (this instanceof Ok) {
+                return ((Ok<T>) this).getValue();
+            }
+            throw new RuntimeException("TestCaseResult is not Ok");
+        }
+
+        public static final class Ok<T> extends ResultValue {
+            private final T value;
+
+            public Ok(T value) {
+                this.value = value;
+            }
+
+            public T getValue() {
+                return value;
+            }
+        }
+
+
+        public static final class Err<E extends Exception> extends ResultValue {
+            private final E error;
+
+            public Err(E error) {
+                this.error = error;
+            }
+
+            public E getError() {
+                return error;
+            }
+        }
+    }
+
+    private final ResultValue value;
 
     //region constructor
     private TestCaseResult(T value) {
-        this.value = value;
+        if (value == null) {
+            this.value = null;
+            return;
+        }
+
+        this.value = new ResultValue.Ok<>(value);
     }
 
-    public static <T> TestCaseResult<T> of(T value){
+    private TestCaseResult(Exception e) {
+        if (e == null) {
+            this.value = null;
+            return;
+        }
+        this.value = new ResultValue.Err<>(e);
+    }
+
+    public static <T> TestCaseResult<T> of(T value) {
         return new TestCaseResult<>(value);
+    }
+
+    public static <T> TestCaseResult<T> of(Exception e) {
+        return new TestCaseResult<>(e);
     }
 
     public static <T> TestCaseResult<T> empty() {
         return new TestCaseResult<>(null);
     }
 
-    protected void withError(Exception e){
-        this.error = e;
-    }
-
     //endregion
 
-    public <R> TestCaseResult<R> map(Function<T,R> mapper){
+    public <R> TestCaseResult<R> map(Function<T, R> mapper) {
         if (value == null) return TestCaseResult.empty();
-        return TestCaseResult.of(mapper.apply(value));
+        return value.<T>ok()
+                .map(ResultValue.Ok::getValue)
+                .map(v -> TestCaseResult.of(mapper.apply(v)))
+                .orElseThrow();
     }
 
     // region assertions
 
-    public TestCaseResult<T> shouldBeNull() {
-        assertNull(value);
-        return this;
+    public ShouldFail shouldFail() {
+        return Objects.requireNonNull(value, "Result value is Null")
+                .err()
+                .map(ShouldFail::new)
+                .orElseThrow(() -> new AssertionError("Result value is Ok"));
     }
 
-    public TestCaseResult<T> shouldBeNotNull() {
-        assertNotNull(value);
-        return this;
-    }
-
-    public TestCaseResult<T> shouldBeNotEqualTo(T other){
-        assertNotEquals(other, value);
-        return this;
-    }
-
-    public TestCaseResult<T> shouldBeEqualTo(T other){
-        assertEquals(other, value);
-        return this;
-    }
-
-    public TestCaseResult<T> shouldMatch(Predicate<T> predicate){
-        assertTrue(predicate.test(value));
-        return this;
-    }
-
-    public TestCaseResult<T> shouldNotMatch(Predicate<T> predicate){
-        assertFalse(predicate.test(value));
-        return this;
-    }
-
-    public  <E extends Exception> void shouldBeException(Class<E> eClass){
-        if(this.error == null){
-            throw new AssertionError("Expected <%s> exception to be thrown, but no exception thrown ".formatted(eClass.getName()));
-        } else if (error.getClass() != eClass) {
-            throw new AssertionError("Expected <%s> but found <%s> ".formatted(eClass.getName(), error.getClass().getName()));
-        }
+    public ShouldBe<T> shouldBe() {
+        return Objects.requireNonNull(value, "Result value is Null")
+                .<T>ok()
+                .map(ShouldBe::new)
+                .orElseThrow(() -> new AssertionError("Result value is Failure"));
 
     }
-    @SafeVarargs
-    public final void assertAll(Consumer<T>... consumers){
-        for (Consumer<T> consumer : consumers) {
-            consumer.accept(value);
-        }
+
+    public ShouldHave<T> shouldHave() {
+        return Objects.requireNonNull(value, "Result value is Null")
+                .<T>ok()
+                .map(ShouldHave::new)
+                .orElseThrow(() -> new AssertionError("Result value is Failure"));
     }
 
+    public ShouldMatch<T> shouldMatch(){
+        return Objects.requireNonNull(value, "Result value is Null")
+                .<T>ok()
+                .map(ShouldMatch::new)
+                .orElseThrow(() -> new AssertionError("Result value is Failure"));
+    }
 
+    public void shouldMatch(Predicate<T> predicate){
+        Objects.requireNonNull(value, "Result value is Null")
+                .<T>ok()
+                .map(ShouldMatch::new)
+                .map(m -> m.one(ShouldMatch.matching("predicate", predicate)))
+                .orElseThrow(() -> new AssertionError("Result value is Failure"));
+    }
     // endregion
 }

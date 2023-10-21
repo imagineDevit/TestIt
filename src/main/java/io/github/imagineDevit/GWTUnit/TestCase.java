@@ -6,7 +6,6 @@ import io.github.imagineDevit.GWTUnit.statements.StmtMsg;
 import io.github.imagineDevit.GWTUnit.statements.functions.*;
 import io.github.imagineDevit.GWTUnit.utils.TextUtils;
 import io.github.imagineDevit.GWTUnit.utils.Utils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +53,7 @@ public class TestCase<T, R> extends CloseableCase {
         public ThenStmt<T,R> then(String message, ThenFn<R> fn) {
             return testCase.then(message, fn);
         }
+
 
     }
 
@@ -164,7 +164,7 @@ public class TestCase<T, R> extends CloseableCase {
      * @param report the test report
      * @param parameters the test parameters
      */
-    private TestCase(@NotNull String name, @NotNull TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
+    private TestCase(String name, TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
         this.name = name;
         this.report = report;
         this.parameters = parameters;
@@ -369,14 +369,15 @@ public class TestCase<T, R> extends CloseableCase {
             } else {
                 this.whenFns.forEach(fn -> {
                     if (fn instanceof WhenFFn<?,?> gfn) {
-                        this.result = ((WhenFFn<T,R>) gfn).apply(this.state);
+                        //this.result = ((WhenFFn<T,R>) gfn).apply(this.state);
+                        this.result = this.state.mapToResult((WhenFFn<T,R>)gfn);
                     } else if (fn instanceof WhenRFn rfn) {
                         rfn.run();
                     }
                 });
             }
         } catch (Exception e) {
-            this.result.withError(e);
+            this.result = TestCaseResult.of(e);
         }
 
         this.thenFns.forEach(fn -> fn.accept(this.result));

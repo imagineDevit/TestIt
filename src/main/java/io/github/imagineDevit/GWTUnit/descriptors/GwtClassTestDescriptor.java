@@ -3,7 +3,7 @@ package io.github.imagineDevit.GWTUnit.descriptors;
 import io.github.imagineDevit.GWTUnit.TestConfiguration;
 import io.github.imagineDevit.GWTUnit.annotations.*;
 import io.github.imagineDevit.GWTUnit.callbacks.*;
-import io.github.imagineDevit.GWTUnit.utils.TestItPredicates;
+import io.github.imagineDevit.GWTUnit.utils.GwtPredicates;
 import io.github.imagineDevit.GWTUnit.utils.Utils;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.engine.UniqueId;
@@ -13,7 +13,7 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class TestItClassTestDescriptor extends AbstractTestDescriptor {
+public class GwtClassTestDescriptor extends AbstractTestDescriptor {
 
     private final Class<?> testClass;
 
@@ -29,7 +29,7 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
 
     private final TestConfiguration configuration;
 
-    public TestItClassTestDescriptor(Class<?> testClass, UniqueId uniqueId) {
+    public GwtClassTestDescriptor(Class<?> testClass, UniqueId uniqueId) {
         super(
                 uniqueId.append("class", testClass.getSimpleName()),
                 testClass.getSimpleName(),
@@ -82,7 +82,7 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
         return testClass;
     }
 
-    public void execute(Consumer<TestItClassTestDescriptor> consumer) {
+    public void execute(Consumer<GwtClassTestDescriptor> consumer) {
         beforeAllCallback.beforeAll();
         consumer.accept(this);
         afterAllCallback.afterAll();
@@ -93,9 +93,9 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
     }
 
     private void addAllChildren() {
-        ReflectionUtils.findMethods(testClass, TestItPredicates.isMethodTest())
+        ReflectionUtils.findMethods(testClass, GwtPredicates.isMethodTest())
                 .forEach(method ->
-                        addChild(new TestItMethodTestDescriptor(
+                        addChild(new GwtMethodTestDescriptor(
                                 Utils.getTestName(method.getAnnotation(Test.class).value(), method),
                                 method,
                                 testInstance,
@@ -103,9 +103,9 @@ public class TestItClassTestDescriptor extends AbstractTestDescriptor {
                                 null, new GwtCallbacks(beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback)))
                 );
 
-        ReflectionUtils.findMethods(testClass, TestItPredicates.isParameterizedMethodTest())
+        ReflectionUtils.findMethods(testClass, GwtPredicates.isParameterizedMethodTest())
                 .forEach(method ->
-                        addChild(new TestItParameterizedMethodTestDescriptor(method, Utils.getParameters(method, this.configuration), testInstance, getUniqueId(), new GwtCallbacks(beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback), this.configuration))
+                        addChild(new GwtParameterizedMethodTestDescriptor(method, Utils.getParameters(method, this.configuration), testInstance, getUniqueId(), new GwtCallbacks(beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback), this.configuration))
                 );
     }
 }

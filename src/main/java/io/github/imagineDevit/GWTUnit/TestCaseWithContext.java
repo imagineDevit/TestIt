@@ -6,7 +6,6 @@ import io.github.imagineDevit.GWTUnit.statements.StmtMsg;
 import io.github.imagineDevit.GWTUnit.statements.functions.CtxConsumer;
 import io.github.imagineDevit.GWTUnit.statements.functions.ResCtxConsumer;
 import io.github.imagineDevit.GWTUnit.utils.Utils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +115,7 @@ public class TestCaseWithContext<T, R> extends CloseableCase {
      * @param report the test report
      * @param parameters the test parameters
      */
-    protected TestCaseWithContext(@NotNull String name, @NotNull TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
+    protected TestCaseWithContext(String name, TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
         this.name = name;
         this.report = report;
         this.parameters = parameters;
