@@ -36,6 +36,10 @@ public class TestCase<T, R> extends CloseableCase {
             return testCase.when(message, fn);
         }
 
+        public WhenStmt<T,R> when(String message, WhenCFn<T> fn) {
+            return testCase.whenc(message, fn);
+        }
+
         public  WhenStmt<T,R> when(String message, WhenRFn fn) {
             return testCase.whenr(message, fn);
         }
@@ -53,7 +57,6 @@ public class TestCase<T, R> extends CloseableCase {
         public ThenStmt<T,R> then(String message, ThenFn<R> fn) {
             return testCase.then(message, fn);
         }
-
 
     }
 
@@ -140,6 +143,7 @@ public class TestCase<T, R> extends CloseableCase {
     private GivenRFn givenRFn = null;
     private WhenSFn<R> whenFn = null;
     private WhenRFn whenRFn = null;
+    private WhenCFn<T> whenCFn = null;
     private final List<GivenFFn<T>> andGivenFns = new ArrayList<>();
     private final List<Object> whenFns = new ArrayList<>();
     private final List<ThenFn<R>> thenFns = new ArrayList<>();
@@ -280,6 +284,20 @@ public class TestCase<T, R> extends CloseableCase {
     }
 
     /**
+     * Adds a When statement to the current test case with the provided message and a consumer function
+     *
+     * @param message the description of the new When statement
+     * @param fn the function that executes the When statement
+     * @return a new instance of WhenStmt that is associated with this test case
+     */
+    protected WhenStmt<T, R> whenc(String message, WhenCFn<T> fn) {
+        this.whenMsgs.add(StmtMsg.when(message));
+        this.report.addDescriptionItem(TestCaseReport.TestReport.DescriptionItem.when(message));
+        this.whenCFn = fn;
+        return new WhenStmt<>(this);
+    }
+
+    /**
      * Adds a When statement to the current test case with the provided message and a runnable function
      *
      * @param message the description of the new When statement
@@ -366,10 +384,11 @@ public class TestCase<T, R> extends CloseableCase {
                 this.result = TestCaseResult.of(this.whenFn.get());
             } else if (this.whenRFn != null) {
                 this.whenRFn.run();
+            } else if (this.whenCFn != null) {
+                this.state.consumeValue(this.whenCFn);
             } else {
                 this.whenFns.forEach(fn -> {
                     if (fn instanceof WhenFFn<?,?> gfn) {
-                        //this.result = ((WhenFFn<T,R>) gfn).apply(this.state);
                         this.result = this.state.mapToResult((WhenFFn<T,R>)gfn);
                     } else if (fn instanceof WhenRFn rfn) {
                         rfn.run();

@@ -23,13 +23,12 @@ public class TestCaseState<T> {
         return TestCaseState.of(mapper.apply(value));
     }
 
-    public <R> TestCaseResult<R> mapToResult(Function<T,R> mapper){
+    protected <R> TestCaseResult<R> mapToResult(Function<T,R> mapper){
         return TestCaseResult.of(mapper.apply(value));
     }
 
-    public TestCaseResult<Void> consumeValue(Consumer<T> consumer){
+    protected void consumeValue(Consumer<T> consumer){
         consumer.accept(value);
-        return TestCaseResult.of(null);
     }
 
 }

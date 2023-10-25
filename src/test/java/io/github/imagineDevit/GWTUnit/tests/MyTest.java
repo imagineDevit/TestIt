@@ -71,7 +71,7 @@ public class MyTest {
     }
 
     @Test("An illegalState exception should be thrown")
-    void test4(TestCase<Void, String> testCase) {
+    void test4(TestCase<Void, Void> testCase) {
         testCase
                 .when("called method throw an exception with oups message", () -> {
                     throw new IllegalStateException("Oups");

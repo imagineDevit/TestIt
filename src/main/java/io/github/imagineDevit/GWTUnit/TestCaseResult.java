@@ -63,19 +63,10 @@ public class TestCaseResult<T> {
 
     //region constructor
     private TestCaseResult(T value) {
-        if (value == null) {
-            this.value = null;
-            return;
-        }
-
         this.value = new ResultValue.Ok<>(value);
     }
 
     private TestCaseResult(Exception e) {
-        if (e == null) {
-            this.value = null;
-            return;
-        }
         this.value = new ResultValue.Err<>(e);
     }
 
@@ -88,13 +79,12 @@ public class TestCaseResult<T> {
     }
 
     public static <T> TestCaseResult<T> empty() {
-        return new TestCaseResult<>(null);
+        return new TestCaseResult<>((T) null);
     }
 
     //endregion
 
     public <R> TestCaseResult<R> map(Function<T, R> mapper) {
-        if (value == null) return TestCaseResult.empty();
         return value.<T>ok()
                 .map(ResultValue.Ok::getValue)
                 .map(v -> TestCaseResult.of(mapper.apply(v)))
