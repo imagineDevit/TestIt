@@ -5,7 +5,7 @@
 
     <groupId>io.github.imagineDevit</groupId>
     <artifactId>GWTUnit</artifactId>
-    <version>0.0.9</version>
+    <version>0.1.0-SNAPSHOT</version>
     <description>
         A JUnit based library that allow developers to write unit test on GIVEN-WHEN-THEN format
     </description>
@@ -46,11 +46,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-engine</artifactId>
             <version>1.9.2</version>
@@ -66,24 +61,9 @@
             <version>1.9.2</version>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
             <version>1.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.rapidpm</groupId>
-            <artifactId>rapidpm-functional-reactive</artifactId>
-            <version>01.00.07-RPM</version>
         </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -95,12 +75,6 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
             <version>2.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.velocity.tools</groupId>
-            <artifactId>velocity-tools-generic</artifactId>
-            <version>3.1</version>
         </dependency>
 
     </dependencies>

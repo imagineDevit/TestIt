@@ -167,6 +167,17 @@ public abstract class Utils {
         close.run();
         return fn.get();
     }
+
+    @SuppressWarnings("unchecked")
+    public static <T, E extends Throwable> Comparable<T> asComparableOrThrow(T value, Supplier<E> eSupplier) throws E {
+        if (value instanceof Comparable<?> c) {
+            return (Comparable<T>)  c;
+        } else {
+            throw eSupplier.get();
+        }
+    }
+
+
     private static Map<Object, List<Method>> getCallbackMethods(Object testInstance, Class<? extends Annotation> annotationClazz, Class<?> callbackClazz, String callbackMethod) {
         Map<Object, List<Method>> map = new HashMap<>();
         Class<?> testClass = testInstance.getClass();

@@ -25,8 +25,8 @@ class MyTest {
     void test(TestCase<Integer, Integer> testCase) {
         testCase
                 .given("state is 1", 1)
-                .when("1 is added to the state", state -> state.mapToResult(i -> i + 1))
-                .then("the result should be equal to 2", result -> result.shouldBeEqualTo(2));
+                .when("1 is added to the state", i -> i + 1)
+                .then("the result should be equal to 2", result -> result.shouldBe().equalTo(2));
     }
 }
 ```
@@ -77,9 +77,9 @@ Managing a `List<Object>` as test state is possible but may not be very conforma
 
 This is why <strong style="color:darkcyan">GWTUnit</strong> introduces <strong style="color: #2f8793">@GWTProxyable</strong> annotation.
 
-<strong style="color: #2f8793">@GWTProxyable</strong> annotation has a processor that generates a `proxy class` for each annotated class and a `parameters record` for each public method with more than one parameter.
+<strong style="color: #2f8793">@GWTProxyable</strong> annotation has a processor that generate a `proxy class` for each annotated class and a `parameters record` for each public method with more than one parameter.
 
-This `parameters record` contains all method parameters. 
+This `parameters record` contains all parameters of the given method. 
 
 The `proxy class` has a `one parameter proxy methods` for each original class public method.
 
@@ -121,7 +121,7 @@ public class StringHelperTestProxy {
     }
 }
 ```
-As seen above, the generated record name is the _name of the method suffixed with _**Params**_.
+As seen above, the generated record name is the _name of the method_ suffixed with _**Params**_.
 
 _What if we have method overloading (several methods with the same name and different parameters) in our class?_
 
@@ -154,16 +154,16 @@ class StringHelperTest {
     public void repeat(TestCase<RepeatParams, String> testCase) {
         testCase
                 .given("a param", new RepeatParams("A", 3, "_"))
-                .when("repeat is called", state -> state.mapToResult(proxy::repeat))
-                .then("the result should be A_A_A", result -> result.shouldBeEqualTo("A_A_A"));
+                .when("repeat is called", proxy::repeat)
+                .then("the result should be A_A_A", result -> result.shouldBe().equalTo("A_A_A"));
     }
 
     @Test("just repeat A 3 times should give AAA")
     public void justRepeat(TestCase<JustRepeatParams, String> testCase) {
         testCase
             .given("a param", new JustRepeatParams("A", 3))
-            .when("repeat is called", state -> state.mapToResult(proxy::repeat))
-            .then("the result should be AAA", result -> result.shouldBeEqualTo("AAA"));
+            .when("repeat is called", proxy::repeat)
+            .then("the result should be AAA", result -> result.shouldBe().equalTo("AAA"));
     }
 }
 
@@ -193,7 +193,9 @@ _This is a simple usage example_ 👇
                 .given("the state is set to 1", ctx -> ctx.setState(1))
                 .when("result is set to state + 1", ctx -> ctx.stateToResult(state -> state + 1))
                 .then("the result should be 2", (ctx, result) ->
-                        result.shouldBeNotNull().shouldBeEqualTo(2)
+                        result.shouldBe()
+                                .notNull()
+                                .equalTo(2)
                 );
     }
 }
@@ -232,9 +234,11 @@ _This is a simple usage example_ 👇
         void test2(TestCase<String, Integer> testCase, String text, Integer expectedResult) {
             testCase
                     .given("state is %s".formatted(text), () -> text)
-                    .when("state length is evaluated", state -> state.onValue(i -> i.length()))
+                    .when("state length is evaluated", i -> i.length())
                     .then("the result should be %d".formatted(expectedResult), result ->
-                            result.shouldBeEqualTo(expectedResult)
+                            result
+                                    .shouldBe()
+                                    .equalTo(expectedResult)
                     );
         }
 

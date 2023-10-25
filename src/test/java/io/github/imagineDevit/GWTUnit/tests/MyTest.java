@@ -1,9 +1,11 @@
 package io.github.imagineDevit.GWTUnit.tests;
 
 import io.github.imagineDevit.GWTUnit.TestCase;
-import io.github.imagineDevit.GWTUnit.TestCaseResult;
 import io.github.imagineDevit.GWTUnit.TestParameters;
 import io.github.imagineDevit.GWTUnit.annotations.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ExtendWith({MyTestExtension.class})
@@ -33,9 +35,9 @@ public class MyTest {
         testCase
                 .given("state is 1",  1)
                 .and("state is multiplied by 2", state -> state.map(i -> i * 2))
-                .when("1 is added to the state", state -> state.mapToResult(i -> i + 1))
-                .then("the result should be not null", TestCaseResult::shouldBeNotNull)
-                .and("the result should be equal to 3", result -> result.shouldBeEqualTo(3));
+                .when("1 is added to the state", i ->  i + 1)
+                .then("the result should be not null", result -> result.shouldBe().notNull())
+                .and("the result should be equal to 3", result -> result.shouldBe().equalTo(3));
     }
 
     @ParameterizedTest(
@@ -50,11 +52,12 @@ public class MyTest {
         testCase
                 .given("state is 1", () -> 1)
                 .and("state is multiplied by 2", state -> state.map(i -> i * 2))
-                .when("%d is added to the state".formatted(number), state -> state.mapToResult(i -> i + number))
+                .when("%d is added to the state".formatted(number), i -> i + number)
                 .then("the result should be %d".formatted(expectedResult), result ->
                         result
-                                .shouldBeNotNull()
-                                .shouldBeEqualTo(expectedResult)
+                                .shouldBe()
+                                .notNull()
+                                .equalTo(expectedResult)
                 );
     }
 
@@ -63,17 +66,23 @@ public class MyTest {
     void test3(TestCase<Void, Integer> testCase) {
         testCase
                 .when("called method return 1", () -> 1)
-                .then("the result should be not null", TestCaseResult::shouldBeNotNull)
-                .and("the result should be equal to 1", result -> result.shouldBeEqualTo(1));
+                .then("the result should be not null", result -> result.shouldBe().notNull())
+                .and("the result should be equal to 1", result -> result.shouldBe().equalTo(1));
     }
 
     @Test("An illegalState exception should be thrown")
-    void test4(TestCase<Void, IllegalStateException> testCase) {
+    void test4(TestCase<Void, String> testCase) {
         testCase
                 .when("called method throw an exception with oups message", () -> {
                     throw new IllegalStateException("Oups");
                 })
-                .then("the exception is not null", result -> result.shouldBeException(IllegalStateException.class));
+                .then("the exception is not null", result ->
+                        result
+                                .shouldFail()
+                                .withErrorOfType(IllegalStateException.class)
+                                .withMessage("Oups")
+
+                );
     }
 
     @Test("test case with context")
@@ -82,12 +91,27 @@ public class MyTest {
                 .given("the state is set to 1", ctx -> ctx.setState(1))
                 .when("result is set to state + 1", ctx -> ctx.stateToResult(one -> one + 1))
                 .then("the result should be 2", (ctx, result) ->
-                        result
-                                .shouldBeNotNull()
-                                .shouldBeEqualTo(2)
+                        result.shouldBe()
+                                .notNull()
+                                .equalTo(2)
                 );
     }
 
+
+    @Test("Add element to an empty collection")
+    void test6(TestCase<List<String>, List<String>> testCase) {
+        testCase
+                .given("an empty list", new ArrayList<>())
+
+                .when("an element is added to the list", list -> {
+                    list.add("element");
+                    return list;
+                })
+                .then("the result should be not null", result -> result.shouldBe().notNull())
+                .and("the result should have a size equal to 1", result -> result.shouldHave().size(1))
+                .and("the result should contain an item equal to 'element'", result -> result.shouldHave().anItemEqualTo("element"));
+
+    }
     @ParameterSource("getParams")
     private TestParameters<TestParameters.Parameter.P2<Integer, Integer>> getParams() {
         return TestParameters.of(
