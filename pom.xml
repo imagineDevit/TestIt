@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.imagineDevit</groupId>
-    <artifactId>GWTUnit</artifactId>
-    <version>0.1.0</version>
+    <artifactId>giwt</artifactId>
+    <version>0.1.1-SNAPSHOT</version>
     <description>
         A JUnit based library that allow developers to write unit test on GIVEN-WHEN-THEN format
     </description>
@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <name>GWTUnit</name>
+    <name>giwt</name>
     <url>https://github.com/imagineDevit/GWTUnit</url>
     <scm>
         <url>https://github.com/imagineDevit/GWTUnit.git</url>
