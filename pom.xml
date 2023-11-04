@@ -5,7 +5,7 @@
 
     <groupId>io.github.imagineDevit</groupId>
     <artifactId>GWTUnit</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <description>
         A JUnit based library that allow developers to write unit test on GIVEN-WHEN-THEN format
     </description>
