@@ -16,8 +16,9 @@ It gives developers the ability to write unit tests in the [GWT (Given-When-Then
 
 
 _This is a simple usage example_ 👇
+
 ```java 
-import io.github.imagineDevit.GWTUnit.annotations.Test;
+import io.github.imagineDevit.giwt.annotations.Test;
 
 class MyTest {
 
@@ -90,11 +91,11 @@ Consider the following class 👇
 ```java
 package io.example.helpers;
 
-import io.github.imagineDevit.GWTUnit.annotations.GwtProxyable;
+import io.github.imagineDevit.giwt.annotations.GwtProxyable;
 
 @GwtProxyable
 public class StringHelper {
-    
+
     public String repeat(String text, int times, String separator) {
         return String.repeat(separator + times).replaceFirst(separator, "");
     }
@@ -130,7 +131,7 @@ _What if we have method overloading (several methods with the same name and diff
 To solve the problem, annotate the overloaded method with <strong style="color: #2f8793">@ParameterRecordName</strong> and specify the name of the record.
 
 ```java
-import io.github.imagineDevit.GWTUnit.annotations.ParameterRecordName;
+import io.github.imagineDevit.giwt.annotations.ParameterRecordName;
 
 @ParameterRecordName("justRepeat")
 public String repeat(String text, int times) {
@@ -142,14 +143,15 @@ public String repeat(String text, int times) {
 The generated `proxy class` can then be used for testing as follows:
 
 ```java
-import io.github.imagineDevit.GWTUnit.TestCase;
-import io.github.imagineDevit.GWTUnit.annotations.Test;
+import io.github.imagineDevit.giwt.TestCase;
+import io.github.imagineDevit.giwt.annotations.Test;
+
 import static io.example.helpers.StringHelperTestProxy.*;
 
 class StringHelperTest {
-    
+
     private StringHelperTestProxy proxy = new StringHelperTestProxy(new StringHelper());
-    
+
     @Test
     public void repeat(TestCase<RepeatParams, String> testCase) {
         testCase
@@ -161,9 +163,9 @@ class StringHelperTest {
     @Test("just repeat A 3 times should give AAA")
     public void justRepeat(TestCase<JustRepeatParams, String> testCase) {
         testCase
-            .given("a param", new JustRepeatParams("A", 3))
-            .when("repeat is called", proxy::repeat)
-            .then("the result should be AAA", result -> result.shouldBe().equalTo("AAA"));
+                .given("a param", new JustRepeatParams("A", 3))
+                .when("repeat is called", proxy::repeat)
+                .then("the result should be AAA", result -> result.shouldBe().equalTo("AAA"));
     }
 }
 
