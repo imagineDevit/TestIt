@@ -1,17 +1,18 @@
 
-# 🧪GWTUnit
+# 🧪GIWT
 
 ---
 
 [![minimum java version](https://img.shields.io/badge/Java-17+-blue)](https://jdk.java.net/17/)
-[![javadoc](https://javadoc.io/badge2/io.github.imagineDevit/GWTUnit/javadoc.svg)](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit)
+[![javadoc](https://javadoc.io/badge2/io.github.imagineDevit/GWIT/javadoc.svg)](https://javadoc.io/doc/io.github.imagineDevit/GWIT)
+![Maven Central](https://img.shields.io/maven-central/v/io.github.imagineDevit/GWIT)
 [![GitHub](https://img.shields.io/github/license/imagineDevit/edgedb?style=flat)](https://github.com/imagineDevit/edgedb/blob/main/License)
-![build](https://github.com/imagineDevit/GWTUnit/actions/workflows/maven-publish.yml/badge.svg)
-![maven test](https://github.com/imagineDevit/GWTUnit/actions/workflows/maven-test.yml/badge.svg) 
-![GitHub issues](https://img.shields.io/github/issues/imagineDevit/GWTUnit)
-[![GitHub contributors](https://badgen.net/github/contributors/imagineDevit/GWTUnit)](https://github.com/imagineDevit/GWTUnit/graphs/contributors)
+![build](https://github.com/imagineDevit/GWIT/actions/workflows/maven-publish.yml/badge.svg)
+![maven test](https://github.com/imagineDevit/GWIT/actions/workflows/maven-test.yml/badge.svg) 
+![GitHub issues](https://img.shields.io/github/issues/imagineDevit/GWIT)
+[![GitHub contributors](https://badgen.net/github/contributors/imagineDevit/GWIT)](https://github.com/imagineDevit/GWIT/graphs/contributors)
 
-<strong style="color:darkcyan">GWTUnit</strong> is a java test library based on [JUnit platform](https://junit.org/junit5/docs/current/user-guide/).
+<strong style="color:darkcyan">GWIT</strong> is a java test library based on [JUnit platform](https://junit.org/junit5/docs/current/user-guide/).
 It gives developers the ability to write unit tests in the [GWT (Given-When-Then)](https://en.wikipedia.org/wiki/Given-When-Then) format.
 
 
@@ -39,7 +40,7 @@ class MyTest {
 
 As seen in the example above, the test method takes a `TestCase<T,R>` as a parameter.
 
-⚠️ It is a particularity of <strong style="color:darkcyan">GWTUnit</strong> : ️ **_all test methods should have at least one parameter of type `TestCase<T,R>`_**.
+⚠️ It is a particularity of <strong style="color:darkcyan">GWIT</strong> : ️ **_all test methods should have at least one parameter of type `TestCase<T,R>`_**.
 
 TestCase is a generic Object that takes two types as parameters : `T` and `R`.
 
@@ -47,20 +48,20 @@ TestCase is a generic Object that takes two types as parameters : `T` and `R`.
 
 `R` represent the type of the result of the test. It can be any type. Use `Void` if you don't need a result.
 
-`TestCase` and its linked statements ([GivenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.GivenStmt.html), [WhenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.WhenStmt.html) and [ThenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.ThenStmt.html) ) come with a set of methods that can be chained to write the test in the GWT format.
+`TestCase` and its linked statements ([GivenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/TestCase.GivenStmt.html), [WhenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/TestCase.WhenStmt.html) and [ThenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/TestCase.ThenStmt.html) ) come with a set of methods that can be chained to write the test in the GWT format.
 
 Each method takes a string first parameter representing the statement description.
 
 
 ### ⚙️ Statement methods 
 - #### given()
-    This method sets the initial state of the test. It returns a [GivenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.GivenStmt.html) object.
+    This method sets the initial state of the test. It returns a [GivenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/TestCase.GivenStmt.html) object.
 
 - #### when()
-    This method represents the action to be tested. It returns a [WhenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.WhenStmt.html) object. 
+    This method represents the action to be tested. It returns a [WhenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/TestCase.WhenStmt.html) object. 
 
 - #### then()
-    This method allows the verification of the result of the test. It returns a [ThenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestCase.ThenStmt.html) object.
+    This method allows the verification of the result of the test. It returns a [ThenStmt<T,R>](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/TestCase.ThenStmt.html) object.
 
 - #### and()
     `GivenStmt<T,R>` and `ThenStmt<T,R>` classes have an `and()` method that allows to chain multiple statements of the same type.
@@ -76,7 +77,7 @@ otherwise as a `List<Object>`.
 
 Managing a `List<Object>` as test state is possible but may not be very conformable.
 
-This is why <strong style="color:darkcyan">GWTUnit</strong> introduces <strong style="color: #2f8793">@GWTProxyable</strong> annotation.
+This is why <strong style="color:darkcyan">GWIT</strong> introduces <strong style="color: #2f8793">@GWTProxyable</strong> annotation.
 
 <strong style="color: #2f8793">@GWTProxyable</strong> annotation has a processor that generate a `proxy class` for each annotated class and a `parameters record` for each public method with more than one parameter.
 
@@ -206,11 +207,11 @@ _This is a simple usage example_ 👇
 ---
 ## 📌 Annotations
 
-<strong style="color:darkcyan">GWTUnit</strong> provides a set of annotations that can be used to configure the test classes and methods.
+<strong style="color:darkcyan">GWIT</strong> provides a set of annotations that can be used to configure the test classes and methods.
 
 - ### @Test
 
-  <strong style="color:darkcyan">GWTUnit</strong> provide a custom annotation `@Test` that can take a string as a parameter representing the test name. 
+  <strong style="color:darkcyan">GWIT</strong> provide a custom annotation `@Test` that can take a string as a parameter representing the test name. 
 
     If no parameter is provided, the test name will be the method name.
 
@@ -277,22 +278,22 @@ _This is a simple usage example_ 👇
 - ### @ExtendWith
 
   This annotation registers a list of callbacks for a test class.
-  It can take a list of classes as a parameter. These classes must implement the [BeforeEachCallback](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/callbacks/BeforeEachCallback.html), 
-  [BeforeAllCallback](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/callbacks/BeforeAllCallback.html),  
-  [AfterEachCallback](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/callbacks/AfterEachCallback.html) 
-  and/or [AfterAllCallback](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/callbacks/AfterAllCallback.html) interfaces.
+  It can take a list of classes as a parameter. These classes must implement the [BeforeEachCallback](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/callbacks/BeforeEachCallback.html), 
+  [BeforeAllCallback](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/callbacks/BeforeAllCallback.html),  
+  [AfterEachCallback](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/callbacks/AfterEachCallback.html) 
+  and/or [AfterAllCallback](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/callbacks/AfterAllCallback.html) interfaces.
 
 - ### @ConfigureWith
-  This annotation registers a class as the test class configuration. It take a class that must implement [TestConfiguration](https://javadoc.io/doc/io.github.imagineDevit/GWTUnit/latest/io/github/imagineDevit/GWTUnit/TestConfiguration.html) as parameter
+  This annotation registers a class as the test class configuration. It take a class that must implement [TestConfiguration](https://javadoc.io/doc/io.github.imagineDevit/GWIT/latest/io/github/imagineDevit/GWIT/TestConfiguration.html) as parameter
 
 ---
 ## 📑 Report generation
 
 
-GWTUnit provides a report generation feature. This feature is disabled by default. 
+GWIT provides a report generation feature. This feature is disabled by default. 
 
-To enable it, you must add a new environment variable `gwtunit.generate.report = true`.
+To enable it, you must add a new environment variable `giwt.generate.report = true`.
 
-The report file `report.html` is generated and stored in the `target/gwtunit` directory.
+The report file `report.html` is generated and stored in the `target/giwt` directory.
 
 
