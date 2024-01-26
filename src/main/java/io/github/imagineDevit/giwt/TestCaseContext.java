@@ -27,7 +27,6 @@ public sealed class TestCaseContext<T, R> {
         @SuppressWarnings("unchecked")
         public void mapState(UnaryOperator<T> mapper) {
             context.computeIfPresent(STATE, (k, v) -> mapper.apply((T) v));
-
         }
 
         public void setVar(String key, Object value) {
