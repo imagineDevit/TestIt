@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static io.github.imagineDevit.giwt.utils.Utils.*;
 
-public class GwtParameterizedMethodTestDescriptor extends AbstractTestDescriptor {
+public class GiwtParameterizedMethodTestDescriptor extends AbstractTestDescriptor {
 
     private final Method testMethod;
     //private final Method parameterSourceMethod;
@@ -34,7 +34,7 @@ public class GwtParameterizedMethodTestDescriptor extends AbstractTestDescriptor
     private final List<? extends TestParameters.Parameter> parameters;
     private final TestConfiguration configuration;
 
-    public GwtParameterizedMethodTestDescriptor(Method testMethod, List<? extends TestParameters.Parameter> parameters, Object testInstance, UniqueId uniqueId, GwtCallbacks callbacks, TestConfiguration configuration) {
+    public GiwtParameterizedMethodTestDescriptor(Method testMethod, List<? extends TestParameters.Parameter> parameters, Object testInstance, UniqueId uniqueId, GiwtCallbacks callbacks, TestConfiguration configuration) {
 
         super(
                 uniqueId.append("method", testMethod.getName()),
@@ -95,7 +95,7 @@ public class GwtParameterizedMethodTestDescriptor extends AbstractTestDescriptor
     private void addAllChildren() {
         parameters.forEach(param -> {
             String name = param.formatName(this.testMethod.getAnnotation(ParameterizedTest.class).name());
-            addChild(new GwtMethodTestDescriptor(name, this.testMethod, this.testInstance, getUniqueId(), param, new GwtCallbacks(beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback)));
+            addChild(new GiwtMethodTestDescriptor(name, this.testMethod, this.testInstance, getUniqueId(), param, new GiwtCallbacks(beforeAllCallback, afterAllCallback, beforeEachCallback, afterEachCallback)));
         });
     }
 

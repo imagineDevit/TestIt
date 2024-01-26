@@ -74,7 +74,7 @@ public class TestCaseResult<T> {
         return new TestCaseResult<>(value);
     }
 
-    public static <T> TestCaseResult<T> of(Exception e) {
+    public static <T> TestCaseResult<T> ofErr(Exception e) {
         return new TestCaseResult<>(e);
     }
 

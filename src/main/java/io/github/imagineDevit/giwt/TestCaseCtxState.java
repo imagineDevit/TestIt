@@ -14,6 +14,9 @@ public class TestCaseCtxState<T> {
         return new TestCaseCtxState<>(value);
     }
 
+    protected T getValue() {
+        return value;
+    }
     public TestCaseCtxState<T> map(UnaryOperator<T> mapper){
         return TestCaseCtxState.of(mapper.apply(value));
     }

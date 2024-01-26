@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 public class ReportProcessor {
 
-    public static final String TARGET_GWTUNIT = "target/gwtunit";
+    public static final String TARGET_GIWTUNIT = "target/giwtunit";
     private final Template template;
 
     public ReportProcessor() throws IOException {
@@ -45,11 +45,11 @@ public class ReportProcessor {
 
         var dataModel = Map.of("report", testCaseReport.toMap());
 
-        if (!Files.exists(new File(TARGET_GWTUNIT).toPath())) {
-            Files.createDirectory(new File(TARGET_GWTUNIT).toPath());
+        if (!Files.exists(new File(TARGET_GIWTUNIT).toPath())) {
+            Files.createDirectory(new File(TARGET_GIWTUNIT).toPath());
         }
 
-        File file = new File("%s/report.html".formatted(TARGET_GWTUNIT));
+        File file = new File("%s/report.html".formatted(TARGET_GIWTUNIT));
         template.process(dataModel, new FileWriter(file));
 
         System.out.println("------------------------------------------------------------------");

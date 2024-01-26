@@ -396,7 +396,7 @@ public class TestCase<T, R> extends CloseableCase {
                 });
             }
         } catch (Exception e) {
-            this.result = TestCaseResult.of(e);
+            this.result = TestCaseResult.ofErr(e);
         }
 
         this.thenFns.forEach(fn -> fn.accept(this.result));

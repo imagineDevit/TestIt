@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import static io.github.imagineDevit.giwt.utils.Utils.*;
 
-public class GwtMethodTestDescriptor extends AbstractTestDescriptor {
+public class GiwtMethodTestDescriptor extends AbstractTestDescriptor {
 
     private final Method testMethod;
 
@@ -37,7 +37,7 @@ public class GwtMethodTestDescriptor extends AbstractTestDescriptor {
 
     private final AfterEachCallback afterEachCallback;
 
-    public GwtMethodTestDescriptor(String name, Method testMethod, Object testInstance, UniqueId uniqueId, TestParameters.Parameter params, GwtCallbacks callbacks) {
+    public GiwtMethodTestDescriptor(String name, Method testMethod, Object testInstance, UniqueId uniqueId, TestParameters.Parameter params, GiwtCallbacks callbacks) {
 
         super(
                 uniqueId.append("method", name),
@@ -128,7 +128,7 @@ public class GwtMethodTestDescriptor extends AbstractTestDescriptor {
                 .map(Skipped::reason);
     }
 
-    public void execute(Consumer<GwtMethodTestDescriptor> consumer, boolean allCallacksRan) {
+    public void execute(Consumer<GiwtMethodTestDescriptor> consumer, boolean allCallacksRan) {
         if (!allCallacksRan) beforeAllCallback.beforeAll();
         beforeEachCallback.beforeEach();
         consumer.accept(this);

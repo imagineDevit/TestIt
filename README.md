@@ -77,9 +77,9 @@ otherwise as a `List<Object>`.
 
 Managing a `List<Object>` as test state is possible but may not be very conformable.
 
-This is why <strong style="color:darkcyan">GIWT</strong> introduces <strong style="color: #2f8793">@GWTProxyable</strong> annotation.
+This is why <strong style="color:darkcyan">GIWT</strong> introduces <strong style="color: #2f8793">@GiwtProxyable</strong> annotation.
 
-<strong style="color: #2f8793">@GWTProxyable</strong> annotation has a processor that generate a `proxy class` for each annotated class and a `parameters record` for each public method with more than one parameter.
+<strong style="color: #2f8793">@GiwtProxyable</strong> annotation has a processor that generate a `proxy class` for each annotated class and a `parameters record` for each public method with more than one parameter.
 
 This `parameters record` contains all parameters of the given method. 
 
@@ -92,9 +92,9 @@ Consider the following class 👇
 ```java
 package io.example.helpers;
 
-import io.github.imagineDevit.giwt.annotations.GwtProxyable;
+import io.github.imagineDevit.giwt.annotations.GiwtProxyable;
 
-@GwtProxyable
+@GiwtProxyable
 public class StringHelper {
 
     public String repeat(String text, int times, String separator) {

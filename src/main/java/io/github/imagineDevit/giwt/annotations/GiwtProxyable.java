@@ -1,6 +1,8 @@
 package io.github.imagineDevit.giwt.annotations;
 
 
+import io.github.imagineDevit.giwt.annotations.processors.GiwtProxyableProcessor;
+
 import java.lang.annotation.*;
 
 /**
@@ -22,7 +24,7 @@ import java.lang.annotation.*;
  * <pre>
  *{@code
  *
- * @GwtProxyable
+ * @GiwtProxyable
  * class Foo {
  *     public void bar(String a, String b) {}
  * }
@@ -62,9 +64,9 @@ import java.lang.annotation.*;
  * </pre>
  *
  * @see ParameterRecordName
- * @see io.github.imagineDevit.giwt.annotations.processors.GwtProxyableProcessor
+ * @see GiwtProxyableProcessor
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE})
 @Documented
-public @interface GwtProxyable {}
+public @interface GiwtProxyable {}
