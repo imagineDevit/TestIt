@@ -1,6 +1,6 @@
 package io.github.imagineDevit.giwt.tests;
 
-import io.github.imagineDevit.giwt.GwtUnitTestEngine;
+import io.github.imagineDevit.giwt.GiwtTestEngine;
 import io.github.imagineDevit.giwt.TestCase;
 import io.github.imagineDevit.giwt.annotations.Test;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
@@ -11,12 +11,12 @@ import static io.github.imagineDevit.giwt.assertions.ShouldMatch.matching;
 
 public class TestEngine {
 
-    @Test(value = "test the gwt-unit-test engine")
+    @Test(value = "test the giwt-test engine")
     void verify(TestCase<Void, Events> tc) {
 
         tc
                 .when("MyTest test class is launched", () ->
-                        EngineTestKit.engine(GwtUnitTestEngine.ENGINE_ID)
+                        EngineTestKit.engine(GiwtTestEngine.ENGINE_ID)
                                 .selectors(DiscoverySelectors.selectClass(MyTest.class))
                                 .execute()
                                 .testEvents())

@@ -1,6 +1,6 @@
 package io.github.imagineDevit.giwt.callbacks;
 
-public record GwtCallbacks(
+public record GiwtCallbacks(
         BeforeAllCallback beforeAllCallback,
         AfterAllCallback afterAllCallback,
         BeforeEachCallback beforeEachCallback,

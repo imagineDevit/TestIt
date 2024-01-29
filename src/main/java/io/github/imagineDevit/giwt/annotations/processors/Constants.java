@@ -3,7 +3,7 @@ package io.github.imagineDevit.giwt.annotations.processors;
 public class Constants {
     public static final String CLASSPATH_RESOURCE_LOADER_CLASS = "classpath.resource.loader.class";
     public static final String CLASSPATH = "classpath";
-    public static final String TEMPLATE_NAME = "templates/gwt.vm";
+    public static final String TEMPLATE_NAME = "templates/giwt.vm";
     public static final String PACKAGE_NAME = "packageName";
     public static final String CLASS_NAME = "ClassName";
     public static final String GENERATED_CLASS_NAME = "GeneratedClassName";

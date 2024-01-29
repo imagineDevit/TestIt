@@ -1,8 +1,8 @@
 package io.github.imagineDevit.giwt;
 
-import io.github.imagineDevit.giwt.descriptors.GwtClassTestDescriptor;
-import io.github.imagineDevit.giwt.descriptors.GwtMethodTestDescriptor;
-import io.github.imagineDevit.giwt.descriptors.GwtParameterizedMethodTestDescriptor;
+import io.github.imagineDevit.giwt.descriptors.GiwtClassTestDescriptor;
+import io.github.imagineDevit.giwt.descriptors.GiwtMethodTestDescriptor;
+import io.github.imagineDevit.giwt.descriptors.GiwtParameterizedMethodTestDescriptor;
 import io.github.imagineDevit.giwt.report.ReportProcessor;
 import io.github.imagineDevit.giwt.report.TestCaseReport;
 import io.github.imagineDevit.giwt.utils.MvnArgs;
@@ -16,7 +16,7 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class GwtUnitTestExecutor {
+public class GiwtTestExecutor {
 
     private TestCaseReport report;
 
@@ -43,17 +43,17 @@ public class GwtUnitTestExecutor {
             executeForEngineDescriptor(request, root);
         }
 
-        if (root instanceof GwtClassTestDescriptor ctd) {
+        if (root instanceof GiwtClassTestDescriptor ctd) {
             allCallbacksRan = true;
             ctd.execute(d -> executeForClassDescriptor(request, d));
             allCallbacksRan = false;
         }
 
-        if (root instanceof GwtParameterizedMethodTestDescriptor) {
+        if (root instanceof GiwtParameterizedMethodTestDescriptor) {
             executeContainer(request, root);
         }
 
-        if (root instanceof GwtMethodTestDescriptor mtd) {
+        if (root instanceof GiwtMethodTestDescriptor mtd) {
             mtd.execute(d ->  executeForMethodDescriptor(request, mtd), allCallbacksRan);
         }
 
@@ -66,7 +66,7 @@ public class GwtUnitTestExecutor {
     }
 
 
-    private void executeForMethodDescriptor(ExecutionRequest request, GwtMethodTestDescriptor md) {
+    private void executeForMethodDescriptor(ExecutionRequest request, GiwtMethodTestDescriptor md) {
         String className = md.getTestMethod().getDeclaringClass().getName();
 
         Optional<TestCaseReport.ClassReport> classReport = getReport().map(
@@ -82,7 +82,7 @@ public class GwtUnitTestExecutor {
         classReport.ifPresent(cr -> cr.addTestReport(testReport));
     }
 
-    private void executeForClassDescriptor(ExecutionRequest request, GwtClassTestDescriptor r) {
+    private void executeForClassDescriptor(ExecutionRequest request, GiwtClassTestDescriptor r) {
         TestCaseReport.ClassReport classReport = new TestCaseReport.ClassReport(r.getTestClass().getName());
         if (r.shouldBeReported()) {
             getReport().ifPresent(tc -> tc.addClassReport(classReport));
@@ -106,7 +106,7 @@ public class GwtUnitTestExecutor {
                 });
     }
 
-    private TestCaseReport.TestReport executeTest(ExecutionRequest request, GwtMethodTestDescriptor root) {
+    private TestCaseReport.TestReport executeTest(ExecutionRequest request, GiwtMethodTestDescriptor root) {
 
         TestCaseReport.TestReport report = new TestCaseReport.TestReport();
 

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Used to specify the name of a record generated for a method .
  *
- * @see io.github.imagineDevit.giwt.annotations.GwtProxyable
+ * @see GiwtProxyable
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.METHOD})

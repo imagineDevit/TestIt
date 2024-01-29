@@ -19,7 +19,7 @@ import static io.github.imagineDevit.giwt.utils.Matchers.match;
 import static org.junit.platform.commons.util.ReflectionUtils.*;
 
 
-public class GwtPredicates {
+public class GiwtPredicates {
 
     public static Predicate<Class<?>> isTestClass() {
 

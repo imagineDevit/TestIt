@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 
 import static io.github.imagineDevit.giwt.annotations.processors.Constants.*;
 
-@SupportedAnnotationTypes("io.github.imagineDevit.giwt.annotations.GwtProxyable")
+@SupportedAnnotationTypes("io.github.imagineDevit.giwt.annotations.GiwtProxyable")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-public class GwtProxyableProcessor extends AbstractProcessor {
+public class GiwtProxyableProcessor extends AbstractProcessor {
 
 
     VelocityEngine velocityEngine;
