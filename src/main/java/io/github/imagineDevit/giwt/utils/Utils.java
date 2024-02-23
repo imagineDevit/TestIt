@@ -213,6 +213,7 @@ public abstract class Utils {
 
         return testNames.stream()
                 .distinct()
+                .filter(s -> !s.isEmpty())
                 .filter(s -> testNames.stream().filter(tn -> tn.equals(s)).count() > 1)
                 .toList();
     }
