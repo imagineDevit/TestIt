@@ -8,6 +8,8 @@ import io.github.imagineDevit.giwt.callbacks.AfterAllCallback;
 import io.github.imagineDevit.giwt.callbacks.AfterEachCallback;
 import io.github.imagineDevit.giwt.callbacks.BeforeAllCallback;
 import io.github.imagineDevit.giwt.callbacks.BeforeEachCallback;
+import io.github.imagineDevit.giwt.errors.DuplicateTestNameException;
+import io.github.imagineDevit.giwt.errors.TestCaseArgMissingException;
 import io.github.imagineDevit.giwt.statements.StmtMsg;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -116,7 +118,7 @@ public abstract class Utils {
         if (parameters != null){
             n = parameters.formatName(n);
         }
-        var title = TextUtils.bold("TEST CASE") + ": " + TextUtils.italic(TextUtils.purple(n));
+        var title = TextUtils.bold("▶️" + TextUtils.italic(TextUtils.purple(n)));
 
         String givenMsg = givenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
         String whenMsg = whenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
@@ -159,7 +161,7 @@ public abstract class Utils {
     public static <S> S runIfOpen(boolean closed, Supplier<S> fn, Runnable close) {
         if (closed) {
             throw new IllegalStateException("""
-                                       
+                    
                     Test case is already closed.
                     A test case can only be run once.
                     """);
@@ -177,6 +179,43 @@ public abstract class Utils {
         }
     }
 
+    public static void checkTestNamesDuplication(Class<?> testClass) {
+        List<Method> methods = ReflectionUtils.findMethods(testClass, GiwtPredicates.isMethodTest().or(GiwtPredicates.isParameterizedMethodTest()));
+
+        List<String> duplicatedTestNames = findDuplicatedTestNames(methods);
+
+        if (!duplicatedTestNames.isEmpty()){
+            throw new DuplicateTestNameException(duplicatedTestNames);
+        }
+    }
+
+    public static void checkTestCaseArgPresent(Class<?> testClass) {
+        List<Method> methods = ReflectionUtils.findMethods(testClass, GiwtPredicates.isTestMethodWithoutTestCaseArg());
+
+        if (!methods.isEmpty()) {
+            throw new TestCaseArgMissingException(methods.stream().map(Method::getName).toList());
+        }
+    }
+
+    public static void checkTestCaseArgPresent(Method testMethod) {
+        if (GiwtPredicates.isTestMethodWithoutTestCaseArg().test(testMethod)) {
+            throw new TestCaseArgMissingException(testMethod.getName());
+        }
+    }
+
+    private static List<String> findDuplicatedTestNames(List<Method> methods) {
+        var testNames = methods.stream()
+                .map(m ->
+                        Optional.ofNullable(m.getAnnotation(Test.class))
+                                .map(Test::value)
+                                .orElseGet(() -> m.getAnnotation(ParameterizedTest.class).name())
+                ).toList();
+
+        return testNames.stream()
+                .distinct()
+                .filter(s -> testNames.stream().filter(tn -> tn.equals(s)).count() > 1)
+                .toList();
+    }
 
     private static Map<Object, List<Method>> getCallbackMethods(Object testInstance, Class<? extends Annotation> annotationClazz, Class<?> callbackClazz, String callbackMethod) {
         Map<Object, List<Method>> map = new HashMap<>();
@@ -198,6 +237,5 @@ public abstract class Utils {
 
         return map;
     }
-
 
 }

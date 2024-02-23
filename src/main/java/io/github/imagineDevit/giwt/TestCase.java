@@ -96,17 +96,14 @@ public class TestCase<T, R> extends CloseableCase {
             return """
                     %s
                     %s
-                    """.formatted(
-                    TextUtils.bold("RESULT: ") + s + m + r,
-                    TestCase.DASH
-            );
+                    """.formatted(s + m + r, TestCase.DASH);
         }
     }
 
     // endregion
 
     // region Constants
-    public static final String DASH = "----------";
+    public static final String DASH = "-".repeat(50);
 
     // endregion
 
