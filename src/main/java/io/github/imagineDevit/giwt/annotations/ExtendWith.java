@@ -1,5 +1,7 @@
 package io.github.imagineDevit.giwt.annotations;
 
+import io.github.imagineDevit.giwt.callbacks.Callback;
+
 import java.lang.annotation.*;
 
 /**
@@ -18,5 +20,5 @@ public @interface ExtendWith {
     /**
      * @return array of extensions classes
      */
-    Class<?>[] value();
+    Class<? extends Callback>[] value();
 }

@@ -28,6 +28,8 @@ public class SelectorUtils {
 
     public static void appendTestInClass(Class<?> testClass, EngineDescriptor root) {
         if (GiwtPredicates.isTestClass().test(testClass)) {
+            Utils.checkTestNamesDuplication(testClass);
+            Utils.checkTestCaseArgPresent(testClass);
             root.addChild(new GiwtClassTestDescriptor(testClass, root.getUniqueId()));
         }
     }
@@ -35,6 +37,8 @@ public class SelectorUtils {
     public static void appendTestInMethod(Method method, EngineDescriptor root) {
         Class<?> clazz = method.getDeclaringClass();
         var instance= ReflectionUtils.newInstance(clazz);
+
+        Utils.checkTestCaseArgPresent(method);
 
         if (GiwtPredicates.isMethodTest().test(method)) {
             root.addChild(new GiwtMethodTestDescriptor(
@@ -48,6 +52,5 @@ public class SelectorUtils {
             root.addChild(new GiwtParameterizedMethodTestDescriptor(method, null, instance, root.getUniqueId(), new GiwtCallbacks(null, null, null, null), null));
         }
     }
-
 
 }

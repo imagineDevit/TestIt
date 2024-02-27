@@ -16,8 +16,8 @@ public class TextUtils {
 
         BACKGROUND_CYAN("\u001B[46m", "\u001B[0m");
 
-        String on;
-        String off;
+        final String on;
+        final String off;
 
         U(String on, String off) {
             this.on = on;
@@ -60,7 +60,5 @@ public class TextUtils {
     public static String bg(String text) {
         return U.BACKGROUND_CYAN.transform(text);
     }
-
-
 
 }

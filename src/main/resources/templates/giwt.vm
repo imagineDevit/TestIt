@@ -8,45 +8,39 @@ public class ${GeneratedClassName} {
         this.delegate = delegate;
     }
 
-    #foreach($data in ${methodDatas})
-
+#foreach($data in ${methodDatas})
     #if(${data.paramRecordName()} != "NULL")
-
-        record ${data.paramRecordName()}(${data.paramsWithType()}) {}
-
+    record ${data.paramRecordName()}(${data.paramsWithType()}) {}
         #if(${data.methodReturnType()} == "void")
-            public void ${data.methodName()}(${data.paramRecordName()} param) {
-                this.delegate.${data.methodName()}(${data.paramsValues()});
-            }
+        public void ${data.methodName()}(${data.paramRecordName()} param) {
+            this.delegate.${data.methodName()}(${data.paramsValues()});
+        }
         #else
-            public ${data.methodReturnType()} ${data.methodName()}(${data.paramRecordName()} param) {
-                return this.delegate.${data.methodName()}(${data.paramsValues()});
-            }
+        public ${data.methodReturnType()} ${data.methodName()}(${data.paramRecordName()} param) {
+            return this.delegate.${data.methodName()}(${data.paramsValues()});
+        }
         #end
 
     #elseif(${data.paramName()} != "NULL")
-
         #if(${data.methodReturnType()} == "void")
-            public void ${data.methodName()}(${data.paramName()} param) {
-                this.delegate.${data.methodName()}(${data.paramsValues()});
-            }
+        public void ${data.methodName()}(${data.paramName()} param) {
+            this.delegate.${data.methodName()}(${data.paramsValues()});
+        }
         #else
-            public ${data.methodReturnType()} ${data.methodName()}(${data.paramName()} param) {
-                return this.delegate.${data.methodName()}(${data.paramsValues()});
-            }
+        public ${data.methodReturnType()} ${data.methodName()}(${data.paramName()} param) {
+            return this.delegate.${data.methodName()}(${data.paramsValues()});
+        }
         #end
     #else
         #if(${data.methodReturnType()} == "void")
-            public void ${data.methodName()}() {
-                this.delegate.${data.methodName()}();
-            }
+        public void ${data.methodName()}() {
+            this.delegate.${data.methodName()}();
+        }
         #else
-            public ${data.methodReturnType()} ${data.methodName()}() {
-                return this.delegate.${data.methodName()}();
-            }
+        public ${data.methodReturnType()} ${data.methodName()}() {
+            return this.delegate.${data.methodName()}();
+        }
         #end
     #end
-
-
-    #end
+#end
 }

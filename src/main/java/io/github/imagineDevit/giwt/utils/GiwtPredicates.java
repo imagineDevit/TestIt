@@ -38,7 +38,6 @@ public class GiwtPredicates {
                 matchCase(() -> isAbstract(method), () -> failure("No support for abstract methods " + method.getName())),
                 matchCase(() -> isTestMethod(method), () -> success(Boolean.TRUE))
         ).orElse(false);
-
     }
 
     public static Predicate<Method> isParameterizedMethodTest() {
@@ -48,6 +47,11 @@ public class GiwtPredicates {
                 matchCase(() -> isAbstract(method), () -> failure("No support for abstract methods " + method.getName())),
                 matchCase(() -> isParameterizedTestMethod(method), () -> success(Boolean.TRUE))
         ).orElse(false);
+    }
+
+    public static Predicate<Method> isTestMethodWithoutTestCaseArg() {
+        return method -> AnnotationSupport.isAnnotated(method, Test.class)
+                && Arrays.stream(method.getParameterTypes()).noneMatch(arg -> arg.equals(TestCase.class));
     }
 
     private static boolean isTestMethod(Method method) {
