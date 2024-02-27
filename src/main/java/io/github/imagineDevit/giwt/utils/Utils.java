@@ -8,6 +8,7 @@ import io.github.imagineDevit.giwt.callbacks.AfterAllCallback;
 import io.github.imagineDevit.giwt.callbacks.AfterEachCallback;
 import io.github.imagineDevit.giwt.callbacks.BeforeAllCallback;
 import io.github.imagineDevit.giwt.callbacks.BeforeEachCallback;
+import io.github.imagineDevit.giwt.callbacks.Callback;
 import io.github.imagineDevit.giwt.errors.DuplicateTestNameException;
 import io.github.imagineDevit.giwt.errors.TestCaseArgMissingException;
 import io.github.imagineDevit.giwt.statements.StmtMsg;
@@ -30,6 +31,15 @@ public abstract class Utils {
         else return name;
     }
 
+    public static String getTestName(Method method) {
+        return Optional.ofNullable(method.getAnnotation(Test.class))
+                .map(Test::value)
+                .or(() -> Optional.ofNullable(method.getAnnotation(ParameterizedTest.class).name()))
+                .or(() -> Optional.of(""))
+                .map(s -> getTestName(s, method))
+                .get();
+    }
+
     public static void runCallbacks(Map<Object, List<Method>> methods, Function<Method, Integer> order) {
         methods
                 .forEach((instance, ms) ->
@@ -39,19 +49,19 @@ public abstract class Utils {
     }
 
     public static Map<Object, List<Method>> getBeforeAllMethods(Object testInstance) {
-        return getCallbackMethods(testInstance, BeforeAll.class, BeforeAllCallback.class, "beforeAll");
+        return getCallbackMethods(testInstance, BeforeAll.class, BeforeAllCallback.class, Callback.Methods.BEFORE_ALL);
     }
 
     public static Map<Object, List<Method>> getAfterAllMethods(Object testInstance) {
-        return getCallbackMethods(testInstance, AfterAll.class, AfterAllCallback.class, "afterAll");
+        return getCallbackMethods(testInstance, AfterAll.class, AfterAllCallback.class, Callback.Methods.AFTER_ALL);
     }
 
     public static Map<Object, List<Method>> getBeforeEachMethods(Object testInstance) {
-        return getCallbackMethods(testInstance, BeforeEach.class, BeforeEachCallback.class, "beforeEach");
+        return getCallbackMethods(testInstance, BeforeEach.class, BeforeEachCallback.class, Callback.Methods.BEFORE_EACH);
     }
 
     public static Map<Object, List<Method>> getAfterEachMethods(Object testInstance) {
-        return getCallbackMethods(testInstance, AfterEach.class, AfterEachCallback.class, "afterEach");
+        return getCallbackMethods(testInstance, AfterEach.class, AfterEachCallback.class, Callback.Methods.AFTER_EACH);
     }
 
     @SuppressWarnings("unchecked")
@@ -61,16 +71,16 @@ public abstract class Utils {
                 .map(name -> {
                     if (Objects.equals(source, name)) {
 
-                        Object instance = ReflectionUtils.newInstance(method.getDeclaringClass());
+                        var instance = ReflectionUtils.newInstance(method.getDeclaringClass());
 
-                        TestParameters<TestParameters.Parameter> testParameters = (TestParameters<TestParameters.Parameter>) ReflectionUtils.invokeMethod(method, instance);
+                        var testParameters = (TestParameters<TestParameters.Parameter>) ReflectionUtils.invokeMethod(method, instance);
 
                         return testParameters.getParameters();
                     }
 
                     return new ArrayList<TestParameters.Parameter>();
 
-                }).orElse(new ArrayList<>());
+                }).orElse(Collections.emptyList());
     }
 
     public static List<? extends TestParameters.Parameter> getParametersFromConfiguration(TestConfiguration configuration, String source) {
@@ -83,29 +93,30 @@ public abstract class Utils {
 
         var testClass = method.getDeclaringClass();
 
-        String parameterSource = method.getAnnotation(ParameterizedTest.class).source();
+        var parameterSource = method.getAnnotation(ParameterizedTest.class).source();
 
-        List<Method> methodList = ReflectionUtils.findMethods(
+        var methodList = ReflectionUtils.findMethods(
                 testClass,
                 (Method m) -> AnnotationSupport.isAnnotated(m, ParameterSource.class) && m.getAnnotation(ParameterSource.class).value().equals(parameterSource)
         );
 
         return switch (methodList.size()) {
             case 0 -> {
-                if(configuration != null) {
+                if (configuration != null) {
                     yield Utils.getParametersFromConfiguration(configuration, parameterSource);
                 } else {
                     throw new IllegalStateException("No parameter source with name %s found".formatted(parameterSource));
                 }
             }
             case 1 -> Utils.getParametersFromMethod(methodList.get(0), parameterSource);
-            default -> throw new IllegalStateException("Multiple parameter sources with same name found (%s)".formatted(parameterSource));
+            default ->
+                    throw new IllegalStateException("Multiple parameter sources with same name found (%s)".formatted(parameterSource));
         };
 
     }
 
     public static TestConfiguration getConfiguration(Method method) {
-        Class<?> clazz = method.getDeclaringClass();
+        var clazz = method.getDeclaringClass();
         return Optional.ofNullable(clazz.getAnnotation(ConfigureWith.class))
                 .map(ConfigureWith::value)
                 .map(ReflectionUtils::newInstance)
@@ -115,24 +126,24 @@ public abstract class Utils {
     public static String reportTestCase(String name, List<StmtMsg> givenMsgs, List<StmtMsg> whenMsgs, List<StmtMsg> thenMsgs, TestParameters.Parameter parameters) {
         var n = name;
 
-        if (parameters != null){
-            n = parameters.formatName(n);
-        }
+        if (parameters != null) n = parameters.formatName(n);
+
         var title = TextUtils.bold("▶️" + TextUtils.italic(TextUtils.purple(n)));
 
-        String givenMsg = givenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
-        String whenMsg = whenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
-        String thenMsg = thenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+        var givenMsg = givenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+        var whenMsg = whenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
+        var thenMsg = thenMsgs.stream().map(StmtMsg::value).collect(Collectors.joining("\n"));
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append(
                 """
-                %s
-                %s
-                %s
-                """.formatted(DASH, title, DASH)
+                        %s
+                        %s
+                        %s
+                        """.formatted(DASH, title, DASH)
         );
+
         if (!givenMsg.isEmpty()) {
             sb.append("""
                     %s
@@ -161,10 +172,10 @@ public abstract class Utils {
     public static <S> S runIfOpen(boolean closed, Supplier<S> fn, Runnable close) {
         if (closed) {
             throw new IllegalStateException("""
-                    
+                                       \s
                     Test case is already closed.
                     A test case can only be run once.
-                    """);
+                   \s""");
         }
         close.run();
         return fn.get();
@@ -173,18 +184,18 @@ public abstract class Utils {
     @SuppressWarnings("unchecked")
     public static <T, E extends Throwable> Comparable<T> asComparableOrThrow(T value, Supplier<E> eSupplier) throws E {
         if (value instanceof Comparable<?> c) {
-            return (Comparable<T>)  c;
+            return (Comparable<T>) c;
         } else {
             throw eSupplier.get();
         }
     }
 
     public static void checkTestNamesDuplication(Class<?> testClass) {
-        List<Method> methods = ReflectionUtils.findMethods(testClass, GiwtPredicates.isMethodTest().or(GiwtPredicates.isParameterizedMethodTest()));
+        var methods = ReflectionUtils.findMethods(testClass, GiwtPredicates.isMethodTest().or(GiwtPredicates.isParameterizedMethodTest()));
 
-        List<String> duplicatedTestNames = findDuplicatedTestNames(methods);
+        var duplicatedTestNames = findDuplicatedTestNames(methods);
 
-        if (!duplicatedTestNames.isEmpty()){
+        if (!duplicatedTestNames.isEmpty()) {
             throw new DuplicateTestNameException(duplicatedTestNames);
         }
     }
@@ -218,9 +229,10 @@ public abstract class Utils {
                 .toList();
     }
 
-    private static Map<Object, List<Method>> getCallbackMethods(Object testInstance, Class<? extends Annotation> annotationClazz, Class<?> callbackClazz, String callbackMethod) {
-        Map<Object, List<Method>> map = new HashMap<>();
-        Class<?> testClass = testInstance.getClass();
+    private static Map<Object, List<Method>> getCallbackMethods(Object testInstance, Class<? extends Annotation> annotationClazz, Class<? extends Callback> callbackClazz, String callbackMethod) {
+        var map = new HashMap<Object, List<Method>>();
+        var testClass = testInstance.getClass();
+
         map.put(testInstance, (ReflectionUtils.findMethods(testClass, m -> AnnotationSupport.isAnnotated(m, annotationClazz))));
 
         Optional.ofNullable(testClass.getAnnotation(ExtendWith.class))
