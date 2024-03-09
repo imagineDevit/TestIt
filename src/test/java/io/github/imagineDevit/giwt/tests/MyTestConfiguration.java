@@ -1,12 +1,12 @@
 package io.github.imagineDevit.giwt.tests;
 
 
-import io.github.imagineDevit.giwt.TestConfiguration;
-import io.github.imagineDevit.giwt.TestParameters;
+import io.github.imagineDevit.giwt.core.TestConfiguration;
+import io.github.imagineDevit.giwt.core.TestParameters;
 
 import java.util.Map;
 
-import static io.github.imagineDevit.giwt.TestParameters.Parameter.P2;
+import static io.github.imagineDevit.giwt.core.TestParameters.Parameter.P2;
 
 public class MyTestConfiguration implements TestConfiguration {
     @Override

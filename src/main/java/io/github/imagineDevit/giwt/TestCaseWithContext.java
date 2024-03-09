@@ -1,92 +1,38 @@
 package io.github.imagineDevit.giwt;
 
-
-import io.github.imagineDevit.giwt.report.TestCaseReport;
-import io.github.imagineDevit.giwt.statements.StmtMsg;
+import io.github.imagineDevit.giwt.core.CloseableCase;
+import io.github.imagineDevit.giwt.core.TestParameters;
+import io.github.imagineDevit.giwt.core.report.TestCaseReport;
+import io.github.imagineDevit.giwt.core.statements.StmtMsg;
+import io.github.imagineDevit.giwt.core.utils.Utils;
 import io.github.imagineDevit.giwt.statements.functions.CtxConsumer;
 import io.github.imagineDevit.giwt.statements.functions.ResCtxConsumer;
-import io.github.imagineDevit.giwt.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test case representation
+ * Test case representation with context
  *
  * @param <R> test case result type
+ * @author Henri Joel SEDJAME
+ * @since 0.1.0
  */
 public class TestCaseWithContext<T, R> extends CloseableCase {
-
-
-
-    // region Statement classes
-    public static class GivenCtxStmt<T, R> {
-
-        private final TestCaseWithContext<T, R> testCase;
-
-        public GivenCtxStmt(TestCaseWithContext<T, R> testCase) {
-            this.testCase = testCase;
-        }
-
-        public GivenCtxStmt<T, R> and(String message, CtxConsumer<R, TestCaseContext<T, R>.GCtx> fn) {
-            testCase.andGiven(message, fn);
-            return this;
-        }
-
-        public  WhenCtxStmt<T, R> when(String message, CtxConsumer<R, TestCaseContext<T, R>.WCtx> fn) {
-            return testCase.whenr(message, fn);
-        }
-
-    }
-
-    public static class WhenCtxStmt<T, R> {
-
-        private final TestCaseWithContext<T, R> testCase;
-
-        public WhenCtxStmt(TestCaseWithContext<T, R> testCase) {
-            this.testCase = testCase;
-        }
-
-        public ThenCtxStmt<T, R> then(String message, ResCtxConsumer<R> fn) {
-            return testCase.then(message, fn);
-        }
-
-    }
-
-    public static class ThenCtxStmt<T, R> {
-
-        private final TestCaseWithContext<T, R> testCase;
-
-        public ThenCtxStmt(TestCaseWithContext<T,R> testCase) {
-            this.testCase = testCase;
-        }
-
-        public ThenCtxStmt<T, R> and(String message, ResCtxConsumer<R> fn) {
-            testCase.andThen(message, fn);
-            return this;
-        }
-
-    }
-
-    // endregion
-
-    // region Fields
 
     /**
      * Test case name
      */
     protected final String name;
-
     /**
      * Test case report
      */
     private final TestCaseReport.TestReport report;
-
     private final TestCaseContext<T, R>.GCtx gCtx = new TestCaseContext<T, R>().new GCtx();
-    private TestCaseContext<T, R>.WCtx wCtx;
-    private TestCaseContext<T, R>.TCtx tCtx;
 
+    // endregion
 
+    // region Fields
     /**
      * Fns
      */
@@ -94,25 +40,21 @@ public class TestCaseWithContext<T, R> extends CloseableCase {
     private final List<CtxConsumer<R, TestCaseContext<T, R>.GCtx>> givenFns = new ArrayList<>();
     private final List<CtxConsumer<R, TestCaseContext<T, R>.WCtx>> whenFns = new ArrayList<>();
     private final List<ResCtxConsumer<R>> thenFns = new ArrayList<>();
-
     /**
      * Messages
      */
     private final List<StmtMsg> givenMsgs = new ArrayList<>();
     private final List<StmtMsg> whenMsgs = new ArrayList<>();
     private final List<StmtMsg> thenMsgs = new ArrayList<>();
-
     private final TestParameters.Parameter parameters;
-
-    // endregion
-
-    // region Methods
+    private TestCaseContext<T, R>.WCtx wCtx;
+    private TestCaseContext<T, R>.TCtx tCtx;
 
     /**
      * Constructor
      *
-     * @param name  the testCase name
-     * @param report the test report
+     * @param name       the testCase name
+     * @param report     the test report
      * @param parameters the test parameters
      */
     protected TestCaseWithContext(String name, TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
@@ -120,7 +62,6 @@ public class TestCaseWithContext<T, R> extends CloseableCase {
         this.report = report;
         this.parameters = parameters;
     }
-
 
     // region Statement functions
     public GivenCtxStmt<T, R> given(String message, CtxConsumer<R, TestCaseContext<T, R>.GCtx> fn) {
@@ -141,6 +82,9 @@ public class TestCaseWithContext<T, R> extends CloseableCase {
         });
     }
 
+    // endregion
+
+    // region Methods
 
     protected void andGiven(String message, CtxConsumer<R, TestCaseContext<T, R>.GCtx> fn) {
         this.givenMsgs.add(StmtMsg.and(message));
@@ -177,8 +121,6 @@ public class TestCaseWithContext<T, R> extends CloseableCase {
         this.thenFns.add(fn);
     }
 
-    // endregion
-
     /**
      * Print report and run the test case
      */
@@ -195,9 +137,60 @@ public class TestCaseWithContext<T, R> extends CloseableCase {
 
     }
 
-    protected String getName(){
+    protected String getName() {
         if (parameters != null) return parameters.formatName(name);
         else return name;
+    }
+
+    // region Statement classes
+    public static class GivenCtxStmt<T, R> {
+
+        private final TestCaseWithContext<T, R> testCase;
+
+        public GivenCtxStmt(TestCaseWithContext<T, R> testCase) {
+            this.testCase = testCase;
+        }
+
+        public GivenCtxStmt<T, R> and(String message, CtxConsumer<R, TestCaseContext<T, R>.GCtx> fn) {
+            testCase.andGiven(message, fn);
+            return this;
+        }
+
+        public WhenCtxStmt<T, R> when(String message, CtxConsumer<R, TestCaseContext<T, R>.WCtx> fn) {
+            return testCase.whenr(message, fn);
+        }
+
+    }
+
+    // endregion
+
+    public static class WhenCtxStmt<T, R> {
+
+        private final TestCaseWithContext<T, R> testCase;
+
+        public WhenCtxStmt(TestCaseWithContext<T, R> testCase) {
+            this.testCase = testCase;
+        }
+
+        public ThenCtxStmt<T, R> then(String message, ResCtxConsumer<R> fn) {
+            return testCase.then(message, fn);
+        }
+
+    }
+
+    public static class ThenCtxStmt<T, R> {
+
+        private final TestCaseWithContext<T, R> testCase;
+
+        public ThenCtxStmt(TestCaseWithContext<T, R> testCase) {
+            this.testCase = testCase;
+        }
+
+        public ThenCtxStmt<T, R> and(String message, ResCtxConsumer<R> fn) {
+            testCase.andThen(message, fn);
+            return this;
+        }
+
     }
 
     // endregion

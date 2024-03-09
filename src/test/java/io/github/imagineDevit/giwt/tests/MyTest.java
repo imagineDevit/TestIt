@@ -1,8 +1,9 @@
 package io.github.imagineDevit.giwt.tests;
 
+
 import io.github.imagineDevit.giwt.TestCase;
-import io.github.imagineDevit.giwt.TestParameters;
-import io.github.imagineDevit.giwt.annotations.*;
+import io.github.imagineDevit.giwt.core.TestParameters;
+import io.github.imagineDevit.giwt.core.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 @ExtendWith({MyTestExtension.class})
 @ConfigureWith(MyTestConfiguration.class)
 @SuppressWarnings("unused")
-public class MyTest {
+class MyTest {
 
     int i;
 
@@ -25,7 +26,6 @@ public class MyTest {
     void tearDown() {
         System.out.println("at the end => i = " + i);
     }
-
 
     @Test("(1 * 2) + 1 should be 3")
     void test(TestCase<Integer, Integer> testCase) {
@@ -78,7 +78,6 @@ public class MyTest {
                                 .shouldFail()
                                 .withErrorOfType(IllegalStateException.class)
                                 .withMessage("Oups")
-
                 );
     }
 
@@ -94,7 +93,6 @@ public class MyTest {
                 );
     }
 
-
     @Test("Add element to an empty collection")
     void test6(TestCase<List<String>, List<String>> testCase) {
         testCase.withContext()
@@ -106,7 +104,6 @@ public class MyTest {
                 .then("the result should be not null", (ctx, result) -> result.shouldBe().notNull())
                 .and("the result should have a size equal to 1", (ctx, result) -> result.shouldHave().size(1))
                 .and("the result should contain an item equal to 'element'", (ctx, result) -> result.shouldHave().anItemEqualTo("element"));
-
     }
 
     @ParameterSource("getParams")

@@ -1,10 +1,19 @@
 package io.github.imagineDevit.giwt.assertions;
 
-import io.github.imagineDevit.giwt.TestCaseResult;
+import io.github.imagineDevit.giwt.core.ATestCaseResult;
 
 import java.util.Collection;
 
-public record ShouldHave<T>(TestCaseResult.ResultValue.Ok<T> result) {
+/**
+ *
+ * @param result the result value
+ * @param <T> type of the result value
+ * @see ATestCaseResult.ResultValue
+ * @author Henri Joel SEDJAME
+ * @version 0.1.2
+ */
+@SuppressWarnings({"unused", "UnusedReturnValue"})
+public record ShouldHave<T>(ATestCaseResult.ResultValue.Ok<T> result) {
 
     public ShouldHave<T> size(int size) {
 
@@ -23,10 +32,10 @@ public record ShouldHave<T>(TestCaseResult.ResultValue.Ok<T> result) {
         }
         return this;
     }
-    
+
     public <R> ShouldHave<T> anItemEqualTo(R element) {
         if (result.getValue() instanceof Collection<?> collection) {
-            if (!collection.contains(element)){
+            if (!collection.contains(element)) {
                 throw new AssertionError("Expected result to contain <" + element + "> but it does not");
             }
         } else {
