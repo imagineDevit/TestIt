@@ -1,19 +1,26 @@
 package io.github.imagineDevit.giwt.assertions;
 
-import io.github.imagineDevit.giwt.TestCaseResult;
-import io.github.imagineDevit.giwt.utils.Utils;
+import io.github.imagineDevit.giwt.core.ATestCaseResult;
+import io.github.imagineDevit.giwt.core.utils.Utils;
 
 import java.util.Collection;
 import java.util.Objects;
 
-public record ShouldBe<T>(TestCaseResult.ResultValue.Ok<T> result) {
+/**
+ *
+ * @param result the result value
+ * @param <T> type of the result value
+ * @see ATestCaseResult.ResultValue
+ * @author Henri Joel SEDJAME
+ * @version 0.1.2
+ */
+@SuppressWarnings({"unused", "UnusedReturnValue"})
+public record ShouldBe<T>(ATestCaseResult.ResultValue.Ok<T> result) {
 
-
-    public ShouldBe<T> null_() {
+    public void null_() {
         if (result.getValue() != null) {
             throw new AssertionError("Expected null value but got " + result.getValue());
         }
-        return this;
     }
 
     public ShouldBe<T> notNull() {
@@ -24,7 +31,7 @@ public record ShouldBe<T>(TestCaseResult.ResultValue.Ok<T> result) {
         return this;
     }
 
-    public  ShouldBe<T> equalTo(T expected) {
+    public ShouldBe<T> equalTo(T expected) {
         if (!Objects.equals(result.getValue(), expected)) {
             throw new AssertionError("Expected value to be <" + expected + "> but got <" + result.getValue() + ">");
         }
@@ -66,7 +73,7 @@ public record ShouldBe<T>(TestCaseResult.ResultValue.Ok<T> result) {
         return this;
     }
 
-    public  ShouldBe<T> lesserThan(T max) {
+    public ShouldBe<T> lesserThan(T max) {
 
         var c = Utils.asComparableOrThrow(
                 result.getValue(),

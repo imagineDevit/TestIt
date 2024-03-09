@@ -1,25 +1,25 @@
 package io.github.imagineDevit.giwt.assertions;
 
-import io.github.imagineDevit.giwt.TestCaseResult;
-import io.github.imagineDevit.giwt.utils.TextUtils;
+import io.github.imagineDevit.giwt.core.ATestCaseResult;
+import io.github.imagineDevit.giwt.core.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-public record ShouldMatch<T>(TestCaseResult.ResultValue.Ok<T> result) {
+/**
+ *
+ * @param result the result value
+ * @param <T> type of the result value
+ * @see ATestCaseResult.ResultValue
+ * @author Henri Joel SEDJAME
+ * @version 0.1.2
+ */
+@SuppressWarnings({"unused", "UnusedReturnValue"})
+public record ShouldMatch<T>(ATestCaseResult.ResultValue.Ok<T> result) {
 
     public static <T> Matching<T> matching(String description, Predicate<T> predicate) {
         return new Matching<>(description, predicate);
-    }
-
-    public  record Matching<T>(String description, Predicate<T> predicate) {
-
-        public void shouldTest(T value) {
-            if (!predicate.test(value)) {
-                throw new AssertionError("Matching < %s > failed ".formatted(TextUtils.yellow(description)));
-            }
-        }
     }
 
     public ShouldMatch<T> one(Matching<T> matching) {
@@ -27,7 +27,7 @@ public record ShouldMatch<T>(TestCaseResult.ResultValue.Ok<T> result) {
         return this;
     }
 
-    public ShouldMatch<T> one( String description, Predicate<T> predicate) {
+    public ShouldMatch<T> one(String description, Predicate<T> predicate) {
         return one(matching(description, predicate));
     }
 
@@ -61,6 +61,13 @@ public record ShouldMatch<T>(TestCaseResult.ResultValue.Ok<T> result) {
         return this;
     }
 
+    public record Matching<T>(String description, Predicate<T> predicate) {
 
+        public void shouldTest(T value) {
+            if (!predicate.test(value)) {
+                throw new AssertionError("Matching < %s > failed ".formatted(TextUtils.yellow(description)));
+            }
+        }
+    }
 
 }

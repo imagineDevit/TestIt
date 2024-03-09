@@ -1,8 +1,8 @@
 package io.github.imagineDevit.giwt.tests;
 
-import io.github.imagineDevit.giwt.GiwtTestEngine;
+import io.github.imagineDevit.giwt.core.GiwtTestEngine;
 import io.github.imagineDevit.giwt.TestCase;
-import io.github.imagineDevit.giwt.annotations.Test;
+import io.github.imagineDevit.giwt.core.annotations.Test;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineTestKit;
 import org.junit.platform.testkit.engine.Events;

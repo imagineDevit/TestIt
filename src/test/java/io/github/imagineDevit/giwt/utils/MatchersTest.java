@@ -1,14 +1,15 @@
 package io.github.imagineDevit.giwt.utils;
 
 import io.github.imagineDevit.giwt.TestCase;
-import io.github.imagineDevit.giwt.annotations.Test;
+import io.github.imagineDevit.giwt.core.annotations.Test;
+import io.github.imagineDevit.giwt.core.utils.Matchers;
 
 import java.util.Optional;
 
-import static io.github.imagineDevit.giwt.utils.Matchers.MatchCase.matchCase;
-import static io.github.imagineDevit.giwt.utils.Matchers.Result.failure;
-import static io.github.imagineDevit.giwt.utils.Matchers.Result.success;
-import static io.github.imagineDevit.giwt.utils.Matchers.match;
+import static io.github.imagineDevit.giwt.core.utils.Matchers.MatchCase.matchCase;
+import static io.github.imagineDevit.giwt.core.utils.Matchers.Result.failure;
+import static io.github.imagineDevit.giwt.core.utils.Matchers.Result.success;
+import static io.github.imagineDevit.giwt.core.utils.Matchers.match;
 
 
 class MatchersTest {

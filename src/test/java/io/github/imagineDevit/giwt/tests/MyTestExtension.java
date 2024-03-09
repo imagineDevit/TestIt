@@ -1,7 +1,7 @@
 package io.github.imagineDevit.giwt.tests;
 
-import io.github.imagineDevit.giwt.callbacks.AfterAllCallback;
-import io.github.imagineDevit.giwt.callbacks.BeforeAllCallback;
+import io.github.imagineDevit.giwt.core.callbacks.AfterAllCallback;
+import io.github.imagineDevit.giwt.core.callbacks.BeforeAllCallback;
 
 public class MyTestExtension implements BeforeAllCallback, AfterAllCallback {
     @Override

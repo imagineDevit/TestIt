@@ -7,9 +7,19 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+/**
+ * A context for a test case
+ *
+ * @param <T> the state type
+ * @param <R> the result type
+ * @author Henri Joel SEDJAME
+ * @since 0.1.0
+ */
+@SuppressWarnings({"unused"})
 public sealed class TestCaseContext<T, R> {
 
     private static final String RESULT = "###RESULT###";
+
     private static final String STATE = "###STATE###";
 
     public non-sealed class GCtx extends TestCaseContext<T, R> {
@@ -53,14 +63,16 @@ public sealed class TestCaseContext<T, R> {
 
         /**
          * Apply a function to the context state and set the context result with the returned value
+         *
          * @param mapper the function to apply to the state
          */
-        public void mapToResult(Function<T,R> mapper) {
+        public void mapToResult(Function<T, R> mapper) {
             setResult(getState().toResult(mapper).value());
         }
 
         /**
          * Apply an action on the context state
+         *
          * @param consumer the action to apply
          */
         public WCtx applyOnState(Consumer<T> consumer) {
@@ -82,6 +94,7 @@ public sealed class TestCaseContext<T, R> {
 
         /**
          * Set the context result
+         *
          * @param value the result value to add to the context
          */
         private void setResult(R value) {
@@ -90,7 +103,8 @@ public sealed class TestCaseContext<T, R> {
 
         /**
          * Get a context variable
-         * @param key the variable key
+         *
+         * @param key  the variable key
          * @param <TT> the variable type
          * @return the variable value
          */
