@@ -8,7 +8,6 @@ import io.github.imagineDevit.giwt.core.annotations.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @ExtendWith({MyTestExtension.class})
 @ConfigureWith(MyTestConfiguration.class)
 @SuppressWarnings("unused")
@@ -30,10 +29,11 @@ class MyTest {
     @Test("(1 * 2) + 1 should be 3")
     void test(TestCase<Integer, Integer> testCase) {
         i++;
+        System.out.println("i = " + i);
 
         testCase
                 .given("state is 1", 1)
-                .and("state is multiplied by 2", state -> state.map(i -> i * 2))
+                .and("state is multiplied by 2", state -> state * 2)
                 .when("1 is added to the state", i -> i + 1)
                 .then("the result should be not null", result -> result.shouldBe().notNull())
                 .and("the result should be equal to 3", result -> result.shouldBe().equalTo(3));
@@ -48,7 +48,7 @@ class MyTest {
 
         testCase
                 .given("state is 1", () -> 1)
-                .and("state is multiplied by 2", state -> state.map(i -> i * 2))
+                .and("state is multiplied by 2", i -> i * 2)
                 .when("%d is added to the state".formatted(number), i -> i + number)
                 .then("the result should be %d".formatted(expectedResult), result ->
                         result
@@ -106,7 +106,7 @@ class MyTest {
                 .and("the result should contain an item equal to 'element'", (ctx, result) -> result.shouldHave().anItemEqualTo("element"));
     }
 
-    @ParameterSource("getParams")
+    @ParameterSource
     private TestParameters<TestParameters.Parameter.P2<Integer, Integer>> getParams() {
         return TestParameters.of(
                 TestParameters.Parameter.P2.of(1, 3),
