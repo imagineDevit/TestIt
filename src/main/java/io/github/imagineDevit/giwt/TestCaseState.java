@@ -2,6 +2,7 @@ package io.github.imagineDevit.giwt;
 
 import io.github.imagineDevit.giwt.core.ATestCaseState;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -40,7 +41,7 @@ public class TestCaseState<T> extends ATestCaseState<T> {
         super.consumeValue(consumer);
     }
 
-    protected T getValue() {
-        return value;
+    protected Optional<T> get() {
+        return Optional.ofNullable(value);
     }
 }

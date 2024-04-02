@@ -1,4 +1,4 @@
-package io.github.imagineDevit.giwt.statements.functions;
+package io.github.imagineDevit.giwt.statements.functions.context;
 
 import io.github.imagineDevit.giwt.TestCaseContext;
 

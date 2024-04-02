@@ -1,4 +1,4 @@
-package io.github.imagineDevit.giwt.statements.functions;
+package io.github.imagineDevit.giwt.statements.functions.givens;
 
 import java.util.function.Supplier;
 

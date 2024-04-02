@@ -24,17 +24,17 @@ public class TestEngine {
                         result -> result.shouldBe().notNull())
                 .and("""
                         list of resulting events should contain 8 events
-                        7 of them should be successful
+                        9 of them should be successful
                         1 of them should be skipped
                         """, events ->
                         events.shouldMatch()
                                 .all(
-                                        matching("8 tests started", e -> {
-                                            e.assertStatistics(stats -> stats.started(8));
+                                        matching("9 tests started", e -> {
+                                            e.assertStatistics(stats -> stats.started(9));
                                             return true;
                                         }),
-                                        matching("7 tests succeeded", e -> {
-                                            e.assertStatistics(stats -> stats.succeeded(7));
+                                        matching("8 tests succeeded", e -> {
+                                            e.assertStatistics(stats -> stats.succeeded(8));
                                             return true;
                                         }),
                                         matching("1 test skipped", e -> {

@@ -1,4 +1,4 @@
-package io.github.imagineDevit.giwt.statements.functions;
+package io.github.imagineDevit.giwt.statements.functions.whens;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

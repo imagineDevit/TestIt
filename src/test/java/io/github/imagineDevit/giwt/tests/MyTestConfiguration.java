@@ -6,7 +6,7 @@ import io.github.imagineDevit.giwt.core.TestParameters;
 import io.github.imagineDevit.giwt.core.annotations.ParameterSource;
 
 
-public class MyTestConfiguration implements TestConfiguration {
+public class MyTestConfiguration extends TestConfiguration {
 
 
     @ParameterSource("getParams")

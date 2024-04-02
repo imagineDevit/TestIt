@@ -33,7 +33,7 @@ class MyTest {
 
         testCase
                 .given("state is 1", 1)
-                .and("state is multiplied by 2", state -> state * 2)
+                .and("state is multiplied by 2", state -> state * 2 )
                 .when("1 is added to the state", i -> i + 1)
                 .then("the result should be not null", result -> result.shouldBe().notNull())
                 .and("the result should be equal to 3", result -> result.shouldBe().equalTo(3));
@@ -85,11 +85,12 @@ class MyTest {
     void test5(TestCase<Integer, Integer> testCase) {
         testCase.withContext()
                 .given("the state is set to 1", ctx -> ctx.setState(1))
+                .and("the state is multiplied by 2", ctx -> ctx.mapState(one -> one * 2))
                 .when("result is set to state + 1", ctx -> ctx.mapToResult(one -> one + 1))
-                .then("the result should be 2", (ctx, result) ->
+                .then("the result should be 3", (ctx, result) ->
                         result.shouldBe()
                                 .notNull()
-                                .equalTo(2)
+                                .equalTo(3)
                 );
     }
 
@@ -104,6 +105,20 @@ class MyTest {
                 .then("the result should be not null", (ctx, result) -> result.shouldBe().notNull())
                 .and("the result should have a size equal to 1", (ctx, result) -> result.shouldHave().size(1))
                 .and("the result should contain an item equal to 'element'", (ctx, result) -> result.shouldHave().anItemEqualTo("element"));
+    }
+
+    @Test("ctx An illegalState exception should be thrown")
+    void test7(TestCase<Void, Void> testCase) {
+        testCase.withContext()
+                .when("called method throw an exception with oups message", (ctx) -> {
+                    throw new IllegalStateException("Oups");
+                })
+                .then("the exception is not null", (ctx, result) ->
+                        result
+                                .shouldFail()
+                                .withErrorOfType(IllegalStateException.class)
+                                .withMessage("Oups")
+                );
     }
 
     @ParameterSource

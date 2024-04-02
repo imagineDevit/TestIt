@@ -4,7 +4,11 @@ package io.github.imagineDevit.giwt;
 import io.github.imagineDevit.giwt.core.ATestCase;
 import io.github.imagineDevit.giwt.core.report.TestCaseReport;
 import io.github.imagineDevit.giwt.core.utils.Utils;
-import io.github.imagineDevit.giwt.statements.functions.*;
+import io.github.imagineDevit.giwt.statements.functions.givens.GivenFFn;
+import io.github.imagineDevit.giwt.statements.functions.givens.GivenRFn;
+import io.github.imagineDevit.giwt.statements.functions.givens.GivenSFn;
+import io.github.imagineDevit.giwt.statements.functions.thens.ThenFn;
+import io.github.imagineDevit.giwt.statements.functions.whens.WhenFn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +19,12 @@ import java.util.List;
  * @param <T> test case state type
  * @param <R> test case result type
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings({"unchecked", "unused", "unusedReturnValue"})
 public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseResult<R>> {
 
 
     // region Statement classes
-    public static class GivenStmt<T, R> {
-
-        private final TestCase<T,R> testCase;
-
-        public GivenStmt(TestCase<T, R> testCase) {
-            this.testCase = testCase;
-        }
+    public record GivenStmt<T, R>(TestCase<T, R> testCase) {
 
         public GivenStmt<T,R> and(String message, GivenFFn<T> fn) {
             testCase.andGiven(message, fn);
@@ -47,13 +45,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
 
     }
 
-    public static class WhenStmt<T,R> {
-
-        private final TestCase<T,R> testCase;
-
-        public WhenStmt(TestCase<T, R> testCase) {
-            this.testCase = testCase;
-        }
+    public record WhenStmt<T,R>(TestCase<T, R> testCase) {
 
         public ThenStmt<T,R> then(String message, ThenFn<R> fn) {
             return testCase.then(message, fn);
@@ -61,13 +53,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
 
     }
 
-    public static class ThenStmt<T,R> {
-
-        private final TestCase<T,R> testCase;
-
-        public ThenStmt(TestCase<T, R> testCase) {
-            this.testCase = testCase;
-        }
+    public record ThenStmt<T,R>(TestCase<T, R> testCase) {
 
         public ThenStmt<T,R> and(String message, ThenFn<R> fn) {
             testCase.andThen(message, fn);
@@ -77,15 +63,12 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
     }
     //endregion
 
-    /**
-     * Fns
-     */
+
     private GivenSFn<T> givenFn = null;
     private GivenRFn givenRFn = null;
     private WhenFn whenFn = null;
     private final List<GivenFFn<T>> andGivenFns = new ArrayList<>();
     private final List<ThenFn<R>> thenFns = new ArrayList<>();
-
     private TestCaseWithContext<T, R> ctxCase = null;
 
     protected TestCase(String name, TestCaseReport.TestReport report, io.github.imagineDevit.giwt.core.TestParameters.Parameter parameters) {
@@ -98,7 +81,6 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         this.ctxCase = new TestCaseWithContext<>(this.name, this.report, this.parameters);
         return ctxCase;
     }
-
 
     // region Statement functions
 
@@ -263,7 +245,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             this.givenRFn.run();
         }
 
-        this.andGivenFns.forEach(f -> this.state = this.state.map(f));
+        this.andGivenFns.forEach(fn -> this.state = this.state.map(fn));
 
         try {
             if (this.whenFn != null) {

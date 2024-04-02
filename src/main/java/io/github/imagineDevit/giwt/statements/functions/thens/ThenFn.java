@@ -1,4 +1,4 @@
-package io.github.imagineDevit.giwt.statements.functions;
+package io.github.imagineDevit.giwt.statements.functions.thens;
 
 import io.github.imagineDevit.giwt.TestCaseResult;
 
