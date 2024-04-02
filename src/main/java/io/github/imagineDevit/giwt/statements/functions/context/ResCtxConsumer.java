@@ -1,4 +1,4 @@
-package io.github.imagineDevit.giwt.statements.functions;
+package io.github.imagineDevit.giwt.statements.functions.context;
 
 import io.github.imagineDevit.giwt.TestCaseContext;
 import io.github.imagineDevit.giwt.TestCaseResult;
@@ -12,5 +12,5 @@ import java.util.function.BiConsumer;
  * @version 0.1.2
  * @author Henri Joel SEDJAME
  */
-public interface ResCtxConsumer<R> extends BiConsumer<TestCaseContext<?, R>.TCtx, TestCaseResult<R>> {
+public interface ResCtxConsumer<T, R> extends BiConsumer<TestCaseContext.TCtx<T, R>, TestCaseResult<R>> {
 }

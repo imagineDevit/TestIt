@@ -79,6 +79,7 @@ public record ShouldBe<T>(ATestCaseResult.ResultValue.Ok<T> result) {
                 result.getValue(),
                 () -> new AssertionError("Value is not comparable")
         );
+
         if (c.compareTo(max) >= 0) {
             throw new AssertionError("Expected value to be lesser than <" + max + "> but got <" + c + ">");
         }

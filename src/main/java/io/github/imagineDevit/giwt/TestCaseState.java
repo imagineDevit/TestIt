@@ -2,6 +2,8 @@ package io.github.imagineDevit.giwt;
 
 import io.github.imagineDevit.giwt.core.ATestCaseState;
 
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -18,19 +20,28 @@ public class TestCaseState<T> extends ATestCaseState<T> {
         super(value);
     }
 
-    public static <T> TestCaseState<T> of(T value) {
+    protected static <T> TestCaseState<T> of(T value) {
         return new TestCaseState<>(value);
     }
 
-    public static <T> TestCaseState<T> empty() {
+    protected static <T> TestCaseState<T> empty() {
         return new TestCaseState<>(null);
     }
 
-    public TestCaseState<T> map(UnaryOperator<T> mapper) {
+    protected TestCaseState<T> map(UnaryOperator<T> mapper) {
         return TestCaseState.of(mapper.apply(value));
     }
 
     protected <R> TestCaseResult<R> mapToResult(Function<T, R> mapper) {
         return TestCaseResult.of(mapper.apply(value));
+    }
+
+    @Override
+    protected void consumeValue(Consumer<T> consumer) {
+        super.consumeValue(consumer);
+    }
+
+    protected Optional<T> get() {
+        return Optional.ofNullable(value);
     }
 }

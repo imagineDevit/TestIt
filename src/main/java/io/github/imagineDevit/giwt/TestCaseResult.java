@@ -39,7 +39,7 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements Assertable<
         return value.<T>ok()
                 .map(ResultValue.Ok::getValue)
                 .map(v -> TestCaseResult.of(mapper.apply(v)))
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalStateException("Result is Failure"));
     }
 
     @Override
