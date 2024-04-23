@@ -23,11 +23,9 @@ import static io.github.imagineDevit.giwt.core.utils.TextUtils.bold;
 @SuppressWarnings({"unused", "unchecked"})
 public sealed class TestCaseContext<T, R> {
 
-    final Map<String, Object> context = new HashMap<>();
-
     private static final String RESULT = "###RESULT###";
-
     private static final String STATE = "###STATE###";
+    final Map<String, Object> context = new HashMap<>();
 
     private TestCaseContext(Map<String, Object> context) {
         Optional.ofNullable(context).ifPresent(this.context::putAll);
@@ -81,11 +79,12 @@ public sealed class TestCaseContext<T, R> {
 
     /**
      * Get a context variable safely
-     * @param key the variable key
-     * @return the variable value
+     *
+     * @param key  the variable key
      * @param <TT> the variable value type
+     * @return the variable value
      */
-    protected  <TT> TT safeGetVar(String key) {
+    protected <TT> TT safeGetVar(String key) {
         Objects.requireNonNull(key);
         return (TT) context.getOrDefault(key, null);
     }
@@ -106,6 +105,7 @@ public sealed class TestCaseContext<T, R> {
 
         /**
          * Set the context state
+         *
          * @param value the state value
          */
         public void setState(T value) {
@@ -114,6 +114,7 @@ public sealed class TestCaseContext<T, R> {
 
         /**
          * Map the context state
+         *
          * @param mapper the function to apply to the state
          */
         public void mapState(UnaryOperator<T> mapper) {
@@ -122,6 +123,7 @@ public sealed class TestCaseContext<T, R> {
 
         /**
          * Convert the context to a WCtx
+         *
          * @return a WCtx instance
          */
         protected WCtx<T, R> toWCtx() {
@@ -143,7 +145,7 @@ public sealed class TestCaseContext<T, R> {
          * @param mapper the function to apply to the state
          */
         public void mapToResult(Function<T, R> mapper) {
-           setResult(getState().toResult(mapper));
+            setResult(getState().toResult(mapper));
         }
 
         /**
@@ -151,20 +153,20 @@ public sealed class TestCaseContext<T, R> {
          *
          * @param consumer the action to apply
          */
-        public WCtx<T, R> applyOnState(Consumer<T> consumer) {
-           consumer.accept(getState().value());
-            return this;
+        public void applyOnState(Consumer<T> consumer) {
+            consumer.accept(getState().value());
         }
 
         /**
          * Set the context state as the context result
          */
         public void setStateAsResult() {
-           setResult(getState().toResult(t -> (R) t));
+            setResult(getState().toResult(t -> (R) t));
         }
 
         /**
          * Supply the context result
+         *
          * @param supplier the supplier to get the result value
          */
         public void supplyResult(Supplier<R> supplier) {
@@ -182,6 +184,7 @@ public sealed class TestCaseContext<T, R> {
 
         /**
          * Convert the context to a TCtx
+         *
          * @return a TCtx instance
          */
         protected TCtx<T, R> toTCtx() {
@@ -199,6 +202,7 @@ public sealed class TestCaseContext<T, R> {
         /**
          * Get the context result
          * If the result is not present, an empty result is returned
+         *
          * @return the context result
          */
         protected TestCaseResult<R> getResult() {

@@ -13,11 +13,11 @@ import java.util.Objects;
  */
 public class TestCaseCtxResult<T> extends ATestCaseResult<T> {
 
-    private TestCaseCtxResult(T value){
+    private TestCaseCtxResult(T value) {
         super(value);
     }
 
-    private TestCaseCtxResult(Exception e){
+    private TestCaseCtxResult(Exception e) {
         super(e);
     }
 
@@ -33,7 +33,7 @@ public class TestCaseCtxResult<T> extends ATestCaseResult<T> {
         return new TestCaseCtxResult<>(e);
     }
 
-    protected TestCaseResult<T> result()  {
+    protected TestCaseResult<T> result() {
         return Objects.requireNonNull(value, "Result value is Null")
                 .<T>ok()
                 .map(ResultValue.Ok::getValue)

@@ -3,53 +3,57 @@ package io.github.imagineDevit.giwt.assertions;
 
 import io.github.imagineDevit.giwt.core.ATestCaseResult;
 
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 /**
  * Interface for the assertion methods.
+ *
  * @param <T> type of the result value
- * @see ATestCaseResult.ResultValue
  * @author Henri Joel SEDJAME
  * @version 0.1.2
+ * @see ATestCaseResult.ResultValue
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes", "unchecked"})
 public interface Assertable<T> {
 
-    default ShouldFail shouldFail() {
-        return Objects.requireNonNull(value(), "Result value is Null")
+    default void shouldFail(ShouldFails... expectations) {
+        Exception exception = Objects.requireNonNull(value(), "Result value is Null")
                 .err()
-                .map(ShouldFail::new)
+                .map(ATestCaseResult.ResultValue.Err::getError)
                 .orElseThrow(() -> new AssertionError("Result value is Ok"));
+
+        Arrays.asList(expectations)
+                .forEach(f -> f.verify(exception));
     }
 
-    default ShouldBe<T> shouldBe() {
-        return Objects.requireNonNull(value(), "Result value is Null")
+    default void shouldBe(ShouldBes... expectations) {
+        T value = Objects.requireNonNull(value(), "Result value is Null")
                 .<T>ok()
-                .map(ShouldBe::new)
+                .map(ATestCaseResult.ResultValue.Ok::getValue)
                 .orElseThrow(() -> new AssertionError("Result value is Failure"));
+
+        Arrays.asList(expectations)
+                .forEach(b -> b.verify(value));
     }
 
-    default ShouldHave<T> shouldHave() {
-        return Objects.requireNonNull(value(), "Result value is Null")
+    default void shouldHave(ShouldHaves... expectations) {
+        T value = Objects.requireNonNull(value(), "Result value is Null")
                 .<T>ok()
-                .map(ShouldHave::new)
+                .map(ATestCaseResult.ResultValue.Ok::getValue)
                 .orElseThrow(() -> new AssertionError("Result value is Failure"));
+
+        Arrays.asList(expectations)
+                .forEach(h -> h.verify(value));
     }
 
-    default ShouldMatch<T> shouldMatch() {
-        return Objects.requireNonNull(value(), "Result value is Null")
+    default void shouldMatch(ShouldMatchs... expectations) {
+        T value = Objects.requireNonNull(value(), "Result value is Null")
                 .<T>ok()
-                .map(ShouldMatch::new)
+                .map(ATestCaseResult.ResultValue.Ok::getValue)
                 .orElseThrow(() -> new AssertionError("Result value is Failure"));
-    }
 
-    default void shouldMatch(Predicate<T> predicate) {
-        Objects.requireNonNull(value(), "Result value is Null")
-                .<T>ok()
-                .map(ShouldMatch::new)
-                .map(m -> m.one(ShouldMatch.matching("predicate", predicate)))
-                .orElseThrow(() -> new AssertionError("Result value is Failure"));
+        Arrays.asList(expectations).forEach(m -> m.verify(value));
     }
 
     ATestCaseResult.ResultValue value();

@@ -21,8 +21,8 @@ public class TestCaseWithContext<T, R> extends ATestCase<T, R, TestCaseCtxState<
 
     private final TestCaseContext.GCtx<T, R> ctx = new TestCaseContext.GCtx<>();
     private final List<CtxConsumer<R, TestCaseContext.GCtx<T, R>>> givenFns = new ArrayList<>();
-    private CtxConsumer<R, TestCaseContext.WCtx<T, R>> whenFn;
     private final List<ResCtxConsumer<T, R>> thenFns = new ArrayList<>();
+    private CtxConsumer<R, TestCaseContext.WCtx<T, R>> whenFn;
 
     protected TestCaseWithContext(String name, TestCaseReport.TestReport report, TestParameters.Parameter parameters) {
         super(name, report, parameters);
@@ -86,7 +86,7 @@ public class TestCaseWithContext<T, R> extends ATestCase<T, R, TestCaseCtxState<
         } catch (Exception e) {
             wctx.setResult(TestCaseCtxResult.ofErr(e));
         }
-        var tctx  = wctx.toTCtx();
+        var tctx = wctx.toTCtx();
         this.thenFns.forEach(fn -> fn.accept(tctx, tctx.getResult()));
 
     }

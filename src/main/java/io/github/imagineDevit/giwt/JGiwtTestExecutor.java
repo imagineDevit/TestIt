@@ -7,6 +7,7 @@ import io.github.imagineDevit.giwt.core.report.TestCaseReport;
 
 /**
  * Giwt test executor
+ *
  * @author Henri Joel SEDJAME
  * @version 0.1.2
  */

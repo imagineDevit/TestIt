@@ -6,11 +6,15 @@ import java.util.function.Supplier;
 
 public sealed interface WhenFn {
 
-    non-sealed interface C<T> extends Consumer<T> , WhenFn {}
+    non-sealed interface C<T> extends Consumer<T>, WhenFn {
+    }
 
-    non-sealed interface S<R> extends Supplier<R>, WhenFn {}
+    non-sealed interface S<R> extends Supplier<R>, WhenFn {
+    }
 
-    non-sealed interface F<T,R> extends Function<T, R>, WhenFn {}
+    non-sealed interface F<T, R> extends Function<T, R>, WhenFn {
+    }
 
-    non-sealed interface R extends Runnable, WhenFn {}
+    non-sealed interface R extends Runnable, WhenFn {
+    }
 }
