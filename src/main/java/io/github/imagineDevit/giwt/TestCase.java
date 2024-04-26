@@ -23,52 +23,11 @@ import java.util.List;
 public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseResult<R>> {
 
 
-    // region Statement classes
-    public record GivenStmt<T, R>(TestCase<T, R> testCase) {
-
-        public GivenStmt<T,R> and(String message, GivenFFn<T> fn) {
-            testCase.andGiven(message, fn);
-            return this;
-        }
-
-        public WhenStmt<T,R> when(String message, WhenFn.F<T,R> fn) {
-            return testCase.when(message, fn);
-        }
-
-        public WhenStmt<T,R> when(String message, WhenFn.C<T> fn) {
-            return testCase.whenc(message, fn);
-        }
-
-        public  WhenStmt<T,R> when(String message, WhenFn.R fn) {
-            return testCase.whenr(message, fn);
-        }
-
-    }
-
-    public record WhenStmt<T,R>(TestCase<T, R> testCase) {
-
-        public ThenStmt<T,R> then(String message, ThenFn<R> fn) {
-            return testCase.then(message, fn);
-        }
-
-    }
-
-    public record ThenStmt<T,R>(TestCase<T, R> testCase) {
-
-        public ThenStmt<T,R> and(String message, ThenFn<R> fn) {
-            testCase.andThen(message, fn);
-            return this;
-        }
-
-    }
-    //endregion
-
-
+    private final List<GivenFFn<T>> andGivenFns = new ArrayList<>();
+    private final List<ThenFn<R>> thenFns = new ArrayList<>();
     private GivenSFn<T> givenFn = null;
     private GivenRFn givenRFn = null;
     private WhenFn whenFn = null;
-    private final List<GivenFFn<T>> andGivenFns = new ArrayList<>();
-    private final List<ThenFn<R>> thenFns = new ArrayList<>();
     private TestCaseWithContext<T, R> ctxCase = null;
 
     protected TestCase(String name, TestCaseReport.TestReport report, io.github.imagineDevit.giwt.core.TestParameters.Parameter parameters) {
@@ -82,13 +41,11 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         return ctxCase;
     }
 
-    // region Statement functions
-
     /**
      * Creates a new Given statement with the provided message and (supplier) function.
      *
      * @param message the description of the statement being given
-     * @param fn the function that executes the given statement
+     * @param fn      the function that executes the given statement
      * @return the Given statement object
      */
     public GivenStmt<T, R> given(String message, GivenSFn<T> fn) {
@@ -99,6 +56,13 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         });
     }
 
+    /**
+     * Creates a new Given statement with the provided message and value.
+     *
+     * @param message the description of the statement being given
+     * @param t       the value to be used in the given statement
+     * @return the Given statement object
+     */
     public GivenStmt<T, R> given(String message, T t) {
         return runIfOpen(() -> {
             this.addGivenMsg(message);
@@ -111,7 +75,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * Creates a new Given statement with the provided message and (runnable) function.
      *
      * @param message the description of the statement being given
-     * @param fn the function that executes the given statement
+     * @param fn      the function that executes the given statement
      * @return the Given statement object
      */
     public GivenStmt<T, R> given(String message, GivenRFn fn) {
@@ -126,7 +90,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * Adds another Given statement to the current test case with the provided message and function.
      *
      * @param message the description of the new Given statement
-     * @param fn the function that executes the given statement
+     * @param fn      the function that executes the given statement
      */
     protected void andGiven(String message, GivenFFn<T> fn) {
         this.addAndGivenMsg(message);
@@ -137,7 +101,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * Adds a When statement to the current test case with the provided message and a supplier function.
      *
      * @param message the description of the new When statement
-     * @param fn the function that executes the When statement
+     * @param fn      the function that executes the When statement
      * @return a new instance of WhenStmt that is associated with this test case
      */
     public WhenStmt<T, R> when(String message, WhenFn.S<R> fn) {
@@ -152,7 +116,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * Adds a When statement to the current test case with the provided message and a runnable function
      *
      * @param message the description of the new When statement
-     * @param fn the function that executes the When statement
+     * @param fn      the function that executes the When statement
      * @return a new instance of WhenStmt that is associated with this test case
      */
     public WhenStmt<T, R> when(String message, WhenFn.R fn) {
@@ -167,7 +131,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * Adds a When statement to the current test case with the provided message and a consumer function
      *
      * @param message the description of the new When statement
-     * @param fn the function that executes the When statement
+     * @param fn      the function that executes the When statement
      * @return a new instance of WhenStmt that is associated with this test case
      */
     protected WhenStmt<T, R> whenc(String message, WhenFn.C<T> fn) {
@@ -180,26 +144,25 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * Adds a When statement to the current test case with the provided message and a runnable function
      *
      * @param message the description of the new When statement
-     * @param fn the function that executes the When statement
+     * @param fn      the function that executes the When statement
      * @return a new instance of WhenStmt that is associated with this test case
      */
     protected WhenStmt<T, R> whenr(String message, WhenFn.R fn) {
         this.addWhenMsg(message);
         this.whenFn = fn;
         return new WhenStmt<>(this);
-
     }
 
     /**
      * Adds a When statement to the current test case with the provided message and a function.
      *
      * @param message the description of the new When statement
-     * @param fn the function that executes the When statement and returns a result of type R
+     * @param fn      the function that executes the When statement and returns a result of type R
      * @return a new instance of WhenStmt that is associated with this test case
      */
     protected WhenStmt<T, R> when(String message, WhenFn.F<T, R> fn) {
         this.addWhenMsg(message);
-        this.whenFn= fn;
+        this.whenFn = fn;
         return new WhenStmt<>(this);
     }
 
@@ -207,7 +170,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * Adds a Then statement to the current test case with the provided message and a consumer function.
      *
      * @param message the description of the new Then statement
-     * @param fn the function that executes the Then statement
+     * @param fn      the function that executes the Then statement
      * @return a new instance of ThenStmt that is associated with this test case
      */
     protected ThenStmt<T, R> then(String message, ThenFn<R> fn) {
@@ -221,14 +184,14 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * This method is used in conjunction with the initial ThenStmt method, allowing for multiple Then statements in a single test case.
      *
      * @param message the description of the new Then statement
-     * @param fn the function that executes the additional Then statement
+     * @param fn      the function that executes the additional Then statement
      */
     protected void andThen(String message, ThenFn<R> fn) {
         this.addAndThenMsg(message);
         this.thenFns.add(fn);
     }
 
-    // endregion
+
     @Override
     protected void run() {
 
@@ -236,6 +199,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             ctxCase.run();
             return;
         }
+
 
         System.out.print(Utils.reportTestCase(name, givenMsgs, whenMsgs, thenMsgs, parameters));
 
@@ -249,8 +213,8 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
 
         try {
             if (this.whenFn != null) {
-                if (this.whenFn instanceof WhenFn.F<?,?> gfn) {
-                    this.result = this.state.mapToResult((WhenFn.F<T,R>)gfn);
+                if (this.whenFn instanceof WhenFn.F<?, ?> gfn) {
+                    this.result = this.state.mapToResult((WhenFn.F<T, R>) gfn);
                 } else if (this.whenFn instanceof WhenFn.R rfn) {
                     rfn.run();
                 } else if (this.whenFn instanceof WhenFn.C<?> cfn) {
@@ -264,6 +228,44 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         }
 
         this.thenFns.forEach(fn -> fn.accept(this.result));
+    }
+
+    public record GivenStmt<T, R>(TestCase<T, R> testCase) {
+
+        public GivenStmt<T, R> and(String message, GivenFFn<T> fn) {
+            testCase.andGiven(message, fn);
+            return this;
+        }
+
+        public WhenStmt<T, R> when(String message, WhenFn.F<T, R> fn) {
+            return testCase.when(message, fn);
+        }
+
+        public WhenStmt<T, R> when(String message, WhenFn.C<T> fn) {
+            return testCase.whenc(message, fn);
+        }
+
+        public WhenStmt<T, R> when(String message, WhenFn.R fn) {
+            return testCase.whenr(message, fn);
+        }
+
+    }
+
+    public record WhenStmt<T, R>(TestCase<T, R> testCase) {
+
+        public ThenStmt<T, R> then(String message, ThenFn<R> fn) {
+            return testCase.then(message, fn);
+        }
+
+    }
+
+    public record ThenStmt<T, R>(TestCase<T, R> testCase) {
+
+        public ThenStmt<T, R> and(String message, ThenFn<R> fn) {
+            testCase.andThen(message, fn);
+            return this;
+        }
+
     }
 
 }

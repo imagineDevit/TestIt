@@ -6,11 +6,12 @@ import java.util.function.Consumer;
 
 /**
  * TextCase context consumer.
+ *
  * @param <R> type of the result value
  * @param <C> type of the context
- * @see TestCaseContext
- * @version 0.1.2
  * @author Henri Joel SEDJAME
+ * @version 0.1.2
+ * @see TestCaseContext
  */
 public interface CtxConsumer<R, C extends TestCaseContext<?, R>> extends Consumer<C> {
 }
