@@ -26,10 +26,10 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
     private final List<GivenFFn<T>> andGivenFns = new ArrayList<>();
     private final List<ThenFn<R>> thenFns = new ArrayList<>();
     private GivenSFn<T> givenFn = null;
-    //endregion
     private GivenRFn givenRFn = null;
     private WhenFn whenFn = null;
     private TestCaseWithContext<T, R> ctxCase = null;
+
     protected TestCase(String name, TestCaseReport.TestReport report, io.github.imagineDevit.giwt.core.TestParameters.Parameter parameters) {
         super(name, report, parameters);
         this.state = TestCaseState.empty();
@@ -56,6 +56,13 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         });
     }
 
+    /**
+     * Creates a new Given statement with the provided message and value.
+     *
+     * @param message the description of the statement being given
+     * @param t       the value to be used in the given statement
+     * @return the Given statement object
+     */
     public GivenStmt<T, R> given(String message, T t) {
         return runIfOpen(() -> {
             this.addGivenMsg(message);
@@ -78,8 +85,6 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             return new GivenStmt<>(this);
         });
     }
-
-    // region Statement functions
 
     /**
      * Adds another Given statement to the current test case with the provided message and function.
@@ -146,7 +151,6 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         this.addWhenMsg(message);
         this.whenFn = fn;
         return new WhenStmt<>(this);
-
     }
 
     /**
@@ -187,7 +191,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         this.thenFns.add(fn);
     }
 
-    // endregion
+
     @Override
     protected void run() {
 
@@ -226,7 +230,6 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         this.thenFns.forEach(fn -> fn.accept(this.result));
     }
 
-    // region Statement classes
     public record GivenStmt<T, R>(TestCase<T, R> testCase) {
 
         public GivenStmt<T, R> and(String message, GivenFFn<T> fn) {

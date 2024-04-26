@@ -8,12 +8,12 @@ import io.github.imagineDevit.giwt.core.annotations.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.imagineDevit.giwt.assertions.ShouldBes.equalTo;
-import static io.github.imagineDevit.giwt.assertions.ShouldBes.notNull;
-import static io.github.imagineDevit.giwt.assertions.ShouldFails.withMessage;
-import static io.github.imagineDevit.giwt.assertions.ShouldFails.withType;
-import static io.github.imagineDevit.giwt.assertions.ShouldHaves.anItemEqualTo;
-import static io.github.imagineDevit.giwt.assertions.ShouldHaves.size;
+import static io.github.imagineDevit.giwt.expectations.ExpectedToBe.equalTo;
+import static io.github.imagineDevit.giwt.expectations.ExpectedToBe.notNull;
+import static io.github.imagineDevit.giwt.expectations.ExpectedToFail.withMessage;
+import static io.github.imagineDevit.giwt.expectations.ExpectedToFail.withType;
+import static io.github.imagineDevit.giwt.expectations.ExpectedToHave.anItemEqualTo;
+import static io.github.imagineDevit.giwt.expectations.ExpectedToHave.size;
 
 @ExtendWith({MyTestExtension.class})
 @ConfigureWith(MyTestConfiguration.class)
@@ -68,7 +68,9 @@ class MyTest {
     @Test("An illegalState exception should be thrown")
     void test4(TestCase<Void, Void> testCase) {
         testCase
-                .when("called method throw an exception with oups message", () -> {throw new IllegalStateException("Oups");})
+                .when("called method throw an exception with oups message", () -> {
+                    throw new IllegalStateException("Oups");
+                })
                 .then("the exception is not null", result -> result.shouldFail(withType(IllegalStateException.class), withMessage("Oups")));
     }
 
@@ -97,7 +99,9 @@ class MyTest {
     @Test("ctx An illegalState exception should be thrown")
     void test7(TestCase<Void, Void> testCase) {
         testCase.withContext()
-                .when("called method throw an exception with oups message", (ctx) -> { throw new IllegalStateException("Oups");})
+                .when("called method throw an exception with oups message", (ctx) -> {
+                    throw new IllegalStateException("Oups");
+                })
                 .then("the exception is not null", (ctx, result) -> result.shouldFail(withType(IllegalStateException.class), withMessage("Oups")));
     }
 
