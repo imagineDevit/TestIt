@@ -34,11 +34,10 @@ class MyTest {
 
     @Test("(1 * 2) + 1 should be 3")
     void test(TestCase<Integer, Integer> testCase) {
-        i++;
         testCase
                 .given("state is 1", 1)
-                .and("state is multiplied by 2", state -> state * 2)
-                .when("1 is added to the state", i -> i + 1)
+                .and("state is multiplied by 2", t -> i++)
+                .when("1 is added to the state", i -> (i * 2) + 1)
                 .then("the result should be not null", result -> result.shouldBe(notNull()))
                 .and("the result should be equal to 3", result -> result.shouldBe(equalTo(3)));
     }
@@ -48,11 +47,10 @@ class MyTest {
             source = "getParams"
     )
     void test2(TestCase<Integer, Integer> testCase, Integer number, Integer expectedResult) {
-        i++;
         testCase
                 .given("state is 1", () -> 1)
-                .and("state is multiplied by 2", i -> i * 2)
-                .when("%d is added to the state".formatted(number), i -> i + number)
+                .and("state is multiplied by 2", t -> i++)
+                .when("%d is added to the state".formatted(number), i -> (i * 2) + number)
                 .then("the result should be %d".formatted(expectedResult), result -> result.shouldBe(notNull(), equalTo(expectedResult)));
     }
 
@@ -87,8 +85,9 @@ class MyTest {
     void test6(TestCase<List<String>, List<String>> testCase) {
         testCase.withContext()
                 .given("an empty list", new ArrayList<>())
+                .and("element is stored as context variable", ctx -> ctx.setVar("var", "element"))
                 .when("an element is added to the list", ctx -> {
-                    ctx.applyOnState(list -> list.add("element"));
+                    ctx.applyOnState(list -> list.add(ctx.getVar("var")));
                     ctx.setStateAsResult();
                 })
                 .then("the result should be not null", (ctx, result) -> result.shouldBe(notNull()))
