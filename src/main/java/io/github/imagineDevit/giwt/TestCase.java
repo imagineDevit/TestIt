@@ -4,7 +4,7 @@ package io.github.imagineDevit.giwt;
 import io.github.imagineDevit.giwt.core.ATestCase;
 import io.github.imagineDevit.giwt.core.report.TestCaseReport;
 import io.github.imagineDevit.giwt.core.utils.Utils;
-import io.github.imagineDevit.giwt.statements.functions.givens.GivenFFn;
+import io.github.imagineDevit.giwt.statements.functions.givens.AndGivenFn;
 import io.github.imagineDevit.giwt.statements.functions.givens.GivenRFn;
 import io.github.imagineDevit.giwt.statements.functions.givens.GivenSFn;
 import io.github.imagineDevit.giwt.statements.functions.thens.ThenFn;
@@ -23,7 +23,7 @@ import java.util.List;
 public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseResult<R>> {
 
 
-    private final List<GivenFFn<T>> andGivenFns = new ArrayList<>();
+    private final List<AndGivenFn<T>> andGivenFns = new ArrayList<>();
     private final List<ThenFn<R>> thenFns = new ArrayList<>();
     private GivenSFn<T> givenFn = null;
     private GivenRFn givenRFn = null;
@@ -92,7 +92,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * @param message the description of the new Given statement
      * @param fn      the function that executes the given statement
      */
-    protected void andGiven(String message, GivenFFn<T> fn) {
+    protected void andGiven(String message, AndGivenFn<T> fn) {
         this.addAndGivenMsg(message);
         this.andGivenFns.add(fn);
     }
@@ -105,11 +105,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * @return a new instance of WhenStmt that is associated with this test case
      */
     public WhenStmt<T, R> when(String message, WhenFn.S<R> fn) {
-        return runIfOpen(() -> {
-            this.addWhenMsg(message);
-            this.whenFn = fn;
-            return new WhenStmt<>(this);
-        });
+        return runIfOpen(() -> whens(message, fn));
     }
 
     /**
@@ -120,11 +116,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
      * @return a new instance of WhenStmt that is associated with this test case
      */
     public WhenStmt<T, R> when(String message, WhenFn.R fn) {
-        return runIfOpen(() -> {
-            this.addWhenMsg(message);
-            this.whenFn = fn;
-            return new WhenStmt<>(this);
-        });
+        return runIfOpen(() -> this.whenr(message, fn));
     }
 
     /**
@@ -154,6 +146,18 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
     }
 
     /**
+     * Adds a When statement to the current test case with the provided message and a runnable function
+     *
+     * @param message the description of the new When statement
+     * @param fn      the function that executes the When statement
+     * @return a new instance of WhenStmt that is associated with this test case
+     */
+    protected WhenStmt<T, R> whens(String message, WhenFn.S<R> fn) {
+        this.addWhenMsg(message);
+        this.whenFn = fn;
+        return new WhenStmt<>(this);
+    }
+    /**
      * Adds a When statement to the current test case with the provided message and a function.
      *
      * @param message the description of the new When statement
@@ -165,6 +169,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         this.whenFn = fn;
         return new WhenStmt<>(this);
     }
+
 
     /**
      * Adds a Then statement to the current test case with the provided message and a consumer function.
@@ -191,7 +196,6 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         this.thenFns.add(fn);
     }
 
-
     @Override
     protected void run() {
 
@@ -209,7 +213,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             this.givenRFn.run();
         }
 
-        this.andGivenFns.forEach(fn -> this.state = this.state.map(fn));
+        this.andGivenFns.forEach(this.state::apply);
 
         try {
             if (this.whenFn != null) {
@@ -232,7 +236,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
 
     public record GivenStmt<T, R>(TestCase<T, R> testCase) {
 
-        public GivenStmt<T, R> and(String message, GivenFFn<T> fn) {
+        public GivenStmt<T, R> and(String message, AndGivenFn<T> fn) {
             testCase.andGiven(message, fn);
             return this;
         }
@@ -247,6 +251,10 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
 
         public WhenStmt<T, R> when(String message, WhenFn.R fn) {
             return testCase.whenr(message, fn);
+        }
+
+        public WhenStmt<T, R> when(String message, WhenFn.S<R> fn) {
+            return testCase.whens(message, fn);
         }
 
     }
