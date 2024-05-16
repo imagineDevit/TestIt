@@ -82,17 +82,17 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements Expectable<
     }
 
     @Override
-    public Optional<T> resultValue() {
+    public T resultValue() {
         return rValue.getOr(
                 () -> Objects.requireNonNull(value, "Result value is Null")
                         .<T>ok()
-                        .map(ATestCaseResult.ResultValue.Ok::getValue)
                         .orElseThrow(() -> new IllegalStateException("Result value is not an Ok"))
+                        .getValue()
         );
     }
 
     @Override
-    public Optional<Exception> resultError() {
+    public Exception resultError() {
         return rError.getOr(
                 () -> Objects.requireNonNull(value, "Result value is Null")
                         .err()

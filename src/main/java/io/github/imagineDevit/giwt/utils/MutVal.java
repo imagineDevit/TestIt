@@ -1,6 +1,5 @@
 package io.github.imagineDevit.giwt.utils;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -21,15 +20,15 @@ public class MutVal<T> {
      * @return an Optional containing the value if it is set, otherwise an Optional containing the result of the supplied function
      */
     @SuppressWarnings("unchecked")
-    public Optional<T> getOr(Supplier<T> defaultValue) {
+    public T getOr(Supplier<T> defaultValue) {
         if (value instanceof Val.Unsetted) {
             T t = defaultValue.get();
-            value = new Val.Setted<>(Optional.of(t));
-            return Optional.of(t);
+            value = new Val.Setted<>(t);
+            return t;
         } else if (value instanceof Val.Setted<?> setted) {
-            return (Optional<T>) setted.value();
+            return (T) setted.value();
         }
-        return Optional.empty();
+        throw new IllegalStateException("Unknown value type");
     }
 
 }

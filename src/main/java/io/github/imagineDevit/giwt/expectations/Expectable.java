@@ -24,12 +24,7 @@ public interface Expectable<T> {
      * @param expectations the expectations to be checked
      */
     default void shouldFail(ExpectedToFail... expectations) {
-        resultError().ifPresentOrElse(
-                e -> Arrays.asList(expectations).forEach(f -> f.verify(e)),
-                () -> {
-                    throw new AssertionError("Result value is Ok");
-                }
-        );
+        Arrays.asList(expectations).forEach(f -> f.verify(resultError()));
     }
 
     /**
@@ -65,12 +60,8 @@ public interface Expectable<T> {
      * @param expectations the expectations to be checked
      */
     private void verify(Expectation.OnValue[] expectations) {
-        resultValue().ifPresentOrElse(
-                v -> Arrays.asList(expectations).forEach(b -> b.verify(v)),
-                () -> {
-                    throw new AssertionError("Result value is Error");
-                }
-        );
+        Arrays.asList(expectations).forEach(b -> b.verify(resultValue()));
+
     }
 
     /**
@@ -78,12 +69,12 @@ public interface Expectable<T> {
      *
      * @return the result value
      */
-    Optional<T> resultValue();
+    T resultValue();
 
     /**
      * Returns the result error if it is present.
      *
      * @return the result error
      */
-    Optional<Exception> resultError();
+    Exception resultError();
 }

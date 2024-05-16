@@ -21,6 +21,6 @@ public sealed interface Val {
      * @param value the set value
      * @param <T>   the type of the value
      */
-    record Setted<T>(Optional<T> value) implements Val {
+    record Setted<T>(T value) implements Val {
     }
 }
