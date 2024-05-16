@@ -3,7 +3,6 @@ package io.github.imagineDevit.giwt.expectations;
 import io.github.imagineDevit.giwt.core.ATestCaseResult;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * This interface provides methods for asserting the state of a result value.

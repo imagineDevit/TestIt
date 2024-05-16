@@ -1,6 +1,5 @@
 package io.github.imagineDevit.giwt.utils;
 
-import java.util.Optional;
 
 /**
  * The Val interface represents a value that can be either set or unset.

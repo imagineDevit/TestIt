@@ -5,7 +5,6 @@ import io.github.imagineDevit.giwt.expectations.Expectable;
 import io.github.imagineDevit.giwt.utils.MutVal;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
