@@ -213,7 +213,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             this.givenRFn.run();
         }
 
-        this.andGivenFns.forEach(this.state::apply);
+        this.andGivenFns.forEach(this.state::consumeValue);
 
         try {
             if (this.whenFn != null) {
