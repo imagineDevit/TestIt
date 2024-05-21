@@ -83,11 +83,4 @@ public class TestCaseState<T> extends ATestCaseState<T> {
         return Optional.ofNullable(value);
     }
 
-    /**
-     * Applies a function to the current value.
-     * @param fn the function to apply to the current value.
-     */
-    protected void apply(Consumer<T> fn) {
-        fn.accept(value);
-    }
 }
