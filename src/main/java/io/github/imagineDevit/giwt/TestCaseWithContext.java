@@ -20,7 +20,8 @@ import java.util.List;
 public class TestCaseWithContext<T, R> extends ATestCase<T, R, TestCaseCtxState<T>, TestCaseCtxResult<R>> {
 
     private final TestCaseContext.GCtx<T, R> ctx = new TestCaseContext.GCtx<>();
-    private final List<CtxConsumer<R, TestCaseContext.GCtx<T, R>>> givenFns = new ArrayList<>();
+    private CtxConsumer<R, TestCaseContext.GCtx<T, R>> givenFn = null;
+    private final List<CtxConsumer<R, TestCaseContext.AGCtx<T, R>>> aGivenFns = new ArrayList<>();
     private final List<ResCtxConsumer<T, R>> thenFns = new ArrayList<>();
     private CtxConsumer<R, TestCaseContext.WCtx<T, R>> whenFn;
 
@@ -31,7 +32,7 @@ public class TestCaseWithContext<T, R> extends ATestCase<T, R, TestCaseCtxState<
     public GivenCtxStmt<T, R> given(String message, CtxConsumer<R, TestCaseContext.GCtx<T, R>> fn) {
         return runIfOpen(() -> {
             this.addGivenMsg(message);
-            this.givenFns.add(fn);
+            this.givenFn  = fn;
             return new GivenCtxStmt<>(this);
         });
     }
@@ -44,9 +45,9 @@ public class TestCaseWithContext<T, R> extends ATestCase<T, R, TestCaseCtxState<
         });
     }
 
-    protected void andGiven(String message, CtxConsumer<R, TestCaseContext.GCtx<T, R>> fn) {
+    protected void andGiven(String message, CtxConsumer<R, TestCaseContext.AGCtx<T, R>> fn) {
         this.addAndGivenMsg(message);
-        this.givenFns.add(fn);
+        this.aGivenFns.add(fn);
     }
 
     public WhenCtxStmt<T, R> when(String message, CtxConsumer<R, TestCaseContext.WCtx<T, R>> fn) {
@@ -79,8 +80,22 @@ public class TestCaseWithContext<T, R> extends ATestCase<T, R, TestCaseCtxState<
 
         System.out.print(Utils.reportTestCase(name, givenMsgs, whenMsgs, thenMsgs, parameters));
 
-        this.givenFns.forEach(fn -> fn.accept(this.ctx));
-        var wctx = this.ctx.toWCtx();
+        TestCaseContext.AGCtx<T,R> aGctx;
+        TestCaseContext.WCtx<T,R> wctx;
+
+        if (this.givenFn != null) {
+            this.givenFn.accept(this.ctx);
+        }
+
+        if (!this.aGivenFns.isEmpty()) {
+            aGctx = this.ctx.toAGCtx();
+            this.aGivenFns.forEach(fn -> fn.accept(aGctx));
+            wctx = aGctx.toWCtx();
+        } else {
+            wctx = this.ctx.toWCtx();
+        }
+
+
         try {
             this.whenFn.accept(wctx);
         } catch (Exception e) {
@@ -93,7 +108,7 @@ public class TestCaseWithContext<T, R> extends ATestCase<T, R, TestCaseCtxState<
 
     public record GivenCtxStmt<T, R>(TestCaseWithContext<T, R> testCase) {
 
-        public GivenCtxStmt<T, R> and(String message, CtxConsumer<R, TestCaseContext.GCtx<T, R>> fn) {
+        public GivenCtxStmt<T, R> and(String message, CtxConsumer<R, TestCaseContext.AGCtx<T, R>> fn) {
             testCase.andGiven(message, fn);
             return this;
         }

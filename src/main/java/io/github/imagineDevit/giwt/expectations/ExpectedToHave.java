@@ -25,12 +25,15 @@ public sealed interface ExpectedToHave<T> extends Expectation.OnValue<T> {
 
     /**
      * Creates an expectation for a value to contain a specific item.
-     *
+     * It is used for collections, arrays, maps and strings.
+     * <p>
+     *    ⚠️ For Maps, the item is checked against the values.
+     * </p>
      * @param item the expected item
      * @param <T>  the type of the value to be checked
      * @return an AnItemEqualTo expectation
      */
-    static <T> AnItemEqualTo<T> anItemEqualTo(T item) {
+    static <T, I> AnItemEqualTo<T, I> anItemEqualTo(I item) {
         return new AnItemEqualTo<>(item);
     }
 
@@ -41,6 +44,12 @@ public sealed interface ExpectedToHave<T> extends Expectation.OnValue<T> {
      * @param <T> the type of the value to be checked
      */
     record Size<T>(int size) implements ExpectedToHave<T> {
+
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be have size <" + size + ">");
+        }
+
         @Override
         public void verify(T value) {
             int length;
@@ -49,7 +58,7 @@ public sealed interface ExpectedToHave<T> extends Expectation.OnValue<T> {
             else if (value instanceof Object[] array) length = array.length;
             else if (value instanceof Map<?, ?> map) length = map.size();
             else if (value instanceof String s) length = s.length();
-            else throw new AssertionError("Result value has no size");
+            else throw new IllegalStateException("Result value has no size");
 
             if (length != size)
                 throw new AssertionError("Expected result to have size <" + size + "> but got <" + length + ">");
@@ -62,7 +71,13 @@ public sealed interface ExpectedToHave<T> extends Expectation.OnValue<T> {
      *
      * @param <T> the type of the value to be checked
      */
-    record AnItemEqualTo<T>(T item) implements ExpectedToHave<T> {
+    record AnItemEqualTo<T, I>(I item) implements ExpectedToHave<T> {
+
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be have item equal to <" + item + ">");
+        }
+
         @Override
         public void verify(T value) {
             if (value instanceof Collection<?> collection) {
@@ -77,8 +92,14 @@ public sealed interface ExpectedToHave<T> extends Expectation.OnValue<T> {
                     }
                 }
                 if (!found) throw new AssertionError("Expected result to contain <" + item + "> but it does not");
+            } else if (value instanceof Map<?, ?> map) {
+                if (!map.containsValue(item))
+                    throw new AssertionError("Expected result to contain <" + item + "> but it does not");
+            } else if (value instanceof String s) {
+                if (!s.contains(item.toString()))
+                    throw new AssertionError("Expected result to contain <" + item + "> but it does not");
             } else {
-                throw new AssertionError("Result value is not a collection");
+                throw new IllegalStateException("Result value is not a collection, an array, a map or a string");
             }
         }
     }

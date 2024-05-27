@@ -2,8 +2,6 @@ package io.github.imagineDevit.giwt.expectations;
 
 import io.github.imagineDevit.giwt.core.utils.Utils;
 
-import java.util.Collection;
-
 /**
  * This interface provides a set of static methods to create different types of expectations.
  * Each expectation is a record that implements the ExpectedToBe interface and overrides the verify method.
@@ -14,6 +12,7 @@ import java.util.Collection;
  */
 @SuppressWarnings({"unused"})
 public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
+
 
     /**
      * Creates an expectation that a value should be null.
@@ -87,19 +86,8 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      * @param max the maximum value
      * @return a LesserThan expectation
      */
-    static <T> LesserThan<T> lesserThan(T max) {
-        return new LesserThan<>(max);
-    }
-
-    /**
-     * Creates an expectation that a value should be one of the values in the collection.
-     *
-     * @param <T>    the type of the value to be checked
-     * @param values the collection of values
-     * @return a OneOf expectation
-     */
-    static <T> OneOf<T> oneOf(Collection<T> values) {
-        return new OneOf<>(values);
+    static <T> LessThan<T> lessThan(T max) {
+        return new LessThan<>(max);
     }
 
     /**
@@ -109,9 +97,14 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      */
     record Null<T>() implements ExpectedToBe<T> {
         @Override
+        public Name name() {
+            return new Name.Value("Expected to be null");
+        }
+
+        @Override
         public void verify(T value) {
             if (value != null) {
-                throw new AssertionError("Expected null value but got " + value);
+                throw new AssertionError("Expected <null> but got <%s>".formatted(value.toString()));
             }
         }
     }
@@ -122,6 +115,12 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      * @param <T> the type of the value to be checked
      */
     record NotNull<T>() implements ExpectedToBe<T> {
+
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be not null");
+        }
+
         @Override
         public void verify(T value) {
             if (value == null) {
@@ -137,6 +136,12 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      * @param expected the expected value
      */
     record EqualTo<T>(T expected) implements ExpectedToBe<T> {
+
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be equal to <" + expected + ">");
+        }
+
         @Override
         public void verify(T value) {
             if (!value.equals(expected)) {
@@ -152,6 +157,12 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      * @param expected the expected value
      */
     record NotEqualTo<T>(T expected) implements ExpectedToBe<T> {
+
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be not equal to <" + expected + ">");
+        }
+
         @Override
         public void verify(T value) {
             if (value.equals(expected)) {
@@ -168,11 +179,17 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      * @param max the maximum value
      */
     record Between<T>(T min, T max) implements ExpectedToBe<T> {
+
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be between <" + min + "> and <" + max + ">");
+        }
+
         @Override
         public void verify(T value) {
             var c = Utils.asComparableOrThrow(
                     value,
-                    () -> new AssertionError("Value is not comparable")
+                    () -> new IllegalStateException("Value is not comparable")
             );
 
             if (c.compareTo(min) < 0 || c.compareTo(max) > 0) {
@@ -188,11 +205,17 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      * @param min the minimum value
      */
     record GreaterThan<T>(T min) implements ExpectedToBe<T> {
+
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be greater than <" + min + ">");
+        }
+
         @Override
         public void verify(T value) {
             var c = Utils.asComparableOrThrow(
                     value,
-                    () -> new AssertionError("Value is not comparable")
+                    () -> new IllegalStateException("Value is not comparable")
             );
 
             if (c.compareTo(min) <= 0) {
@@ -207,32 +230,24 @@ public sealed interface ExpectedToBe<T> extends Expectation.OnValue<T> {
      * @param <T> the type of the value to be checked
      * @param max the maximum value
      */
-    record LesserThan<T>(T max) implements ExpectedToBe<T> {
+    record LessThan<T>(T max) implements ExpectedToBe<T> {
+        @Override
+        public Name name() {
+            return new Name.Value("Expected to be less than <" + max + ">");
+        }
+
         @Override
         public void verify(T value) {
             var c = Utils.asComparableOrThrow(
                     value,
-                    () -> new AssertionError("Value is not comparable")
+                    () -> new IllegalStateException("Value is not comparable")
             );
 
             if (c.compareTo(max) >= 0) {
-                throw new AssertionError("Expected value to be lesser than <" + max + "> but got <" + value + ">");
+                throw new AssertionError("Expected value to be less than <" + max + "> but got <" + value + ">");
             }
         }
     }
 
-    /**
-     * This record represents an expectation that a value should be one of the values in the collection.
-     *
-     * @param <T>    the type of the value to be checked
-     * @param values the collection of values
-     */
-    record OneOf<T>(Collection<T> values) implements ExpectedToBe<T> {
-        @Override
-        public void verify(T value) {
-            if (!values.contains(value))
-                throw new AssertionError("Expected value to be one of <" + values + "> but got <" + value + ">");
-        }
-    }
 
 }

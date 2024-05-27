@@ -227,7 +227,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
                     this.result = TestCaseResult.of(((WhenFn.S<R>) sfn).get());
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             this.result = TestCaseResult.ofErr(e);
         }
 

@@ -1,5 +1,6 @@
 package io.github.imagineDevit.giwt;
 
+
 import io.github.imagineDevit.giwt.core.ATestCaseResult;
 import io.github.imagineDevit.giwt.expectations.Expectable;
 import io.github.imagineDevit.giwt.utils.MutVal;
@@ -17,7 +18,7 @@ import java.util.function.Function;
 public class TestCaseResult<T> extends ATestCaseResult<T> implements Expectable<T> {
 
     private final MutVal<T> rValue = new MutVal<>();
-    private final MutVal<Exception> rError = new MutVal<>();
+    private final MutVal<Throwable> rError = new MutVal<>();
 
     /**
      * Private constructor for TestCaseResult.
@@ -33,7 +34,7 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements Expectable<
      *
      * @param e the exception to be set as the value of the test case result
      */
-    private TestCaseResult(Exception e) {
+    private TestCaseResult(Throwable e) {
         super(e);
     }
 
@@ -53,7 +54,7 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements Expectable<
      * @param e the exception to be set as the value of the test case result
      * @return a new TestCaseResult instance
      */
-    protected static <T> TestCaseResult<T> ofErr(Exception e) {
+    protected static <T> TestCaseResult<T> ofErr(Throwable e) {
         return new TestCaseResult<>(e);
     }
 
@@ -91,7 +92,7 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements Expectable<
     }
 
     @Override
-    public Exception resultError() {
+    public Throwable resultError() {
         return rError.getOr(
                 () -> Objects.requireNonNull(value, "Result value is Null")
                         .err()
