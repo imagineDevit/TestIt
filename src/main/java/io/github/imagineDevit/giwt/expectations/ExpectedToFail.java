@@ -34,8 +34,14 @@ public sealed interface ExpectedToFail extends Expectation.OnFailure {
      * @param clazz the class of the expected exception
      */
     record WihType(Class<?> clazz) implements ExpectedToFail {
+
         @Override
-        public void verify(Exception e) {
+        public Name name() {
+            return new Name.Value("Expected to fail with exception of type <" + clazz.getName() + ">");
+        }
+
+        @Override
+        public void verify(Throwable e) {
             if (!clazz.isInstance(e)) {
                 throw new AssertionError("Expected error to be of type <" + clazz.getName() + "> but got <" + e.getClass().getName() + ">");
             }
@@ -49,7 +55,12 @@ public sealed interface ExpectedToFail extends Expectation.OnFailure {
      */
     record WithMessage(String message) implements ExpectedToFail {
         @Override
-        public void verify(Exception e) {
+        public Name name() {
+            return new Name.Value("Expected to fail with message <" + message + ">");
+        }
+
+        @Override
+        public void verify(Throwable e) {
             if (!e.getMessage().equals(message)) {
                 throw new AssertionError("Expected error message to be <" + message + "> but got <" + e.getMessage() + ">");
             }

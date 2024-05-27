@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 import static io.github.imagineDevit.giwt.core.utils.TextUtils.blue;
 import static io.github.imagineDevit.giwt.core.utils.TextUtils.bold;
@@ -113,12 +112,12 @@ public sealed class TestCaseContext<T, R> {
         }
 
         /**
-         * Map the context state
+         * Convert the context to a AGCtx
          *
-         * @param mapper the function to apply to the state
+         * @return a WCtx instance
          */
-        public void mapState(UnaryOperator<T> mapper) {
-            context.computeIfPresent(STATE, (k, v) -> ((TestCaseCtxState<T>) v).map(mapper));
+        protected AGCtx<T, R> toAGCtx() {
+            return new AGCtx<>(context);
         }
 
         /**
@@ -129,6 +128,33 @@ public sealed class TestCaseContext<T, R> {
         protected WCtx<T, R> toWCtx() {
             return new WCtx<>(context);
         }
+
+    }
+
+    public static non-sealed class AGCtx<T, R> extends TestCaseContext<T, R> {
+
+        protected AGCtx(Map<String, Object> context) {
+            super(context);
+        }
+
+        /**
+         * Convert the context to a WCtx
+         *
+         * @return a WCtx instance
+         */
+        protected WCtx<T, R> toWCtx() {
+            return new WCtx<>(context);
+        }
+
+        /**
+         * Apply an action on the context state
+         *
+         * @param consumer the action to apply
+         */
+        public void applyOnState(Consumer<T> consumer) {
+            consumer.accept(getState().value());
+        }
+
 
     }
 

@@ -1,9 +1,9 @@
 package io.github.imagineDevit.giwt.expectations;
 
-import io.github.imagineDevit.giwt.core.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -71,8 +71,12 @@ public sealed interface ExpectedToMatch<T> extends Expectation.OnValue<T> {
     record Matching<T>(String description, Predicate<T> predicate) {
         public void shouldTest(T value) {
             if (!predicate.test(value)) {
-                throw new AssertionError("Matching < %s > failed ".formatted(TextUtils.yellow(description)));
+                throw new AssertionError("Matching <%s> failed".formatted(description));
             }
+        }
+
+        private Matching<T> not() {
+            return new Matching<>(description, predicate.negate());
         }
     }
 
@@ -82,6 +86,14 @@ public sealed interface ExpectedToMatch<T> extends Expectation.OnValue<T> {
      * @param <T> the type of the value to be checked
      */
     record One<T>(Matching<T> matching) implements ExpectedToMatch<T> {
+
+        @Override
+        public Name name() {
+            if (Objects.requireNonNullElse(matching.description, "").isBlank())
+                return new Name.Value("Expected to match one condition");
+            return new Name.Value(matching.description);
+        }
+
         @Override
         public void verify(T value) {
             matching.shouldTest(value);
@@ -94,17 +106,15 @@ public sealed interface ExpectedToMatch<T> extends Expectation.OnValue<T> {
      * @param <T> the type of the value to be checked
      */
     record All<T>(List<Matching<T>> matchings) implements ExpectedToMatch<T> {
+
+        @Override
+        public Name name() {
+            return new Name.None();
+        }
+
         @Override
         public void verify(T value) {
-            List<String> failedMessages = matchings.stream()
-                    .filter(matching -> !matching.predicate.test(value))
-                    .map(m -> "👉 %s".formatted(m.description))
-                    .toList();
-
-            if (!failedMessages.isEmpty()) {
-                throw new AssertionError("\n Following matchings failed: \n %s  \n".formatted(String.join("\n ", failedMessages)));
-            }
-
+            matchings.forEach(matching -> new One<T>(matching).verify(value));
         }
     }
 
@@ -115,15 +125,13 @@ public sealed interface ExpectedToMatch<T> extends Expectation.OnValue<T> {
      */
     record None<T>(List<Matching<T>> matchings) implements ExpectedToMatch<T> {
         @Override
-        public void verify(T value) {
-            List<String> failedMessages = matchings.stream()
-                    .filter(matching -> matching.predicate.test(value))
-                    .map(m -> "👉 %s".formatted(m.description))
-                    .toList();
+        public Name name() {
+            return new Name.None();
+        }
 
-            if (!failedMessages.isEmpty()) {
-                throw new AssertionError("\n Following matchings are expected to fail but succeed: \n %s  \n".formatted(String.join("\n ", failedMessages)));
-            }
+        @Override
+        public void verify(T value) {
+            matchings.forEach(matching -> new One<T>(matching.not()).verify(value));
         }
     }
 }

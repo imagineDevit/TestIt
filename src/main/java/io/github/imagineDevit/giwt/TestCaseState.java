@@ -5,7 +5,6 @@ import io.github.imagineDevit.giwt.core.ATestCaseState;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 /**
  * A state of a test case
@@ -42,16 +41,6 @@ public class TestCaseState<T> extends ATestCaseState<T> {
      */
     protected static <T> TestCaseState<T> empty() {
         return new TestCaseState<>(null);
-    }
-
-    /**
-     * Applies a function to the current value and returns a new TestCaseState with the result.
-     *
-     * @param mapper the function to apply to the current value
-     * @return a new TestCaseState with the result of the function
-     */
-    protected TestCaseState<T> map(UnaryOperator<T> mapper) {
-        return TestCaseState.of(mapper.apply(value));
     }
 
     /**

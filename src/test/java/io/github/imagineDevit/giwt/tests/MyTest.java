@@ -8,8 +8,7 @@ import io.github.imagineDevit.giwt.core.annotations.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.imagineDevit.giwt.expectations.ExpectedToBe.equalTo;
-import static io.github.imagineDevit.giwt.expectations.ExpectedToBe.notNull;
+import static io.github.imagineDevit.giwt.expectations.ExpectedToBe.*;
 import static io.github.imagineDevit.giwt.expectations.ExpectedToFail.withMessage;
 import static io.github.imagineDevit.giwt.expectations.ExpectedToFail.withType;
 import static io.github.imagineDevit.giwt.expectations.ExpectedToHave.anItemEqualTo;
@@ -59,8 +58,11 @@ class MyTest {
     void test3(TestCase<Void, Integer> testCase) {
         testCase
                 .when("called method return 1", () -> 1)
-                .then("the result should be not null", result -> result.shouldBe(notNull()))
-                .and("the result should be equal to 1", result -> result.shouldBe(equalTo(1)));
+                .then("the result should be not null and equal to 1",
+                        result -> result
+                                .shouldBe(notNull())
+                                .and(equalTo(1))
+                );
     }
 
     @Test("An illegalState exception should be thrown")
@@ -69,16 +71,20 @@ class MyTest {
                 .when("called method throw an exception with oups message", () -> {
                     throw new IllegalStateException("Oups");
                 })
-                .then("the exception is not null", result -> result.shouldFail(withType(IllegalStateException.class), withMessage("Oups")));
+                .then("the exception is not null",
+                        result -> result
+                                .shouldFail(withType(IllegalStateException.class))
+                                .and(withMessage("Oups"))
+
+                );
     }
 
     @Test("test case with context")
     void test5(TestCase<Integer, Integer> testCase) {
         testCase.withContext()
                 .given("the state is set to 1", ctx -> ctx.setState(1))
-                .and("the state is multiplied by 2", ctx -> ctx.mapState(one -> one * 2))
                 .when("result is set to state + 1", ctx -> ctx.mapToResult(one -> one + 1))
-                .then("the result should be 3", (ctx, result) -> result.shouldBe(notNull(), equalTo(3)));
+                .then("the result should be 3", (ctx, result) -> result.shouldBe(notNull(), equalTo(2)));
     }
 
     @Test("Add element to an empty collection")
@@ -91,8 +97,11 @@ class MyTest {
                     ctx.setStateAsResult();
                 })
                 .then("the result should be not null", (ctx, result) -> result.shouldBe(notNull()))
-                .and("the result should have a size equal to 1", (ctx, result) -> result.shouldHave(size(1)))
-                .and("the result should contain an item equal to 'element'", (ctx, result) -> result.shouldHave(anItemEqualTo("element")));
+                .and("the result should have a single item equal to 'element'",
+                        (ctx, result) -> result
+                                        .shouldHave(size(1))
+                                        .and(anItemEqualTo("element"))
+                );
     }
 
     @Test("ctx An illegalState exception should be thrown")

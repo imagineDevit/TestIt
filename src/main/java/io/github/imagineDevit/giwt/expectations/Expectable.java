@@ -23,7 +23,25 @@ public interface Expectable<T> {
      * @param expectations the expectations to be checked
      */
     default void shouldFail(ExpectedToFail... expectations) {
-        Arrays.asList(expectations).forEach(f -> f.verify(resultError()));
+        Arrays.asList(expectations).forEach(f -> f.doVerify(resultError()));
+    }
+
+    /**
+     * Verifies that the result value should fail the provided expectation.
+     * @param expectation the expectation to be checked
+     * @return an ExpectationChain.OnFailure instance
+     */
+    default ExpectationChain.OnFailure<T, ExpectedToFail> shouldFail(ExpectedToFail expectation) {
+        expectation.doVerify(resultError());
+        return new ExpectationChain.OnFailure<>(resultError());
+    }
+
+    default void shouldSucceed() {
+        try {
+            resultValue();
+        } catch (Throwable e) {
+            throw new AssertionError("Expected the result to succeed but got an error: " + e.getMessage());
+        }
     }
 
     /**
@@ -36,12 +54,34 @@ public interface Expectable<T> {
     }
 
     /**
+     * Verifies that the result value should be the provided expectation.
+     * @param expectation the expectation to be checked
+     * @return an ExpectationChain.OnValue instance
+     */
+    default ExpectationChain.OnValue<T, ExpectedToBe<T>> shouldBe(ExpectedToBe expectation) {
+        T value = resultValue();
+        expectation.doVerify(value);
+       return new ExpectationChain.OnValue<>(value, this);
+    }
+
+    /**
      * Verifies that the result value should have the provided expectations.
      *
      * @param expectations the expectations to be checked
      */
     default void shouldHave(ExpectedToHave... expectations) {
         verify(expectations);
+    }
+
+    /**
+     * Verifies that the result value should have the provided expectation.
+     * @param expectation the expectation to be checked
+     * @return an ExpectationChain.OnValue instance
+     */
+    default ExpectationChain.OnValue<T, ExpectedToHave<T>> shouldHave(ExpectedToHave expectation) {
+        T value = resultValue();
+        expectation.doVerify(value);
+        return new ExpectationChain.OnValue<>(value, this);
     }
 
     /**
@@ -54,12 +94,23 @@ public interface Expectable<T> {
     }
 
     /**
+     * Verifies that the result value should match the provided expectation.
+     * @param expectation the expectation to be checked
+     * @return an ExpectationChain.OnValue instance
+     */
+    default ExpectationChain.OnValue<T, ExpectedToMatch<T>> shouldMatch(ExpectedToMatch expectation) {
+        T value = resultValue();
+        expectation.doVerify(value);
+        return new ExpectationChain.OnValue<>(value, this);
+    }
+
+    /**
      * Verifies the provided expectations against the result value.
      *
      * @param expectations the expectations to be checked
      */
     private void verify(Expectation.OnValue[] expectations) {
-        Arrays.asList(expectations).forEach(b -> b.verify(resultValue()));
+        Arrays.asList(expectations).forEach(b -> b.doVerify(resultValue()));
 
     }
 
@@ -75,5 +126,5 @@ public interface Expectable<T> {
      *
      * @return the result error
      */
-    Exception resultError();
+     Throwable resultError();
 }
