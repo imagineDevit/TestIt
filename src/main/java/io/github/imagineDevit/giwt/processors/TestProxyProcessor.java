@@ -1,7 +1,7 @@
 package io.github.imagineDevit.giwt.processors;
 
 import com.squareup.javapoet.*;
-import io.github.imagineDevit.giwt.core.annotations.ParameterRecordName;
+import io.github.imagineDevit.giwt.core.annotations.ParametersDataName;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -17,15 +17,15 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * A processor to generate proxy classes for classes annotated with {@link io.github.imagineDevit.giwt.core.annotations.GiwtProxyable}.
+ * A processor to generate proxy classes for classes annotated with {@link io.github.imagineDevit.giwt.core.annotations.TestProxy}.
  *
  * @author Henri Joel SEDJAME
- * @see io.github.imagineDevit.giwt.core.annotations.GiwtProxyable
+ * @see io.github.imagineDevit.giwt.core.annotations.TestProxy
  */
 
-@SupportedAnnotationTypes("io.github.imagineDevit.giwt.core.annotations.GiwtProxyable")
+@SupportedAnnotationTypes("io.github.imagineDevit.giwt.core.annotations.TestProxy")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-public class GiwtProxyableProcessor extends AbstractProcessor {
+public class TestProxyProcessor extends AbstractProcessor {
 
     private static final String DELEGATE = "delegate";
     private static final String INIT = "<init>";
@@ -103,7 +103,6 @@ public class GiwtProxyableProcessor extends AbstractProcessor {
 
     }
 
-
     private MethodSpec buildMethod(TypeSpec.Builder type, ExecutableElement element) {
         var methodName = element.getSimpleName().toString();
 
@@ -129,8 +128,8 @@ public class GiwtProxyableProcessor extends AbstractProcessor {
                         .addStatement("$N this.$N.$N($N)", returnTerm, DELEGATE, methodName, parameter);
             }
             default -> {
-                var recordName = capitalize(Optional.ofNullable(element.getAnnotation(ParameterRecordName.class))
-                        .map(ParameterRecordName::value)
+                var recordName = capitalize(Optional.ofNullable(element.getAnnotation(ParametersDataName.class))
+                        .map(ParametersDataName::value)
                         .orElse(methodName) + PARAMS);
 
                 type.addType(buildRecord(recordName, parameters));

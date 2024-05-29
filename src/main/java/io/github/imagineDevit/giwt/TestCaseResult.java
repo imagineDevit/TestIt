@@ -2,8 +2,8 @@ package io.github.imagineDevit.giwt;
 
 
 import io.github.imagineDevit.giwt.core.ATestCaseResult;
-import io.github.imagineDevit.giwt.expectations.Expectable;
-import io.github.imagineDevit.giwt.utils.MutVal;
+import io.github.imagineDevit.giwt.core.utils.MutVal;
+import io.github.imagineDevit.giwt.expectations.JExpectable;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @author Henri Joel SEDJAME
  * @since 0.1.0
  */
-public class TestCaseResult<T> extends ATestCaseResult<T> implements Expectable<T> {
+public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable<T> {
 
     private final MutVal<T> rValue = new MutVal<>();
     private final MutVal<Throwable> rError = new MutVal<>();
