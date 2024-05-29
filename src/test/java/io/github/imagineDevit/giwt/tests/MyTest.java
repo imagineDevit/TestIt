@@ -8,11 +8,11 @@ import io.github.imagineDevit.giwt.core.annotations.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.imagineDevit.giwt.expectations.ExpectedToBe.*;
-import static io.github.imagineDevit.giwt.expectations.ExpectedToFail.withMessage;
-import static io.github.imagineDevit.giwt.expectations.ExpectedToFail.withType;
-import static io.github.imagineDevit.giwt.expectations.ExpectedToHave.anItemEqualTo;
-import static io.github.imagineDevit.giwt.expectations.ExpectedToHave.size;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.*;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToFail.withMessage;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToFail.withType;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToHave.anItemEqualTo;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToHave.size;
 
 @ExtendWith({MyTestExtension.class})
 @ConfigureWith(MyTestConfiguration.class)

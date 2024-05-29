@@ -204,7 +204,6 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             return;
         }
 
-
         System.out.print(Utils.reportTestCase(name, givenMsgs, whenMsgs, thenMsgs, parameters));
 
         if (this.givenFn != null) {
