@@ -1,11 +1,15 @@
 package io.github.imagineDevit.giwt.expectations;
 
 import io.github.imagineDevit.giwt.core.expectations.*;
+import io.github.imagineDevit.giwt.core.expectations.Expectation.Should;
+import io.github.imagineDevit.giwt.core.expectations.Expectation.Should.ShouldFail;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * [JExpectable] is an interface that extends [Expectable] and provides additional methods to verify expectations.
+ *
  * @param <T> the type of the result value
  */
 public interface JExpectable<T> extends Expectable<T> {
@@ -15,8 +19,8 @@ public interface JExpectable<T> extends Expectable<T> {
      */
     @Override
     default OnFailureChain<ExpectedToFail> shouldFail(ExpectedToFail expectation) {
-        expectation.doVerify(resultError());
-        return new OnFailureChain<>(resultError());
+        var sh = new ShouldFail<>(this, List.of(expectation));
+        return new OnFailureChain<>(sh.verifyAndGet());
     }
 
     /**
@@ -25,7 +29,7 @@ public interface JExpectable<T> extends Expectable<T> {
      * @param expectations the expectations to be checked
      */
     default void shouldFail(ExpectedToFail... expectations) {
-        Arrays.asList(expectations).forEach(f -> f.doVerify(resultError()));
+        new ShouldFail<>(this, Arrays.asList(expectations)).verify();
     }
 
     /**
@@ -85,13 +89,12 @@ public interface JExpectable<T> extends Expectable<T> {
      * @param expectations the expectations to be checked
      */
     private void verify(Expectation.OnValue<T>[] expectations) {
-        T value = resultValue();
-        Arrays.asList(expectations).forEach(b -> b.doVerify(value));
+        new Should.ShouldSucceed<>(this, Arrays.asList(expectations))
+                .verify();
     }
 
     private <E extends Expectation.OnValue<T>> OnValueChain<T, E> verify(E expectation) {
-        T value = resultValue();
-        expectation.doVerify(value);
-        return new OnValueChain<>(value, this);
+        var sc = new Should.ShouldSucceed<>(this, List.of(expectation));
+        return new OnValueChain<>(sc.verifyAndGet(), this);
     }
 }
