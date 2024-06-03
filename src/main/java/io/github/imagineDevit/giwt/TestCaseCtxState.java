@@ -2,8 +2,7 @@ package io.github.imagineDevit.giwt;
 
 import io.github.imagineDevit.giwt.core.ATestCaseState;
 
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
+import java.util.Objects;
 
 /**
  * A state of a test case with context
@@ -42,29 +41,6 @@ public class TestCaseCtxState<T> extends ATestCaseState<T> {
         return new TestCaseCtxState<>(null);
     }
 
-    /**
-     * Applies a function to the current value and returns a new TestCaseCtxState with the result.
-     *
-     * @param mapper the function to apply to the current value
-     * @return a new TestCaseCtxState with the result of the function
-     */
-    protected TestCaseCtxState<T> map(UnaryOperator<T> mapper) {
-        return new TestCaseCtxState<>(mapper.apply(this.value()));
-    }
-
-    /**
-     * Applies a function to the current value and returns a new TestCaseCtxResult with the result.
-     *
-     * @param mapper the function to apply to the current value
-     * @return a new TestCaseCtxResult with the result of the function
-     */
-    protected <R> TestCaseCtxResult<R> toResult(Function<T, R> mapper) {
-        try {
-            return TestCaseCtxResult.of(mapper.apply(this.value()));
-        } catch (Exception e) {
-            return TestCaseCtxResult.ofErr(e);
-        }
-    }
 
     /**
      * Returns the current value.
@@ -73,5 +49,18 @@ public class TestCaseCtxState<T> extends ATestCaseState<T> {
      */
     protected T value() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestCaseCtxState<?> that = (TestCaseCtxState<?>) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 }

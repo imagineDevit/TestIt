@@ -2,9 +2,8 @@ package io.github.imagineDevit.giwt;
 
 import io.github.imagineDevit.giwt.core.ATestCaseState;
 
-import java.util.Optional;
+import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A state of a test case
@@ -44,16 +43,6 @@ public class TestCaseState<T> extends ATestCaseState<T> {
     }
 
     /**
-     * Applies a function to the current value and returns a new TestCaseResult with the result.
-     *
-     * @param mapper the function to apply to the current value
-     * @return a new TestCaseResult with the result of the function
-     */
-    protected <R> TestCaseResult<R> mapToResult(Function<T, R> mapper) {
-        return TestCaseResult.of(mapper.apply(value));
-    }
-
-    /**
      * Consumes the current value using a provided Consumer.
      *
      * @param consumer the Consumer to apply to the current value
@@ -64,19 +53,24 @@ public class TestCaseState<T> extends ATestCaseState<T> {
     }
 
     /**
-     * Returns an Optional containing the current value, or an empty Optional if the value is null.
+     * Returns the current value.
      *
-     * @return an Optional containing the current value
+     * @return the current value
      */
-    protected Optional<T> get() {
-        return Optional.ofNullable(value);
+    protected T value() {
+        return value;
     }
 
-    /**
-     * Applies a function to the current value.
-     * @param fn the function to apply to the current value.
-     */
-    protected void apply(Consumer<T> fn) {
-        fn.accept(value);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestCaseState<?> that = (TestCaseState<?>) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 }

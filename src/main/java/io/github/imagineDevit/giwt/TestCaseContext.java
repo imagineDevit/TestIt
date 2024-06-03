@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static io.github.imagineDevit.giwt.core.utils.TextUtils.blue;
 import static io.github.imagineDevit.giwt.core.utils.TextUtils.bold;
@@ -107,7 +104,7 @@ public sealed class TestCaseContext<T, R> {
          *
          * @param value the state value
          */
-        public void setState(T value) {
+        protected void setState(T value) {
             context.put(STATE, TestCaseCtxState.of(value));
         }
 
@@ -146,16 +143,6 @@ public sealed class TestCaseContext<T, R> {
             return new WCtx<>(context);
         }
 
-        /**
-         * Apply an action on the context state
-         *
-         * @param consumer the action to apply
-         */
-        public void applyOnState(Consumer<T> consumer) {
-            consumer.accept(getState().value());
-        }
-
-
     }
 
     public static non-sealed class WCtx<T, R> extends TestCaseContext<T, R> {
@@ -163,40 +150,6 @@ public sealed class TestCaseContext<T, R> {
         protected WCtx(Map<String, Object> context) {
             super(context);
             setResult(TestCaseCtxResult.empty());
-        }
-
-        /**
-         * Apply a function to the context state and set the context result with the returned value
-         *
-         * @param mapper the function to apply to the state
-         */
-        public void mapToResult(Function<T, R> mapper) {
-            setResult(getState().toResult(mapper));
-        }
-
-        /**
-         * Apply an action on the context state
-         *
-         * @param consumer the action to apply
-         */
-        public void applyOnState(Consumer<T> consumer) {
-            consumer.accept(getState().value());
-        }
-
-        /**
-         * Set the context state as the context result
-         */
-        public void setStateAsResult() {
-            setResult(getState().toResult(t -> (R) t));
-        }
-
-        /**
-         * Supply the context result
-         *
-         * @param supplier the supplier to get the result value
-         */
-        public void supplyResult(Supplier<R> supplier) {
-            setResult(TestCaseCtxResult.of(supplier.get()));
         }
 
         /**

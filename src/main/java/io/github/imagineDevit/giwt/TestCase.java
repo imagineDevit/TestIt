@@ -157,6 +157,7 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
         this.whenFn = fn;
         return new WhenStmt<>(this);
     }
+
     /**
      * Adds a When statement to the current test case with the provided message and a function.
      *
@@ -212,12 +213,12 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             this.givenRFn.run();
         }
 
-        this.andGivenFns.forEach(this.state::apply);
+        this.andGivenFns.forEach(this.state::consumeValue);
 
         try {
             if (this.whenFn != null) {
                 if (this.whenFn instanceof WhenFn.F<?, ?> gfn) {
-                    this.result = this.state.mapToResult((WhenFn.F<T, R>) gfn);
+                    this.result = TestCaseResult.of(((WhenFn.F<T, R>) gfn).apply(this.state.value()));
                 } else if (this.whenFn instanceof WhenFn.R rfn) {
                     rfn.run();
                 } else if (this.whenFn instanceof WhenFn.C<?> cfn) {
@@ -230,7 +231,10 @@ public class TestCase<T, R> extends ATestCase<T, R, TestCaseState<T>, TestCaseRe
             this.result = TestCaseResult.ofErr(e);
         }
 
+        System.out.print(Utils.listExpectations());
+
         this.thenFns.forEach(fn -> fn.accept(this.result));
+        System.out.println();
     }
 
     public record GivenStmt<T, R>(TestCase<T, R> testCase) {

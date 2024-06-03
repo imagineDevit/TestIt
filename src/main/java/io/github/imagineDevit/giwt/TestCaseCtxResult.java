@@ -7,18 +7,18 @@ import java.util.Objects;
 /**
  * A result of a test case with context
  *
- * @param <T> the result type
+ * @param <R> the result type
  * @author Henri Joel SEDJAME
  * @since 0.1.0
  */
-public class TestCaseCtxResult<T> extends ATestCaseResult<T> {
+public class TestCaseCtxResult<R> extends ATestCaseResult<R> {
 
     /**
      * Private constructor that accepts a value
      *
      * @param value the value to be wrapped in the TestCaseCtxResult
      */
-    private TestCaseCtxResult(T value) {
+    private TestCaseCtxResult(R value) {
         super(value);
     }
 
@@ -37,7 +37,7 @@ public class TestCaseCtxResult<T> extends ATestCaseResult<T> {
      * @param value the value to be wrapped in the TestCaseCtxResult
      * @return a new TestCaseCtxResult instance with the given value
      */
-    protected static <T> TestCaseCtxResult<T> of(T value) {
+    protected static <R> TestCaseCtxResult<R> of(R value) {
         return new TestCaseCtxResult<>(value);
     }
 
@@ -46,8 +46,8 @@ public class TestCaseCtxResult<T> extends ATestCaseResult<T> {
      *
      * @return a new TestCaseCtxResult instance with a null value
      */
-    protected static <T> TestCaseCtxResult<T> empty() {
-        return new TestCaseCtxResult<>(null);
+    protected static <R> TestCaseCtxResult<R> empty() {
+        return new TestCaseCtxResult<>((R) null);
     }
 
     /**
@@ -57,24 +57,36 @@ public class TestCaseCtxResult<T> extends ATestCaseResult<T> {
      * @return a new TestCaseCtxResult instance with the given Exception
      */
     protected static <T> TestCaseCtxResult<T> ofErr(Exception e) {
-        return new TestCaseCtxResult<>(e);
+        return new TestCaseCtxResult<>(Objects.requireNonNull(e));
     }
 
     /**
      * Method to get the result of the TestCaseCtxResult
      *
-     * @return a TestCaseResult instance with the value or Exception of this TestCaseCtxResult
+     * @return a TestCaseResult instance with the value or exception of this TestCaseCtxResult
      */
-    protected TestCaseResult<T> result() {
-        return Objects.requireNonNull(value, "Result value is Null")
-                .<T>ok()
-                .map(ResultValue.Ok::getValue)
-                .map(TestCaseResult::of)
-                .orElseGet(() ->
-                        TestCaseResult.ofErr(
-                                value.err().map(ResultValue.Err::getError).orElseThrow()
+    protected TestCaseResult<R> result() {
+        return Objects.requireNonNull(value, "Result value is Null").<R>ok()
+                .map(v -> TestCaseResult.of(v.getValue()))
+                .orElseGet(() -> TestCaseResult.ofErr(
+                                value.err()
+                                        .map(ResultValue.Err::getError)
+                                        .orElseThrow(() -> new IllegalStateException("Unexpected error occurred while mapping result to TestCaseResult"))
                         )
                 );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestCaseCtxResult<?> that = (TestCaseCtxResult<?>) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 
 }

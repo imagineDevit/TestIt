@@ -8,7 +8,8 @@ import io.github.imagineDevit.giwt.core.annotations.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.*;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.equalTo;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.notNull;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToFail.withMessage;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToFail.withType;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToHave.anItemEqualTo;
@@ -75,15 +76,14 @@ class MyTest {
                         result -> result
                                 .shouldFail(withType(IllegalStateException.class))
                                 .and(withMessage("Oups"))
-
                 );
     }
 
     @Test("test case with context")
     void test5(TestCase<Integer, Integer> testCase) {
         testCase.withContext()
-                .given("the state is set to 1", ctx -> ctx.setState(1))
-                .when("result is set to state + 1", ctx -> ctx.mapToResult(one -> one + 1))
+                .given("the state is set to 1", 1)
+                .when("result is set to state + 1", (ctx, state) -> state + 1)
                 .then("the result should be 3", (ctx, result) -> result.shouldBe(notNull(), equalTo(2)));
     }
 
@@ -91,16 +91,16 @@ class MyTest {
     void test6(TestCase<List<String>, List<String>> testCase) {
         testCase.withContext()
                 .given("an empty list", new ArrayList<>())
-                .and("element is stored as context variable", ctx -> ctx.setVar("var", "element"))
-                .when("an element is added to the list", ctx -> {
-                    ctx.applyOnState(list -> list.add(ctx.getVar("var")));
-                    ctx.setStateAsResult();
+                .and("element is stored as context variable", (ctx, state) -> ctx.setVar("var", "element"))
+                .when("an element is added to the list", (ctx, state) -> {
+                    state.add(ctx.getVar("var"));
+                    return state;
                 })
                 .then("the result should be not null", (ctx, result) -> result.shouldBe(notNull()))
                 .and("the result should have a single item equal to 'element'",
                         (ctx, result) -> result
-                                        .shouldHave(size(1))
-                                        .and(anItemEqualTo("element"))
+                                .shouldHave(size(1))
+                                .and(anItemEqualTo("element"))
                 );
     }
 

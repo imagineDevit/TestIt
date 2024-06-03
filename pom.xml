@@ -5,7 +5,7 @@
 
     <groupId>io.github.imagineDevit</groupId>
     <artifactId>giwt</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9-SNAPSHOT</version>
     <description>
         A JUnit based library that allow developers to write unit test on GIVEN-WHEN-THEN format
     </description>
@@ -14,7 +14,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <giwt.core.version>0.0.8</giwt.core.version>
+        <giwt.core.version>0.0.9</giwt.core.version>
     </properties>
 
     <name>giwt</name>
@@ -61,11 +61,6 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-testkit</artifactId>
             <version>1.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup</groupId>
-            <artifactId>javapoet</artifactId>
-            <version>1.13.0</version>
         </dependency>
     </dependencies>
 

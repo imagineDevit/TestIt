@@ -11,13 +11,13 @@ import java.util.function.Function;
 /**
  * A result of a test case
  *
- * @param <T> the result type
+ * @param <R> the result type
  * @author Henri Joel SEDJAME
  * @since 0.1.0
  */
-public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable<T> {
+public class TestCaseResult<R> extends ATestCaseResult<R> implements JExpectable<R> {
 
-    private final MutVal<T> rValue = new MutVal<>();
+    private final MutVal<R> rValue = new MutVal<>();
     private final MutVal<Throwable> rError = new MutVal<>();
 
     /**
@@ -25,7 +25,7 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable
      *
      * @param value the initial value of the test case result
      */
-    private TestCaseResult(T value) {
+    private TestCaseResult(R value) {
         super(value);
     }
 
@@ -35,7 +35,7 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable
      * @param e the exception to be set as the value of the test case result
      */
     private TestCaseResult(Throwable e) {
-        super(e);
+        super(Objects.requireNonNull(e));
     }
 
     /**
@@ -44,7 +44,7 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable
      * @param value the initial value of the test case result
      * @return a new TestCaseResult instance
      */
-    protected static <T> TestCaseResult<T> of(T value) {
+    protected static <R> TestCaseResult<R> of(R value) {
         return new TestCaseResult<>(value);
     }
 
@@ -54,8 +54,8 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable
      * @param e the exception to be set as the value of the test case result
      * @return a new TestCaseResult instance
      */
-    protected static <T> TestCaseResult<T> ofErr(Throwable e) {
-        return new TestCaseResult<>(e);
+    protected static <R> TestCaseResult<R> ofErr(Throwable e) {
+        return new TestCaseResult<>(Objects.requireNonNull(e));
     }
 
     /**
@@ -63,8 +63,8 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable
      *
      * @return a new TestCaseResult instance with no initial value
      */
-    protected static <T> TestCaseResult<T> empty() {
-        return new TestCaseResult<>((T) null);
+    protected static <R> TestCaseResult<R> empty() {
+        return new TestCaseResult<>((R) null);
     }
 
     /**
@@ -74,30 +74,40 @@ public class TestCaseResult<T> extends ATestCaseResult<T> implements JExpectable
      * @return a new TestCaseResult with the result of the function
      * @throws IllegalStateException if the result is a failure
      */
-    public <R> TestCaseResult<R> map(Function<T, R> mapper) {
-        return value.<T>ok()
-                .map(ResultValue.Ok::getValue)
-                .map(v -> TestCaseResult.of(mapper.apply(v)))
+    public <S> TestCaseResult<S> map(Function<R, S> mapper) {
+        return value.<R>ok()
+                .map(v -> TestCaseResult.of(mapper.apply(v.getValue())))
                 .orElseThrow(() -> new IllegalStateException("Result is Failure"));
     }
 
     @Override
-    public T resultValue() {
-        return rValue.getOr(
-                () -> Objects.requireNonNull(value, "Result value is Null")
-                        .<T>ok()
-                        .orElseThrow(() -> new IllegalStateException("Result value is not an Ok"))
-                        .getValue()
+    public R resultValue() {
+        return rValue.getOr(() -> Objects.requireNonNull(value, "Result value is Null")
+                .<R>ok()
+                .orElseThrow(() -> new IllegalStateException("Result is Failure"))
+                .getValue()
         );
     }
 
     @Override
     public Throwable resultError() {
-        return rError.getOr(
-                () -> Objects.requireNonNull(value, "Result value is Null")
-                        .err()
-                        .map(ATestCaseResult.ResultValue.Err::getError)
-                        .orElseThrow(() -> new IllegalStateException("Result value is not a Failure"))
+        return rError.getOr(() -> Objects.requireNonNull(value, "Result value is Null")
+                .err()
+                .orElseThrow(() -> new IllegalStateException("Result is Success"))
+                .getError()
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestCaseResult<?> that = (TestCaseResult<?>) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 }
