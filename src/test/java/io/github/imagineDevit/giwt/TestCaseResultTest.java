@@ -3,6 +3,7 @@ package io.github.imagineDevit.giwt;
 
 import io.github.imagineDevit.giwt.core.annotations.Test;
 
+import static io.github.imagineDevit.giwt.core.errors.ResultValueError.*;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.equalTo;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.notNull;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToFail.withMessage;
@@ -99,8 +100,8 @@ class TestCaseResultTest {
                 })
                 .then("the TestCaseResult should fail", (result) -> {
                     result
-                            .shouldFail(withType(IllegalStateException.class))
-                            .and(withMessage("Result is Failure"));
+                            .shouldFail(withType(ExpectedValueFailed.class))
+                            .and(withMessage(EXPECTED_VALUE_FAILED));
                 });
     }
 
@@ -128,8 +129,8 @@ class TestCaseResultTest {
                 })
                 .then("the value should fail", (value) -> {
                     value
-                            .shouldFail(withType(IllegalStateException.class))
-                            .and(withMessage("Result is Failure"));
+                            .shouldFail(withType(ExpectedValueFailed.class))
+                            .and(withMessage(EXPECTED_VALUE_FAILED));
                 });
     }
 
@@ -158,8 +159,8 @@ class TestCaseResultTest {
                 })
                 .then("the value should fail", (result) -> {
                     result
-                            .shouldFail(withType(IllegalStateException.class))
-                            .and(withMessage("Result is Success"));
+                            .shouldFail(withType(ExpectedErrorFailed.class))
+                            .and(withMessage(EXPECTED_ERROR_FAILED));
                 });
     }
 }
