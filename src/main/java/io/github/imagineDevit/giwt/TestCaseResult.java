@@ -2,6 +2,7 @@ package io.github.imagineDevit.giwt;
 
 
 import io.github.imagineDevit.giwt.core.ATestCaseResult;
+import io.github.imagineDevit.giwt.core.errors.ResultValueError;
 import io.github.imagineDevit.giwt.core.utils.MutVal;
 import io.github.imagineDevit.giwt.expectations.JExpectable;
 
@@ -77,14 +78,14 @@ public class TestCaseResult<R> extends ATestCaseResult<R> implements JExpectable
     public <S> TestCaseResult<S> map(Function<R, S> mapper) {
         return value.<R>ok()
                 .map(v -> TestCaseResult.of(mapper.apply(v.getValue())))
-                .orElseThrow(() -> new IllegalStateException("Result is Failure"));
+                .orElseThrow(ResultValueError.ExpectedValueFailed::new);
     }
 
     @Override
     public R resultValue() {
         return rValue.getOr(() -> Objects.requireNonNull(value, "Result value is Null")
                 .<R>ok()
-                .orElseThrow(() -> new IllegalStateException("Result is Failure"))
+                .orElseThrow(ResultValueError.ExpectedValueFailed::new)
                 .getValue()
         );
     }
@@ -93,7 +94,7 @@ public class TestCaseResult<R> extends ATestCaseResult<R> implements JExpectable
     public Throwable resultError() {
         return rError.getOr(() -> Objects.requireNonNull(value, "Result value is Null")
                 .err()
-                .orElseThrow(() -> new IllegalStateException("Result is Success"))
+                .orElseThrow(ResultValueError.ExpectedErrorFailed::new)
                 .getError()
         );
     }

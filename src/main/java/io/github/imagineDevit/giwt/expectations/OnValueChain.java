@@ -1,4 +1,3 @@
-
 package io.github.imagineDevit.giwt.expectations;
 
 import io.github.imagineDevit.giwt.core.expectations.Expectable;
