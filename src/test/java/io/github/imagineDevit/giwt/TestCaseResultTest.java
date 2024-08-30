@@ -3,12 +3,15 @@ package io.github.imagineDevit.giwt;
 
 import io.github.imagineDevit.giwt.core.annotations.Test;
 
+import java.util.Map;
+import java.util.Objects;
+
 import static io.github.imagineDevit.giwt.core.errors.ResultValueError.*;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.equalTo;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToBe.notNull;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToFail.withMessage;
 import static io.github.imagineDevit.giwt.core.expectations.ExpectedToFail.withType;
-import static io.github.imagineDevit.giwt.core.expectations.ExpectedToMatch.one;
+import static io.github.imagineDevit.giwt.core.expectations.ExpectedToMatch.all;
 
 class TestCaseResultTest {
 
@@ -20,11 +23,11 @@ class TestCaseResultTest {
                 .when("a TestCaseResult is created using 'of' method factory", (i) -> {
                     return TestCaseResult.of(i);
                 })
-                .then("the value of the TestCaseResult should be 1", (result) -> {
+                .then("the value of the TestCaseResult should be 1", (result) ->
                     result
                             .shouldBe(notNull())
-                            .and(equalTo(TestCaseResult.of(1)));
-                });
+                            .and(equalTo(TestCaseResult.of(1)))
+                );
     }
 
     @Test("create a TestCaseResult with a null value")
@@ -34,11 +37,11 @@ class TestCaseResultTest {
                 .when("a TestCaseResult is created using 'of' method factory", (i) -> {
                     return TestCaseResult.of(i);
                 })
-                .then("the value of the TestCaseResult should be null", (result) -> {
+                .then("the value of the TestCaseResult should be null", (result) ->
                     result
                             .shouldBe(notNull())
-                            .and(equalTo(TestCaseResult.of(null)));
-                });
+                            .and(equalTo(TestCaseResult.of(null)))
+                );
     }
 
     @Test("create a TestCaseResult with a given exception")
@@ -70,11 +73,11 @@ class TestCaseResultTest {
     void empty(TestCase<Integer, TestCaseResult<Integer>> tc) {
         tc
                 .when("a TestCaseResult is created using 'empty' method factory", () -> TestCaseResult.empty())
-                .then("the value of the TestCaseResult should be null", (result) -> {
+                .then("the value of the TestCaseResult should be null", (result) ->
                     result
                             .shouldBe(notNull())
-                            .and(equalTo(TestCaseResult.of(null)));
-                });
+                            .and(equalTo(TestCaseResult.of(null)))
+                );
     }
 
     @Test("map a TestCaseResult with a value")
@@ -84,11 +87,9 @@ class TestCaseResultTest {
                 .when("the value of the TestCaseResult is mapped to a string", (result) -> {
                     return result.map(Object::toString);
                 })
-                .then("the value of the TestCaseResult should be '1'", (result) -> {
-                    result
-                            .shouldBe(notNull())
-                            .and(equalTo(TestCaseResult.of("1")));
-                });
+                .then("the value of the TestCaseResult should be '1'", (result) -> result
+                        .shouldBe(notNull())
+                        .and(equalTo(TestCaseResult.of("1"))));
     }
 
     @Test("map a TestCaseResult with an exception")
@@ -98,11 +99,9 @@ class TestCaseResultTest {
                 .when("the value of the TestCaseResult is mapped to a string", (result) -> {
                     return result.map(Object::toString);
                 })
-                .then("the TestCaseResult should fail", (result) -> {
-                    result
-                            .shouldFail(withType(ExpectedValueFailed.class))
-                            .and(withMessage(EXPECTED_VALUE_FAILED));
-                });
+                .then("the TestCaseResult should fail", (result) -> result
+                        .shouldFail(withType(ExpectedValueFailed.class))
+                        .and(withMessage(EXPECTED_VALUE_FAILED)));
     }
 
 
@@ -113,11 +112,9 @@ class TestCaseResultTest {
                 .when("the value of the TestCaseResult is retrieved", (result) -> {
                     return result.resultValue();
                 })
-                .then("the value should be 1", (value) -> {
-                    value
-                            .shouldBe(notNull())
-                            .and(equalTo(1));
-                });
+                .then("the value should be 1", (value) -> value
+                        .shouldBe(notNull())
+                        .and(equalTo(1)));
     }
 
     @Test("try get the value of a TestCaseResult with an exception")
@@ -127,11 +124,9 @@ class TestCaseResultTest {
                 .when("the value of the TestCaseResult is retrieved", (result) -> {
                     return result.resultValue();
                 })
-                .then("the value should fail", (value) -> {
-                    value
-                            .shouldFail(withType(ExpectedValueFailed.class))
-                            .and(withMessage(EXPECTED_VALUE_FAILED));
-                });
+                .then("the value should fail", (value) -> value
+                        .shouldFail(withType(ExpectedValueFailed.class))
+                        .and(withMessage(EXPECTED_VALUE_FAILED)));
     }
 
 
@@ -142,12 +137,11 @@ class TestCaseResultTest {
                 .when("the error of the TestCaseResult is retrieved", (result) -> {
                     return result.resultError();
                 })
-                .then("the error should be the exception", (result) -> {
-                    result
-                            .shouldBe(notNull())
-                            .and()
-                            .shouldMatch(one("expected to instance of Exception", e -> e instanceof Exception));
-                });
+                .then("the error should be the exception", (result) -> result.shouldMatch(all( Map.of(
+                        "expected to be not null", Objects::nonNull,
+                        "expected to be instance of Exception", e -> e instanceof Exception
+
+                ))));
     }
 
     @Test("try get the error of a TestCaseResult with a value")
@@ -157,10 +151,8 @@ class TestCaseResultTest {
                 .when("the value of the TestCaseResult is retrieved", (result) -> {
                     return result.resultError();
                 })
-                .then("the value should fail", (result) -> {
-                    result
-                            .shouldFail(withType(ExpectedErrorFailed.class))
-                            .and(withMessage(EXPECTED_ERROR_FAILED));
-                });
+                .then("the value should fail", (result) -> result
+                        .shouldFail(withType(ExpectedErrorFailed.class))
+                        .and(withMessage(EXPECTED_ERROR_FAILED)));
     }
 }
